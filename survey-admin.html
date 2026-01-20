@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>Survey Link Generator | FATHOM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Interstate Font Family - Brand/Display Font */
+    @font-face {
+      font-family: 'Interstate';
+      src: url('https://steveyoung74.github.io/journeymaps/fonts/Interstate-regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Interstate';
+      src: url('https://steveyoung74.github.io/journeymaps/fonts/Interstate-bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    :root {
+      /* Font Families */
+      --font-display: 'Interstate', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      
+      --navy-950: #0C1620;
+      --navy-900: #111E2E;
+      --navy-800: #15243A;
+      --navy-700: #192B45;
+      --navy-600: #243D5C;
+      --steel-600: #4A7485;
+      --steel-500: #5B8A9A;
+      --steel-400: #74A0AE;
+      --steel-100: #E1EEF2;
+      --slate-50: #F4F5F7;
+      --slate-100: #E4E7EB;
+      --slate-200: #C8CED6;
+      --slate-300: #A9B2BE;
+      --slate-400: #8A95A5;
+      --slate-500: #6E7B8C;
+      --slate-600: #556275;
+      --slate-700: #3D4A5C;
+      --success: #2D8A6E;
+      --success-light: #D4EDE5;
+      --error: #B84A5A;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      overflow-x: hidden;
+      width: 100%;
+      
+    }
+    body {
+      font-family: var(--font-body);
+      background: var(--slate-50);
+      color: var(--slate-700);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
+    }
+    
+    /* Typography - Display font for headings */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-display);
+    }
+    
+    /* Page background with topographic pattern */
+    .page-bg {
+      min-height: 100vh;
+      background: var(--slate-50);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .page-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://steveyoung74.github.io/journeymaps/topography-light.svg') center/600px 600px repeat;
+      opacity: 1;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .page-bg > main {
+      position: relative;
+      flex: 1;
+    }
+    .page-bg > .footer {
+      position: relative;
+    }
+    
+    /* Navigation */
+    .nav {
+      background: linear-gradient(135deg, var(--navy-700) 0%, var(--navy-900) 100%);
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+    }
+    .nav::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://steveyoung74.github.io/journeymaps/topography-dark.svg') center/600px 600px repeat;
+      opacity: 1;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: relative;
+      z-index: 1;
+    }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .nav-logo {
+      height: 32px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-link {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+    }
+    .nav-link:hover {
+      color: #FFF;
+      background: rgba(255,255,255,0.1);
+    }
+    .nav-link.active {
+      color: #FFF;
+      background: rgba(255,255,255,0.15);
+    }
+    .nav-dropdown {
+      position: relative;
+    }
+    .nav-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #FFF;
+      border-radius: 8px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      min-width: 180px;
+      padding: 8px 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px);
+      transition: all 0.2s;
+      z-index: 1001;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .nav-dropdown-item {
+      display: block;
+      padding: 10px 16px;
+      color: var(--slate-700);
+      text-decoration: none;
+      font-size: 14px;
+      transition: background 0.15s;
+    }
+    .nav-dropdown-item:hover {
+      background: var(--slate-50);
+      color: var(--navy-700);
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    /* Profile Dropdown */
+    .profile-trigger {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+    .profile-trigger:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .profile-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--steel-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .profile-trigger:hover .profile-avatar {
+      border-color: rgba(255,255,255,0.4);
+    }
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .profile-chevron {
+      position: absolute;
+      bottom: 2px;
+      right: 0;
+      width: 14px;
+      height: 14px;
+      background: var(--navy-700);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.8);
+      font-size: 8px;
+      border: 2px solid var(--navy-800);
+    }
+    .profile-trigger.open .profile-chevron {
+      transform: rotate(180deg);
+    }
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: #FFF;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      min-width: 220px;
+      padding: 8px 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: all 0.2s;
+      z-index: 1000;
+    }
+    .profile-dropdown.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .profile-dropdown-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--slate-100);
+      margin-bottom: 4px;
+    }
+    .profile-dropdown-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--steel-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      font-size: 16px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .profile-dropdown-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .profile-dropdown-name {
+      font-weight: 600;
+      color: var(--slate-900);
+      font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .profile-dropdown-email {
+      color: var(--slate-500);
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .profile-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      color: var(--slate-700);
+      text-decoration: none;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.1s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+    }
+    .profile-dropdown-item:hover {
+      background: var(--slate-50);
+    }
+    .profile-dropdown-item .icon {
+      width: 18px;
+      text-align: center;
+    }
+    .profile-dropdown-divider {
+      height: 1px;
+      background: var(--slate-100);
+      margin: 4px 0;
+    }
+    .profile-dropdown-item.danger {
+      color: var(--error);
+    }
+    .profile-dropdown-item.danger:hover {
+      background: rgba(184, 74, 90, 0.08);
+    }
+    
+    .nav-user {
+      color: rgba(255,255,255,0.8);
+      font-size: 14px;
+    }
+    .nav-signout {
+      color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .nav-signout:hover {
+      background: rgba(255,255,255,0.2);
+      color: #FFF;
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-inner { padding: 0 16px; }
+      .nav-right { display: none !important; }
+      .nav-mobile-toggle { 
+        display: flex !important; 
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    
+    /* Mobile Menu */
+    .nav-mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #FFF;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px 12px;
+      line-height: 1;
+      position: relative;
+      z-index: 10;
+    }
+    /* Mobile Menu - Threads-style Side Sliding */
+    .nav-mobile-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .nav-mobile-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .nav-mobile-menu {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 280px;
+      max-width: 85vw;
+      background: var(--navy-800);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+    }
+    .nav-mobile-menu.open {
+      transform: translateX(0);
+    }
+    .nav-mobile-header {
+      display: flex;
+      justify-content: flex-end;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .nav-mobile-close {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #FFF;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px 12px;
+      line-height: 1;
+      border-radius: 20px;
+      transition: background 0.15s;
+    }
+    .nav-mobile-close:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .nav-mobile-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .nav-mobile-link {
+      color: rgba(255,255,255,0.9);
+      text-decoration: none;
+      padding: 14px 20px;
+      border-radius: 24px;
+      font-size: 15px;
+      font-weight: 500;
+      background: rgba(255,255,255,0.05);
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .nav-mobile-link:hover {
+      background: rgba(255,255,255,0.15);
+      color: #FFF;
+    }
+    .nav-mobile-link.active {
+      background: rgba(255,255,255,0.2);
+      color: #FFF;
+    }
+    .nav-mobile-section-label {
+      color: rgba(255,255,255,0.4);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 16px 20px 8px;
+    }
+    .nav-mobile-user {
+      padding: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.2);
+    }
+    .nav-mobile-user-name {
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .nav-mobile-signout {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.9);
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .nav-mobile-signout:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.4);
+    }
+    
+    .page-header {
+      margin-bottom: 32px;
+    }
+    .page-title {
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--navy-700);
+      margin-bottom: 8px;
+    }
+    .page-subtitle {
+      font-size: 15px;
+      color: var(--slate-500);
+    }
+    
+    .main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    
+    .card {
+      background: #FFF;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    
+    .card h2 {
+      font-size: 18px;
+      color: var(--navy-700);
+      margin-bottom: 16px;
+    }
+    
+    .field {
+      margin-bottom: 16px;
+    }
+    
+    .field-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--slate-700);
+      margin-bottom: 6px;
+    }
+    
+    .input, .select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid var(--slate-200);
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--slate-700);
+    }
+    
+    .input:focus, .select:focus {
+      outline: none;
+      border-color: var(--steel-500);
+    }
+    
+    .btn {
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+    
+    .btn-primary {
+      background: var(--navy-900);
+      color: #FFF;
+    }
+    
+    .btn-primary:hover {
+      background: var(--navy-700);
+    }
+    
+    .btn-secondary {
+      background: var(--slate-100);
+      color: var(--slate-600);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--slate-200);
+    }
+    
+    .generated-links {
+      margin-top: 24px;
+    }
+    
+    .link-item {
+      background: var(--slate-50);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    
+    .link-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .link-role {
+      font-weight: 600;
+      color: var(--navy-700);
+    }
+    
+    .link-email {
+      font-size: 13px;
+      color: var(--slate-500);
+    }
+    
+    .link-url {
+      background: #FFF;
+      border: 1px solid var(--slate-200);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-family: monospace;
+      word-break: break-all;
+      margin-bottom: 8px;
+    }
+    
+    .link-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .link-actions .btn {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    
+    .copied {
+      color: var(--green-500);
+      font-size: 12px;
+      margin-left: 8px;
+    }
+    
+    .personas-list {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .persona-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      background: var(--slate-50);
+      border-radius: 8px;
+    }
+    
+    .persona-row .input {
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+    
+    .persona-name {
+      font-weight: 600;
+      color: var(--navy-700);
+    }
+    
+    .step-count {
+      font-size: 12px;
+      color: var(--slate-500);
+    }
+    
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--slate-400);
+      cursor: pointer;
+      padding: 4px;
+      font-size: 16px;
+    }
+    
+    .remove-btn:hover {
+      color: #B84A5A;
+    }
+    
+    .info-box {
+      background: rgba(91, 138, 154, 0.1);
+      border-left: 4px solid var(--steel-500);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: var(--slate-600);
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--slate-500);
+    }
+    
+    .error {
+      background: rgba(184, 74, 90, 0.1);
+      border-left: 4px solid #B84A5A;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      color: #B84A5A;
+    }
+    
+    /* Footer */
+    .footer {
+      background: var(--navy-950);
+      color: rgba(255,255,255,0.4);
+      padding: 32px 24px;
+    }
+    .footer-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .footer-logo {
+      height: 20px;
+      opacity: 0.5;
+    }
+    .footer-version {
+      font-size: 11px;
+      opacity: 0.6;
+    }
+    .footer-copy {
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://ktctvaeulualihczwnrl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Y3R2YWV1bHVhbGloY3p3bnJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0MzczNjksImV4cCI6MjA4MzAxMzM2OX0.qnvrAUvUhp3hgu37YnahR0Ql-CKR0zcDt3sKWaMq95I';
+    
+    const supabase = window.supabase?.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        storage: window.localStorage
+      }
+    });
+    
+    const BASE_SURVEY_URL = 'https://steveyoung74.github.io/journeymaps/survey.html';
+    
+    function LinkGenerator() {
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [maps, setMaps] = useState([]);
+      const [selectedMapId, setSelectedMapId] = useState('');
+      const [mapConfig, setMapConfig] = useState(null);
+      const [assignments, setAssignments] = useState([]);
+      const [generatedLinks, setGeneratedLinks] = useState([]);
+      const [copiedIndex, setCopiedIndex] = useState(null);
+      const [user, setUser] = useState(null);
+      const [profile, setProfile] = useState(null);
+      const [userOrgId, setUserOrgId] = useState(null);
+      const [showMobileMenu, setShowMobileMenu] = useState(false);
+      const [showProfileMenu, setShowProfileMenu] = useState(false);
+      const [sendingAll, setSendingAll] = useState(false);
+      const [sentCount, setSentCount] = useState(0);
+      
+      // Helper to get user initials
+      const getInitials = (name) => {
+        if (!name) return '?';
+        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      };
+      
+      // Close profile menu when clicking outside
+      useEffect(() => {
+        const handleClickOutside = (e) => {
+          if (showProfileMenu && !e.target.closest('.profile-container')) {
+            setShowProfileMenu(false);
+          }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+      }, [showProfileMenu]);
+      
+      // Get map ID from URL if present
+      const urlParams = new URLSearchParams(window.location.search);
+      const preselectedMapId = urlParams.get('map') || urlParams.get('id');
+      
+      // Load user from Supabase
+      useEffect(() => {
+        if (!supabase) return;
+        
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session?.user) {
+            setUser(session.user);
+            supabase
+              .from('users')
+              .select('display_name, organisation_id, role, avatar_url')
+              .eq('id', session.user.id)
+              .single()
+              .then(({ data }) => {
+                if (data) {
+                  setProfile(data);
+                  setUserOrgId(data.organisation_id);
+                }
+              });
+          }
+        });
+        
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+          setUser(session?.user ?? null);
+          if (!session?.user) {
+            setProfile(null);
+            setUserOrgId(null);
+          }
+        });
+        
+        return () => subscription?.unsubscribe();
+      }, []);
+      
+      const handleSignOut = async () => {
+        if (supabase) {
+          await supabase.auth.signOut();
+        }
+        window.location.href = 'index.html';
+      };
+      
+      // Display name helper
+      const displayName = profile?.display_name || user?.email?.split('@')[0] || 'User';
+      const canManageTeam = profile?.role === 'owner' || profile?.role === 'admin';
+      
+      // Load maps from Supabase
+      useEffect(() => {
+        if (!supabase || !userOrgId) return;
+        
+        const loadMaps = async () => {
+          try {
+            const { data, error } = await supabase
+              .from('journey_maps')
+              .select('id, title, journey_type, created_at')
+              .eq('organisation_id', userOrgId)
+              .is('archived_at', null)
+              .order('updated_at', { ascending: false });
+            
+            if (error) throw error;
+            
+            setMaps(data || []);
+            
+            // Pre-select map from URL parameter
+            if (preselectedMapId && data?.some(m => m.id === preselectedMapId)) {
+              setSelectedMapId(preselectedMapId);
+            }
+            
+            setLoading(false);
+          } catch (err) {
+            setError(err.message);
+            setLoading(false);
+          }
+        };
+        loadMaps();
+      }, [userOrgId, preselectedMapId]);
+      
+      // Load selected map config from Supabase
+      useEffect(() => {
+        if (!selectedMapId || !supabase) {
+          setMapConfig(null);
+          setAssignments([]);
+          return;
+        }
+        
+        const loadMapConfig = async () => {
+          try {
+            const { data, error } = await supabase
+              .from('journey_maps')
+              .select('config, title')
+              .eq('id', selectedMapId)
+              .single();
+            
+            if (error) throw error;
+            if (!data?.config) throw new Error('Map not found');
+            
+            const config = data.config;
+            setMapConfig(config);
+            
+            // Count steps per persona using roleInvolvement
+            const stepCounts = {};
+            config.stages?.forEach(stage => {
+              stage.steps?.forEach(step => {
+                // Check roleInvolvement (new format)
+                if (step.roleInvolvement) {
+                  Object.keys(step.roleInvolvement).forEach(roleId => {
+                    const involvement = step.roleInvolvement[roleId];
+                    // Only count if they have time assigned
+                    if (involvement && involvement.timeMinutes > 0) {
+                      stepCounts[roleId] = (stepCounts[roleId] || 0) + 1;
+                    }
+                  });
+                }
+                // Also check owner (legacy fallback)
+                if (step.owner && !step.roleInvolvement) {
+                  stepCounts[step.owner] = (stepCounts[step.owner] || 0) + 1;
+                }
+                // Also check persona (oldest format)
+                if (step.persona && !step.roleInvolvement && !step.owner) {
+                  stepCounts[step.persona] = (stepCounts[step.persona] || 0) + 1;
+                }
+              });
+            });
+            
+            console.log('Step counts by persona:', stepCounts);
+            console.log('Personas:', config.personas);
+            
+            // Initialize assignments from personas
+            const initialAssignments = config.personas
+              ?.filter(p => stepCounts[p.id] > 0) // Only personas with steps
+              ?.map(p => ({
+                roleId: p.id,
+                roleName: p.label || p.name,
+                email: '',
+                name: '',
+                stepCount: stepCounts[p.id] || 0
+              })) || [];
+            
+            setAssignments(initialAssignments);
+            setGeneratedLinks([]);
+          } catch (err) {
+            setError(err.message);
+          }
+        };
+        
+        loadMapConfig();
+      }, [selectedMapId]);
+      
+      // Update assignment
+      const updateAssignment = (index, field, value) => {
+        setAssignments(prev => prev.map((a, i) => 
+          i === index ? { ...a, [field]: value } : a
+        ));
+      };
+      
+      // Add duplicate assignment (same role, different person)
+      const duplicateAssignment = (index) => {
+        const source = assignments[index];
+        setAssignments(prev => [
+          ...prev.slice(0, index + 1),
+          { ...source, email: '', name: '' },
+          ...prev.slice(index + 1)
+        ]);
+      };
+      
+      // Remove assignment
+      const removeAssignment = (index) => {
+        setAssignments(prev => prev.filter((_, i) => i !== index));
+      };
+      
+      // Generate links
+      const generateLinks = () => {
+        const links = assignments
+          .filter(a => a.email) // Only generate for assignments with email
+          .map(a => {
+            const params = new URLSearchParams({
+              id: selectedMapId,  // Supabase UUID
+              role: a.roleId,
+              email: a.email,
+              name: a.name || a.email.split('@')[0]
+            });
+            
+            return {
+              ...a,
+              url: `${BASE_SURVEY_URL}?${params.toString()}`
+            };
+          });
+        
+        setGeneratedLinks(links);
+      };
+      
+      // Copy to clipboard
+      const copyToClipboard = async (text, index) => {
+        try {
+          await navigator.clipboard.writeText(text);
+          setCopiedIndex(index);
+          setTimeout(() => setCopiedIndex(null), 2000);
+        } catch (err) {
+          console.error('Failed to copy:', err);
+        }
+      };
+      
+      // Copy email template
+      const copyEmailTemplate = (link) => {
+        const template = `Hi ${link.name},
+
+We're currently mapping out our "${mapConfig?.meta?.title || 'process'}" to understand how it really works and identify opportunities for improvement.
+
+As someone involved in this process (${link.roleName}), we'd love to get your input. We've put together a short survey (about ${Math.ceil(link.stepCount * 2)} minutes) to capture your experience.
+
+Please complete the survey here:
+${link.url}
+
+Your input is really valuable - thank you!`;
+        
+        copyToClipboard(template, `email-${link.email}`);
+      };
+      
+      // Generate mailto URL for sending email
+      const getMailtoUrl = (link) => {
+        const subject = encodeURIComponent(`Process Survey: ${mapConfig?.meta?.title || 'Journey Map'}`);
+        const body = encodeURIComponent(`Hi ${link.name},
+
+We're currently mapping out our "${mapConfig?.meta?.title || 'process'}" to understand how it really works and identify opportunities for improvement.
+
+As someone involved in this process (${link.roleName}), we'd love to get your input. We've put together a short survey (about ${Math.ceil(link.stepCount * 2)} minutes) to capture your experience.
+
+Please complete the survey here:
+${link.url}
+
+Your input is really valuable - thank you!`);
+        
+        return `mailto:${link.email}?subject=${subject}&body=${body}`;
+      };
+      
+      // Track sent invitation in Supabase
+      const trackInvitation = async (link) => {
+        if (!supabase || !userOrgId) {
+          console.warn('Cannot track invitation: Supabase not available');
+          return;
+        }
+        
+        try {
+          // First check if invitation already exists
+          const { data: existing } = await supabase
+            .from('survey_invitations')
+            .select('id, send_count')
+            .eq('journey_map_id', selectedMapId)
+            .eq('role_id', link.roleId)
+            .eq('email', link.email)
+            .single();
+          
+          if (existing) {
+            // Update existing invitation
+            const { error } = await supabase
+              .from('survey_invitations')
+              .update({
+                last_sent_at: new Date().toISOString(),
+                send_count: (existing.send_count || 1) + 1
+              })
+              .eq('id', existing.id);
+            
+            if (error) console.error('Update error:', error);
+            else console.log('✅ Invitation updated (reminder sent)');
+          } else {
+            // Insert new invitation
+            const { error } = await supabase
+              .from('survey_invitations')
+              .insert({
+                journey_map_id: selectedMapId,
+                organisation_id: userOrgId,
+                role_id: link.roleId,
+                role_name: link.roleName,
+                email: link.email,
+                name: link.name,
+                survey_url: link.url,
+                step_count: link.stepCount,
+                sent_at: new Date().toISOString(),
+                last_sent_at: new Date().toISOString(),
+                send_count: 1,
+                created_by: user?.id
+              });
+            
+            if (error) console.error('Insert error:', error);
+            else console.log('✅ New invitation tracked');
+          }
+        } catch (err) {
+          console.error('Failed to track invitation:', err);
+        }
+      };
+      
+      // Send email via mailto and track it
+      const sendEmail = async (link) => {
+        await trackInvitation(link);
+        window.open(getMailtoUrl(link), '_blank');
+      };
+      
+      // Send all emails (opens each in sequence)
+      const sendAllEmails = async () => {
+        setSendingAll(true);
+        setSentCount(0);
+        
+        for (let i = 0; i < generatedLinks.length; i++) {
+          const link = generatedLinks[i];
+          // Track the invitation
+          await trackInvitation(link);
+          // Open mailto link
+          window.open(getMailtoUrl(link), '_blank');
+          setSentCount(i + 1);
+          
+          // Small delay between emails to prevent browser blocking
+          if (i < generatedLinks.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+        }
+        
+        setSendingAll(false);
+      };
+      
+      // Navigation component
+      const Nav = () => (
+        <>
+        <nav className="nav">
+          <div className="nav-inner">
+            <div className="nav-left">
+              <a href="index.html">
+                <img src="https://steveyoung74.github.io/journeymaps/logo_light.png" alt="FATHOM" className="nav-logo" />
+              </a>
+              {user && (
+                <div className="nav-links">
+                  <a href="dashboard.html" className="nav-link">Dashboard</a>
+                  <div className="nav-dropdown">
+                    <span className="nav-link active">Surveys ▾</span>
+                    <div className="nav-dropdown-menu">
+                      <a href="survey-admin.html" className="nav-dropdown-item">Send Surveys</a>
+                      <a href="responses.html" className="nav-dropdown-item">View Responses</a>
+                    </div>
+                  </div>
+                  {canManageTeam && (
+                    <a href="team.html" className="nav-link">Team</a>
+                  )}
+                  <a href="whats-new.html" className="nav-link">What's New</a>
+                  <a href="about.html" className="nav-link">About</a>
+                </div>
+              )}
+            </div>
+            <div className="nav-right">
+              {user ? (
+                <div className="profile-container" style={{ position: 'relative' }}>
+                  <button 
+                    className={`profile-trigger ${showProfileMenu ? 'open' : ''}`}
+                    onClick={(e) => { e.stopPropagation(); setShowProfileMenu(!showProfileMenu); }}
+                  >
+                    <div className="profile-avatar">
+                      {profile?.avatar_url ? (
+                        <img src={profile.avatar_url} alt="" />
+                      ) : (
+                        getInitials(displayName)
+                      )}
+                    </div>
+                    <span className="profile-chevron">▼</span>
+                  </button>
+                  
+                  <div className={`profile-dropdown ${showProfileMenu ? 'open' : ''}`}>
+                    <div className="profile-dropdown-header">
+                      <div className="profile-dropdown-avatar">
+                        {profile?.avatar_url ? (
+                          <img src={profile.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          getInitials(displayName)
+                        )}
+                      </div>
+                      <div className="profile-dropdown-info">
+                        <div className="profile-dropdown-name">{profile?.display_name || 'User'}</div>
+                        <div className="profile-dropdown-email">{user?.email}</div>
+                      </div>
+                    </div>
+                    
+                    <a href="profile.html" className="profile-dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                      <span className="icon">👤</span>
+                      Profile Settings
+                    </a>
+                    
+                    {canManageTeam && (
+                      <a href="team.html" className="profile-dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                        <span className="icon">👥</span>
+                        Team Management
+                      </a>
+                    )}
+                    
+                    <div className="profile-dropdown-divider" />
+                    
+                    <a href="whats-new.html" className="profile-dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                      <span className="icon">✨</span>
+                      What's New
+                    </a>
+                    <a href="about.html" className="profile-dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                      <span className="icon">ℹ️</span>
+                      About Fathom
+                    </a>
+                    
+                    <div className="profile-dropdown-divider" />
+                    
+                    <button 
+                      className="profile-dropdown-item danger"
+                      onClick={() => { setShowProfileMenu(false); handleSignOut(); }}
+                    >
+                      <span className="icon">🚪</span>
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <a href="dashboard.html" className="nav-link" style={{ color: '#FFF' }}>Sign In</a>
+              )}
+            </div>
+            {/* Mobile hamburger */}
+            <button className="nav-mobile-toggle" onClick={() => setShowMobileMenu(true)}>
+              ☰
+            </button>
+          </div>
+        </nav>
+        
+        {/* Mobile Menu - Threads-style */}
+        <div className={`nav-mobile-backdrop ${showMobileMenu ? 'open' : ''}`} onClick={() => setShowMobileMenu(false)} />
+        <div className={`nav-mobile-menu ${showMobileMenu ? 'open' : ''}`}>
+          <div className="nav-mobile-header">
+            <button className="nav-mobile-close" onClick={() => setShowMobileMenu(false)}>✕</button>
+          </div>
+          <div className="nav-mobile-links">
+            {user && (
+              <>
+                <a href="dashboard.html" className="nav-mobile-link">Dashboard</a>
+                <div className="nav-mobile-section-label">Surveys</div>
+                <a href="survey-admin.html" className="nav-mobile-link active">Send Surveys</a>
+                <a href="responses.html" className="nav-mobile-link">View Responses</a>
+                {canManageTeam && (
+                  <>
+                    <div className="nav-mobile-section-label">Organisation</div>
+                    <a href="team.html" className="nav-mobile-link">Team</a>
+                  </>
+                )}
+                <div className="nav-mobile-section-label">Info</div>
+              </>
+            )}
+            <a href="whats-new.html" className="nav-mobile-link">What's New</a>
+            <a href="about.html" className="nav-mobile-link">About</a>
+          </div>
+          <div className="nav-mobile-user">
+            {user ? (
+              <>
+                <div className="nav-mobile-user-name">Signed in as {displayName}</div>
+                <button onClick={() => { setShowMobileMenu(false); handleSignOut(); }} className="nav-mobile-signout">Sign Out</button>
+              </>
+            ) : (
+              <a href="dashboard.html" className="nav-mobile-signout" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>Sign In</a>
+            )}
+          </div>
+        </div>
+        </>
+      );
+      
+      if (loading) {
+        return (
+          <div className="page-bg">
+            <Nav />
+            <main className="main">
+              <div className="loading">Loading maps...</div>
+            </main>
+          </div>
+        );
+      }
+      
+      return (
+        <div className="page-bg">
+          <Nav />
+          
+          <main className="main">
+            <div className="page-header">
+              <h1 className="page-title">Send Surveys</h1>
+              <p className="page-subtitle">Generate personalised survey links for your team</p>
+            </div>
+            
+            {error && <div className="error">{error}</div>}
+            
+            <div className="card">
+              <h2>1. Select Journey Map</h2>
+              <div className="field">
+                <select 
+                  className="select"
+                  value={selectedMapId}
+                  onChange={(e) => setSelectedMapId(e.target.value)}
+                >
+                  <option value="">Choose a journey map...</option>
+                  {maps.map(map => (
+                    <option key={map.id} value={map.id}>{map.title}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            
+            {mapConfig && (
+              <div className="card">
+                <h2>2. Assign People to Roles</h2>
+                <div className="info-box">
+                  Each person will only see the steps assigned to their role. You can assign multiple people to the same role.
+                </div>
+                
+                <div className="personas-list">
+                  {assignments.map((assignment, index) => (
+                    <div key={`${assignment.roleId}-${index}`} className="persona-row">
+                      <div>
+                        <div className="persona-name">{assignment.roleName}</div>
+                        <div className="step-count">{assignment.stepCount} step{assignment.stepCount !== 1 ? 's' : ''}</div>
+                      </div>
+                      <input 
+                        type="email"
+                        className="input"
+                        placeholder="Email address"
+                        value={assignment.email}
+                        onChange={(e) => updateAssignment(index, 'email', e.target.value)}
+                      />
+                      <input 
+                        type="text"
+                        className="input"
+                        placeholder="Name (optional)"
+                        value={assignment.name}
+                        onChange={(e) => updateAssignment(index, 'name', e.target.value)}
+                      />
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        <button 
+                          className="remove-btn" 
+                          onClick={() => duplicateAssignment(index)}
+                          title="Add another person for this role"
+                        >
+                          +
+                        </button>
+                        {assignments.filter(a => a.roleId === assignment.roleId).length > 1 && (
+                          <button 
+                            className="remove-btn" 
+                            onClick={() => removeAssignment(index)}
+                            title="Remove"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <button className="btn btn-primary" onClick={generateLinks}>
+                  Generate Survey Links
+                </button>
+              </div>
+            )}
+            
+            {generatedLinks.length > 0 && (
+              <div className="card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h2 style={{ margin: 0 }}>3. Survey Links</h2>
+                  <button 
+                    className="btn btn-primary"
+                    onClick={sendAllEmails}
+                    disabled={sendingAll}
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    {sendingAll ? (
+                      <>Sending... ({sentCount}/{generatedLinks.length})</>
+                    ) : (
+                      <>📧 Send All Emails ({generatedLinks.length})</>
+                    )}
+                  </button>
+                </div>
+                <div className="info-box">
+                  Click "Send Email" to open your email client with a pre-filled message, or use "Send All" to queue them all.
+                </div>
+                
+                <div className="generated-links">
+                  {generatedLinks.map((link, index) => (
+                    <div key={index} className="link-item">
+                      <div className="link-header">
+                        <div>
+                          <span className="link-role">{link.roleName}</span>
+                          <span className="link-email"> — {link.name} ({link.email})</span>
+                        </div>
+                      </div>
+                      <div className="link-url">{link.url}</div>
+                      <div className="link-actions">
+                        <button 
+                          className="btn btn-primary"
+                          onClick={() => sendEmail(link)}
+                          style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                        >
+                          📧 Send Email
+                        </button>
+                        <button 
+                          className="btn btn-secondary"
+                          onClick={() => copyToClipboard(link.url, index)}
+                        >
+                          {copiedIndex === index ? '✓ Copied!' : 'Copy Link'}
+                        </button>
+                        <button 
+                          className="btn btn-secondary"
+                          onClick={() => window.open(link.url, '_blank')}
+                        >
+                          Preview
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </main>
+          
+          <footer className="footer">
+            <div className="footer-inner">
+              <div className="footer-brand">
+                <img src="https://steveyoung74.github.io/journeymaps/logo_light.png" alt="Fathom" className="footer-logo" />
+                <span className="footer-version">v8.8.0</span>
+              </div>
+              <div className="footer-copy">© 2025 Fathom · Journey intelligence for modern operations</div>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+    
+    ReactDOM.createRoot(document.getElementById('root')).render(<LinkGenerator />);
+  </script>
+</body>
+</html>

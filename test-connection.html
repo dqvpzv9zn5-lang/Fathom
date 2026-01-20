@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FATHOM - Connection Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #0C1620;
+      color: #C8D5E2;
+    }
+    .test { 
+      margin: 10px 0;
+      padding: 10px;
+      background: #192B45;
+      border-radius: 4px;
+    }
+    .pass { color: #2D8A6E; }
+    .fail { color: #B84A5A; }
+    .warn { color: #C4942A; }
+    pre {
+      background: #111E2E;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 FATHOM Connection Diagnostic</h1>
+  <div id="output"></div>
+
+  <script>
+    const output = document.getElementById('output');
+    
+    function log(message, status = 'info') {
+      const div = document.createElement('div');
+      div.className = `test ${status}`;
+      div.textContent = message;
+      output.appendChild(div);
+    }
+
+    function logJSON(obj) {
+      const pre = document.createElement('pre');
+      pre.textContent = JSON.stringify(obj, null, 2);
+      output.appendChild(pre);
+    }
+
+    async function runTests() {
+      log('Starting diagnostic tests...', 'info');
+      
+      // Test 1: Configuration
+      const SUPABASE_URL = 'https://ktctvaeuluallhczwnrl.supabase.co';
+      const SUPABASE_ANON_KEY = 'sb_publishable_NlZjP1W6SO7j7jrbv8gARA_HgZlRxLY';
+      
+      log('✓ URL: ' + SUPABASE_URL, 'pass');
+      log('✓ Key format: ' + (SUPABASE_ANON_KEY.startsWith('sb_publishable') ? 'Valid (new format)' : 'Invalid'), 
+          SUPABASE_ANON_KEY.startsWith('sb_publishable') ? 'pass' : 'fail');
+      
+      // Test 2: Supabase Client
+      try {
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        log('✓ Supabase client created', 'pass');
+        
+        // Test 3: Network connectivity
+        log('Testing network connectivity...', 'info');
+        const { data, error } = await supabase.from('journey_maps').select('id').limit(1);
+        
+        if (error) {
+          log('✗ Database query failed: ' + error.message, 'fail');
+          logJSON(error);
+        } else {
+          log('✓ Database query successful', 'pass');
+          log('  Returned ' + (data ? data.length : 0) + ' rows', 'pass');
+        }
+        
+        // Test 4: Check tables
+        const tables = ['users', 'organisations', 'journey_maps', 'survey_invitations', 'survey_responses'];
+        log('Checking table access...', 'info');
+        
+        for (const table of tables) {
+          const { error: tableError } = await supabase.from(table).select('id').limit(1);
+          if (tableError) {
+            log(`✗ ${table}: ${tableError.message}`, 'fail');
+          } else {
+            log(`✓ ${table}: accessible`, 'pass');
+          }
+        }
+        
+        // Test 5: Session check
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          log('✓ User session found', 'pass');
+          log('  User: ' + session.user.email, 'info');
+        } else {
+          log('⚠ No active session (not logged in)', 'warn');
+        }
+        
+        // Test 6: Edge Functions
+        log('Testing Edge Functions...', 'info');
+        const functions = [
+          'submit-survey',
+          'send-survey-email'
+        ];
+        
+        for (const fn of functions) {
+          const url = `${SUPABASE_URL}/functions/v1/${fn}`;
+          try {
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+              },
+              body: JSON.stringify({ test: true })
+            });
+            
+            if (response.status === 400 || response.status === 200) {
+              log(`✓ ${fn}: reachable (status ${response.status})`, 'pass');
+            } else {
+              log(`⚠ ${fn}: unexpected status ${response.status}`, 'warn');
+            }
+          } catch (err) {
+            log(`✗ ${fn}: ${err.message}`, 'fail');
+          }
+        }
+        
+        log('=== Tests Complete ===', 'info');
+        
+      } catch (err) {
+        log('✗ Critical error: ' + err.message, 'fail');
+        logJSON(err);
+      }
+    }
+
+    runTests();
+  </script>
+</body>
+</html>

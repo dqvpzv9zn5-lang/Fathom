@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>What's New | FATHOM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Interstate Font Family - Brand/Display Font */
+    @font-face {
+      font-family: 'Interstate';
+      src: url('https://steveyoung74.github.io/journeymaps/fonts/Interstate-light.ttf') format('truetype');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Interstate';
+      src: url('https://steveyoung74.github.io/journeymaps/fonts/Interstate-regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Interstate';
+      src: url('https://steveyoung74.github.io/journeymaps/fonts/Interstate-bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    :root {
+      /* Font Families */
+      --font-display: 'Interstate', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      
+      --navy-950: #0C1620;
+      --navy-900: #111E2E;
+      --navy-800: #15243A;
+      --navy-700: #192B45;
+      --navy-600: #243D5C;
+      --navy-500: #2F5070;
+      --steel-700: #3A6070;
+      --steel-600: #4A7485;
+      --steel-500: #5B8A9A;
+      --steel-400: #74A0AE;
+      --steel-300: #96BCC7;
+      --steel-100: #E1EEF2;
+      --amber-600: #A67D1D;
+      --amber-500: #C4942A;
+      --amber-100: #FAF0D6;
+      --success: #2D8A6E;
+      --success-light: #D4EDE5;
+      --error: #B84A5A;
+      --slate-900: #1A2332;
+      --slate-700: #3D4A5C;
+      --slate-600: #556275;
+      --slate-500: #6E7B8C;
+      --slate-400: #8A95A5;
+      --slate-300: #A9B2BE;
+      --slate-200: #C8CED6;
+      --slate-100: #E4E7EB;
+      --slate-50: #F4F5F7;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      overflow-x: hidden;
+      width: 100%;
+      
+    }
+    body {
+      font-family: var(--font-body);
+      background: var(--slate-50);
+      color: var(--slate-900);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
+    }
+    
+    /* Typography - Display font for headings */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-display);
+    }
+    
+    /* Page Background */
+    .page-bg {
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .page-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://steveyoung74.github.io/journeymaps/topography-light.svg') center/600px 600px repeat;
+      opacity: 1;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .page-bg > main {
+      position: relative;
+      flex: 1;
+    }
+    .page-bg > .footer {
+      position: relative;
+    }
+    
+    /* Navigation */
+    .nav {
+      background: linear-gradient(135deg, var(--navy-700) 0%, var(--navy-900) 100%);
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+    }
+    .nav::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://steveyoung74.github.io/journeymaps/topography-dark.svg') center/600px 600px repeat;
+      opacity: 1;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: relative;
+      z-index: 1;
+    }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .nav-logo {
+      height: 32px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-link {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .nav-link:hover {
+      color: #FFF;
+      background: rgba(255,255,255,0.1);
+    }
+    .nav-link.active {
+      color: #FFF;
+      background: rgba(255,255,255,0.15);
+    }
+    .nav-dropdown {
+      position: relative;
+    }
+    .nav-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #FFF;
+      border-radius: 8px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      min-width: 180px;
+      padding: 8px 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px);
+      transition: all 0.2s;
+      z-index: 1001;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .nav-dropdown-item {
+      display: block;
+      padding: 10px 16px;
+      color: var(--slate-700);
+      text-decoration: none;
+      font-size: 14px;
+      transition: background 0.15s;
+    }
+    .nav-dropdown-item:hover {
+      background: var(--slate-50);
+      color: var(--navy-700);
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    /* Profile Dropdown */
+    .profile-trigger {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+    .profile-trigger:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .profile-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--steel-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .profile-trigger:hover .profile-avatar {
+      border-color: rgba(255,255,255,0.4);
+    }
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .profile-chevron {
+      position: absolute;
+      bottom: 2px;
+      right: 0;
+      width: 14px;
+      height: 14px;
+      background: var(--navy-700);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.8);
+      font-size: 8px;
+      border: 2px solid var(--navy-800);
+    }
+    .profile-trigger.open .profile-chevron {
+      transform: rotate(180deg);
+    }
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: #FFF;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      min-width: 220px;
+      padding: 8px 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: all 0.2s;
+      z-index: 1000;
+    }
+    .profile-dropdown.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .profile-dropdown-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--slate-100);
+      margin-bottom: 4px;
+    }
+    .profile-dropdown-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--steel-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      font-size: 16px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .profile-dropdown-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .profile-dropdown-name {
+      font-weight: 600;
+      color: var(--slate-900);
+      font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .profile-dropdown-email {
+      color: var(--slate-500);
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .profile-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      color: var(--slate-700);
+      text-decoration: none;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.1s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+    }
+    .profile-dropdown-item:hover {
+      background: var(--slate-50);
+    }
+    .profile-dropdown-item .icon {
+      width: 18px;
+      text-align: center;
+    }
+    .profile-dropdown-divider {
+      height: 1px;
+      background: var(--slate-100);
+      margin: 4px 0;
+    }
+    .profile-dropdown-item.danger {
+      color: var(--error);
+    }
+    .profile-dropdown-item.danger:hover {
+      background: rgba(184, 74, 90, 0.08);
+    }
+    
+    .nav-user {
+      color: rgba(255,255,255,0.8);
+      font-size: 14px;
+    }
+    .nav-signout {
+      color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .nav-signout:hover {
+      background: rgba(255,255,255,0.2);
+      color: #FFF;
+    }
+    
+    /* Main Content */
+    .main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+    
+    .page-header {
+      margin-bottom: 48px;
+    }
+    .page-header h1 {
+      font-size: 36px;
+      font-weight: 400;
+      color: var(--navy-700);
+      margin-bottom: 8px;
+    }
+    .page-header p {
+      font-size: 17px;
+      color: var(--slate-500);
+    }
+    
+    /* Release Timeline */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    
+    .release {
+      background: #FFF;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    
+    .release-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .release-version {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--navy-700);
+    }
+    
+    .release-date {
+      font-size: 14px;
+      color: var(--slate-500);
+    }
+    
+    .release-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .release-badge.latest {
+      background: var(--success-light);
+      color: var(--success);
+    }
+    
+    .release-badge.beta {
+      background: var(--amber-100);
+      color: var(--amber-600);
+    }
+    
+    .release-title {
+      font-size: 18px;
+      color: var(--slate-700);
+      margin-bottom: 20px;
+      font-weight: 400;
+    }
+    
+    .release-section {
+      margin-bottom: 20px;
+    }
+    
+    .release-section:last-child {
+      margin-bottom: 0;
+    }
+    
+    .release-section h3 {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--slate-500);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .release-section h3 .icon {
+      font-size: 16px;
+    }
+    
+    .release-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .release-list li {
+      font-size: 15px;
+      color: var(--slate-700);
+      padding-left: 20px;
+      position: relative;
+    }
+    
+    .release-list li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--steel-500);
+    }
+    
+    /* Coming Soon */
+    .roadmap {
+      background: linear-gradient(135deg, var(--navy-700) 0%, var(--navy-900) 100%);
+      border-radius: 16px;
+      padding: 32px;
+      color: #FFF;
+      position: relative;
+      overflow: hidden;
+    }
+    .roadmap::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://steveyoung74.github.io/journeymaps/topography-dark.svg') center/600px 600px repeat;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .roadmap > * {
+      position: relative;
+      z-index: 1;
+    }
+    .roadmap h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .roadmap p {
+      opacity: 0.8;
+      margin-bottom: 24px;
+    }
+    .roadmap-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+      gap: 16px;
+    }
+    .roadmap-item {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .roadmap-item h3 {
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+    .roadmap-item p {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-bottom: 0;
+    }
+    
+    /* Footer */
+    .footer {
+      background: var(--navy-950);
+      color: rgba(255,255,255,0.4);
+      padding: 32px 24px;
+    }
+    .footer-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .footer-logo {
+      height: 20px;
+      opacity: 0.5;
+    }
+    .footer-version {
+      font-size: 11px;
+      opacity: 0.6;
+    }
+    .footer-copy {
+      font-size: 13px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      .nav-right {
+        display: none !important;
+      }
+      .nav-mobile-toggle {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+      }
+      .release {
+        padding: 24px;
+      }
+    }
+    
+    /* Mobile Menu */
+    .nav-mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #FFF;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px 12px;
+      line-height: 1;
+      position: relative;
+      z-index: 10;
+    }
+    /* Mobile Menu - Threads-style Side Sliding */
+    .nav-mobile-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .nav-mobile-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .nav-mobile-menu {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 280px;
+      max-width: 85vw;
+      background: var(--navy-800);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+    }
+    .nav-mobile-menu.open {
+      transform: translateX(0);
+    }
+    .nav-mobile-header {
+      display: flex;
+      justify-content: flex-end;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .nav-mobile-close {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #FFF;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px 12px;
+      line-height: 1;
+      border-radius: 20px;
+      transition: background 0.15s;
+    }
+    .nav-mobile-close:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .nav-mobile-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .nav-mobile-link {
+      color: rgba(255,255,255,0.9);
+      text-decoration: none;
+      padding: 14px 20px;
+      border-radius: 24px;
+      font-size: 15px;
+      font-weight: 500;
+      background: rgba(255,255,255,0.05);
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .nav-mobile-link:hover {
+      background: rgba(255,255,255,0.15);
+      color: #FFF;
+    }
+    .nav-mobile-link.active {
+      background: rgba(255,255,255,0.2);
+      color: #FFF;
+    }
+    .nav-mobile-section-label {
+      color: rgba(255,255,255,0.4);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 16px 20px 8px;
+    }
+    .nav-mobile-user {
+      padding: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.2);
+    }
+    .nav-mobile-user-name {
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .nav-mobile-signout {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.9);
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .nav-mobile-signout:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.4);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://ktctvaeulualihczwnrl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Y3R2YWV1bHVhbGloY3p3bnJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0MzczNjksImV4cCI6MjA4MzAxMzM2OX0.qnvrAUvUhp3hgu37YnahR0Ql-CKR0zcDt3sKWaMq95I';
+    
+    const supabase = window.supabase?.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        storage: window.localStorage
+      }
+    });
+    
+    // Release notes data - easy to update
+    const RELEASES = [
+      {
+        version: '9.4.0',
+        date: 'January 2026',
+        badge: 'latest',
+        title: 'Dashboard Views & Data Import',
+        sections: [
+          {
+            type: 'new',
+            icon: '✨',
+            items: [
+              'Dashboard view toggle — switch between Card and List view',
+              'List view with sortable columns (Time, Cost, Steps, Friction, Updated)',
+              'JSON Import — import journey maps from legacy systems',
+              'Automatic format detection for legacy/current JSON structures',
+              'Preview imported data before creating map',
+              'Smooth loading screen gradients without banding artifacts'
+            ]
+          },
+          {
+            type: 'improved',
+            icon: '🔧',
+            items: [
+              'Loading screen visual polish across all pages',
+              'View toggle hidden on mobile (cards only)',
+              'Better grid layout for list view with consistent spacing'
+            ]
+          }
+        ]
+      },
+      {
+        version: '9.3.0',
+        date: 'January 2026',
+        title: 'Avatar Upload & Cost Accuracy',
+        sections: [
+          {
+            type: 'new',
+            icon: '✨',
+            items: [
+              'Profile avatar upload with image cropping',
+              'Avatar display across all pages (nav, team, profile)',
+              'Workspace name editing on Team page',
+              'Stage cards with unified shadow and rounded corners',
+              'Step separators with connected card design'
+            ]
+          },
+          {
+            type: 'improved',
+            icon: '🔧',
+            items: [
+              'Cost calculations now match exactly between Dashboard, Editor, and Reports',
+              'Support for both legacy (owner) and new (roleInvolvement) data formats',
+              'Workspace overhead and burden multiplier applied consistently',
+              'Additional costs (third-party services) included in totals',
+              'Friction level calculation handles all format variations'
+            ]
+          },
+          {
+            type: 'fixed',
+            icon: '🐛',
+            items: [
+              'Dashboard card cost now matches Editor total',
+              'Report cost analysis shows correct values',
+              'Role costs properly calculated for legacy imports'
+            ]
+          }
+        ]
+      },
+      {
+        version: '9.2.0',
+        date: 'January 2026',
+        title: 'Team Management & Invitations',
+        sections: [
+          {
+            type: 'new',
+            icon: '✨',
+            items: [
+              'Team page for managing organisation members',
+              'Invite team members via email with role selection',
+              'Pending invitations with expiry dates',
+              'Resend invitation emails with one click',
+              'Role-based permissions (Owner, Admin, Member, Viewer)',
+              'Team page restricted to Owners and Admins only',
+              'Role permissions reference guide'
+            ]
+          },
+          {
+            type: 'improved',
+            icon: '🔧',
+            items: [
+              'Team link appears in nav bar for authorised users only',
+              'Better error messages for invitation conflicts',
+              'Consistent navigation across all pages'
+            ]
+          }
+        ]
+      },
+      {
+        version: '9.1.0',
+        date: 'January 2026',
+        title: 'Map Sharing & Collaboration',
+        sections: [
+          {
+            type: 'new',
+            icon: '✨',
+            items: [
+              'Share maps with colleagues via email',
+              'View or Edit permission levels',
+              'Email notification when sharing maps',
+              'Resend share notifications',
+              'Copy shareable link to clipboard',
+              'See who has access to your maps',
+              'Shared with Me tab on dashboard'
+            ]
+          },
+          {
+            type: 'improved',
+            icon: '🔧',
+            items: [
+              'Share modal accessible from dashboard and editor',
+              'Avatar display for shared users',
+              'Permission badges (Can View / Can Edit)'
+            ]
+          }
+        ]
+      },
+      {
+        version: '9.0.0',
+        date: 'January 2026',
+        title: 'Supabase Backend & User Accounts',
+        sections: [
+          {
+            type: 'new',
+            icon: '✨',
+            items: [
+              'Full Supabase backend integration',
+              'User accounts with email/password authentication',
+              'Organisation workspaces for team data isolation',
+              'Row-level security for data protection',
+              'Persistent cloud storage (goodbye localStorage!)',
+              'User profiles with display names',
+              'Automatic organisation creation on signup'
+            ]
+          },
+          {
+            type: 'improved',
+            icon: '🔧',
+            items: [
+              'Journey maps now saved to PostgreSQL database',
+              'Real-time sync across devices',
+              'Secure session management',
+              'EU data hosting for GDPR compliance'
+            ]
+          }
+        ]
+      },
+      {
+        version: '8.9.0',
+        date: 'January 2026',
+        title: 'UI Polish & Brand Refinements',
+        sections: [
+          {
+            type: 'new',
+            icon: '✨',
+            items: [
+              'Sinking logo loading animation — the Fathom logo descends into the depths',
+              'Dashboard cards with gradient headers',
+              'Favourite maps highlighted with amber/gold gradient',
+              'Mobile-responsive improvements throughout'
+            ]
+          },
+          {
+            type: 'improved',
+            icon: '🔧',
+            items: [
+              'Consistent loading experience across all pages',
+              'Better visual hierarchy on dashboard cards',
+              'Refined topographic background patterns',
+              'Interstate font applied consistently'
+            ]
+          }
+        ]
+      },
+      {
+        version: '8.8.0',
+        date: 'December 2025',
+        title: 'Survey Response Viewer & Product Navigation',
+        sections: [
+          {
+            type: 'new',
+            icon: '✨',
+            items: [
+              'Survey Response Viewer — see all submissions with filtering by role',
+              'Comparison View — compare your estimates vs actual survey responses',
+              'Consistent product navigation across all pages',
+              'About page with product information and founder bio',
+              'What\'s New page (you\'re looking at it!)',
+              'Time variance highlighting in response viewer'
+            ]
+          },
+          {
+            type: 'improved',
+            icon: '🔧',
+            items: [
+              'Fathom branding applied consistently across survey pages',
+              'Logo and topography motif on all authenticated pages',
+              'Interstate font family loaded across all pages',
+              'Dashboard now shows Responses button on each map card'
+            ]
+          }
+        ]
+      },
+      {
+        version: '8.7.0',
+        date: 'December 2025',
+        title: 'Survey System & Template Library',
+        sections: [
+          {
+            type: 'new',
+            icon: '✨',
+            items: [
+              'RFI Survey system for collecting ground-truth data',
+              'Survey Link Generator for sending personalised surveys',
+              'Role-based survey filtering — each person sees only their steps',
+              'Friction scoring with emoji scale',
+              'Eight industry template journeys (Financial Services, HR, SaaS, Insurance, Legal, Property)',
+              'Template system with realistic stages, personas, and timing data'
+            ]
+          },
+          {
+            type: 'improved',
+            icon: '🔧',
+            items: [
+              'Mobile layout fixes for Cost Analysis dashboard',
+              'Improved survey form UX with progress indicator'
+            ]
+          }
+        ]
+      },
+      {
+        version: '8.6.0',
+        date: 'November 2025',
+        title: 'Cost Analysis & Funnel Analytics',
+        sections: [
+          {
+            type: 'new',
+            icon: '✨',
+            items: [
+              'Comprehensive Cost Analysis dashboard',
+              'True cost modelling with employment burden multipliers',
+              'Workspace overhead calculations',
+              'Third-party cost tracking per step',
+              'Funnel Analysis with cascading drop-off calculations',
+              'Good Cost vs Bad Cost breakdown',
+              'Stage-by-stage cost comparison'
+            ]
+          }
+        ]
+      },
+      {
+        version: '8.5.0',
+        date: 'October 2025',
+        title: 'Dashboard & Multi-Map Support',
+        sections: [
+          {
+            type: 'new',
+            icon: '✨',
+            items: [
+              'Dashboard for managing multiple journey maps',
+              'Map sharing with view/edit permissions',
+              'Favourite and lock maps',
+              'Grid and list view options',
+              'Map metrics preview on cards',
+              'GitHub-based storage with localStorage sync'
+            ]
+          }
+        ]
+      }
+    ];
+    
+    const ROADMAP = [
+      { title: 'AI Journey Generation', description: 'Describe your process and let AI create a starting point' },
+      { title: 'AI Survey Synthesis', description: 'Auto-summarise survey responses with consistent tone' },
+      { title: 'Benchmark Intelligence', description: 'Compare your journeys against anonymised industry data' },
+      { title: 'PDF Export', description: 'Export journey maps as professional reports' },
+      { title: 'Version History', description: 'Track changes and compare versions over time' },
+      { title: 'API Access', description: 'Integrate Fathom with your existing tools' }
+    ];
+    
+    function WhatsNewPage() {
+      const [user, setUser] = useState(null);
+      const [profile, setProfile] = useState(null);
+      const [showMobileMenu, setShowMobileMenu] = useState(false);
+      const [showProfileMenu, setShowProfileMenu] = useState(false);
+      const [authLoading, setAuthLoading] = useState(true);
+      
+      // Helper to get user initials
+      const getInitials = (name) => {
+        if (!name) return '?';
+        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      };
+      
+      // Close profile menu when clicking outside
+      useEffect(() => {
+        const handleClickOutside = (e) => {
+          if (showProfileMenu && !e.target.closest('.profile-container')) {
+            setShowProfileMenu(false);
+          }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+      }, [showProfileMenu]);
+      
+      useEffect(() => {
+        if (!supabase) {
+          setAuthLoading(false);
+          return;
+        }
+        
+        // Check Supabase session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session?.user) {
+            setUser(session.user);
+            // Fetch profile for display name and role
+            supabase
+              .from('users')
+              .select('display_name, role, avatar_url')
+              .eq('id', session.user.id)
+              .single()
+              .then(({ data }) => {
+                if (data) setProfile(data);
+              });
+          }
+          setAuthLoading(false);
+        });
+        
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+          setUser(session?.user ?? null);
+          if (!session?.user) setProfile(null);
+        });
+        
+        return () => subscription?.unsubscribe();
+      }, []);
+      
+      const handleSignOut = async () => {
+        if (supabase) {
+          await supabase.auth.signOut();
+        }
+        window.location.href = 'index.html';
+      };
+      
+      // Display name: profile > email username > 'User'
+      const displayName = profile?.display_name || user?.email?.split('@')[0] || 'User';
+      const canManageTeam = profile?.role === 'owner' || profile?.role === 'admin';
+      
+      const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+      
+      return (
+        <div className="page-bg">
+          {/* Navigation */}
+          <nav className="nav">
+            <div className="nav-inner">
+              <div className="nav-left">
+                <a href="index.html">
+                  <img src="https://steveyoung74.github.io/journeymaps/logo_light.png" alt="FATHOM" className="nav-logo" />
+                </a>
+                <div className="nav-links">
+                  {user && (
+                    <>
+                      <a href="dashboard.html" className={`nav-link ${currentPath === 'dashboard.html' ? 'active' : ''}`}>Dashboard</a>
+                      <div className="nav-dropdown">
+                        <span className="nav-link" style={{ cursor: 'pointer' }}>Surveys ▾</span>
+                        <div className="nav-dropdown-menu">
+                          <a href="survey-admin.html" className="nav-dropdown-item">Send Surveys</a>
+                          <a href="responses.html" className="nav-dropdown-item">View Responses</a>
+                        </div>
+                      </div>
+                      {canManageTeam && (
+                        <a href="team.html" className={`nav-link ${currentPath === 'team.html' ? 'active' : ''}`}>Team</a>
+                      )}
+                    </>
+                  )}
+                  <a href="whats-new.html" className={`nav-link ${currentPath === 'whats-new.html' ? 'active' : ''}`}>What's New</a>
+                  <a href="about.html" className={`nav-link ${currentPath === 'about.html' ? 'active' : ''}`}>About</a>
+                </div>
+              </div>
+              <div className="nav-right">
+                {user ? (
+                  <div className="profile-container" style={{ position: 'relative' }}>
+                    <button 
+                      className={`profile-trigger ${showProfileMenu ? 'open' : ''}`}
+                      onClick={(e) => { e.stopPropagation(); setShowProfileMenu(!showProfileMenu); }}
+                    >
+                      <div className="profile-avatar">
+                        {profile?.avatar_url ? (
+                          <img src={profile.avatar_url} alt="" />
+                        ) : (
+                          getInitials(displayName)
+                        )}
+                      </div>
+                      <span className="profile-chevron">▼</span>
+                    </button>
+                    
+                    <div className={`profile-dropdown ${showProfileMenu ? 'open' : ''}`}>
+                      <div className="profile-dropdown-header">
+                        <div className="profile-dropdown-avatar">
+                          {profile?.avatar_url ? (
+                            <img src={profile.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            getInitials(displayName)
+                          )}
+                        </div>
+                        <div className="profile-dropdown-info">
+                          <div className="profile-dropdown-name">{profile?.display_name || 'User'}</div>
+                          <div className="profile-dropdown-email">{user?.email}</div>
+                        </div>
+                      </div>
+                      
+                      <a href="profile.html" className="profile-dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                        <span className="icon">👤</span>
+                        Profile Settings
+                      </a>
+                      
+                      {canManageTeam && (
+                        <a href="team.html" className="profile-dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                          <span className="icon">👥</span>
+                          Team Management
+                        </a>
+                      )}
+                      
+                      <div className="profile-dropdown-divider" />
+                      
+                      <a href="whats-new.html" className="profile-dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                        <span className="icon">✨</span>
+                        What's New
+                      </a>
+                      <a href="about.html" className="profile-dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                        <span className="icon">ℹ️</span>
+                        About Fathom
+                      </a>
+                      
+                      <div className="profile-dropdown-divider" />
+                      
+                      <button 
+                        className="profile-dropdown-item danger"
+                        onClick={() => { setShowProfileMenu(false); handleSignOut(); }}
+                      >
+                        <span className="icon">🚪</span>
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <a href="dashboard.html" className="nav-link" style={{ color: '#FFF' }}>Sign In</a>
+                )}
+              </div>
+              {/* Mobile hamburger */}
+              <button className="nav-mobile-toggle" onClick={() => setShowMobileMenu(true)}>
+                ☰
+              </button>
+            </div>
+          </nav>
+          
+          {/* Mobile Menu - Threads-style */}
+          <div className={`nav-mobile-backdrop ${showMobileMenu ? 'open' : ''}`} onClick={() => setShowMobileMenu(false)} />
+          <div className={`nav-mobile-menu ${showMobileMenu ? 'open' : ''}`}>
+            <div className="nav-mobile-header">
+              <button className="nav-mobile-close" onClick={() => setShowMobileMenu(false)}>✕</button>
+            </div>
+            <div className="nav-mobile-links">
+              {user && (
+                <>
+                  <a href="dashboard.html" className={`nav-mobile-link ${currentPath === 'dashboard.html' ? 'active' : ''}`}>Dashboard</a>
+                  <div className="nav-mobile-section-label">Surveys</div>
+                  <a href="survey-admin.html" className="nav-mobile-link">Send Surveys</a>
+                  <a href="responses.html" className="nav-mobile-link">View Responses</a>
+                  {canManageTeam && (
+                    <>
+                      <div className="nav-mobile-section-label">Organisation</div>
+                      <a href="team.html" className="nav-mobile-link">Team</a>
+                    </>
+                  )}
+                  <div className="nav-mobile-section-label">Info</div>
+                </>
+              )}
+              <a href="whats-new.html" className={`nav-mobile-link ${currentPath === 'whats-new.html' ? 'active' : ''}`}>What's New</a>
+              <a href="about.html" className={`nav-mobile-link ${currentPath === 'about.html' ? 'active' : ''}`}>About</a>
+            </div>
+            <div className="nav-mobile-user">
+              {user ? (
+                <>
+                  <div className="nav-mobile-user-name">Signed in as {displayName}</div>
+                  <button onClick={() => { setShowMobileMenu(false); handleSignOut(); }} className="nav-mobile-signout">Sign Out</button>
+                </>
+              ) : (
+                <a href="dashboard.html" className="nav-mobile-signout" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>Sign In</a>
+              )}
+            </div>
+          </div>
+          
+          <main className="main">
+            <div className="page-header">
+              <h1>What's New</h1>
+              <p>Latest updates, features, and improvements to Fathom</p>
+            </div>
+            
+            {/* Roadmap */}
+            <div className="roadmap" style={{ marginBottom: '32px' }}>
+              <h2>🚀 Coming Soon</h2>
+              <p>Features we're working on next</p>
+              <div className="roadmap-items">
+                {ROADMAP.map((item, i) => (
+                  <div key={i} className="roadmap-item">
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Release Timeline */}
+            <div className="timeline">
+              {RELEASES.map((release, i) => (
+                <div key={release.version} className="release">
+                  <div className="release-header">
+                    <span className="release-version">v{release.version}</span>
+                    <span className="release-date">{release.date}</span>
+                    {release.badge && (
+                      <span className={`release-badge ${release.badge}`}>{release.badge}</span>
+                    )}
+                  </div>
+                  <div className="release-title">{release.title}</div>
+                  
+                  {release.sections.map((section, j) => (
+                    <div key={j} className="release-section">
+                      <h3>
+                        <span className="icon">{section.icon}</span>
+                        {section.type === 'new' ? 'New Features' : 'Improvements'}
+                      </h3>
+                      <ul className="release-list">
+                        {section.items.map((item, k) => (
+                          <li key={k}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </main>
+          
+          <footer className="footer">
+            <div className="footer-inner">
+              <div className="footer-brand">
+                <img src="https://steveyoung74.github.io/journeymaps/logo_light.png" alt="Fathom" className="footer-logo" />
+                <span className="footer-version">v9.4.0</span>
+              </div>
+              <div className="footer-copy">© 2025 Fathom · Journey intelligence for modern operations</div>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+    
+    ReactDOM.createRoot(document.getElementById('root')).render(<WhatsNewPage />);
+  </script>
+</body>
+</html>
