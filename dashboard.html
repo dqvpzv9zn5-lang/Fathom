@@ -3138,17 +3138,12 @@
                         <span className="dropdown-item-icon">📋</span>
                         Send Surveys
                       </a>
-                      <a href="responses.html" className="dropdown-item">
-                        <span className="dropdown-item-icon">📊</span>
-                        View Responses
-                        {getTotalPendingResponses() > 0 && (
-                          <span className="dropdown-item-badge">{getTotalPendingResponses()}</span>
-                        )}
-                      </a>
-                      <div className="dropdown-divider" />
                       <a href="responses-review.html" className="dropdown-item">
                         <span className="dropdown-item-icon">✅</span>
                         Review & Approve
+                        {getTotalPendingResponses() > 0 && (
+                          <span className="dropdown-item-badge">{getTotalPendingResponses()}</span>
+                        )}
                       </a>
                     </div>
                   </div>
