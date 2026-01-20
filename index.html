@@ -1262,9 +1262,8 @@
       const [scrolled, setScrolled] = useState(false);
       const [logoVisible, setLogoVisible] = useState(false);
       
-      // NEW: Context and industry state
+      // Context state
       const [activeContext, setActiveContext] = useState('journeys');
-      const [activeIndustry, setActiveIndustry] = useState('all');
       const [showDemo, setShowDemo] = useState(false);
       const [isTransitioning, setIsTransitioning] = useState(false);
       
@@ -1272,22 +1271,17 @@
       useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const context = params.get('context');
-        const industry = params.get('industry');
         if (context && ['journeys', 'projects', 'events'].includes(context)) {
           setActiveContext(context);
         }
-        if (industry) {
-          setActiveIndustry(industry);
-        }
       }, []);
       
-      // Update URL when context/industry changes
+      // Update URL when context changes
       useEffect(() => {
         const params = new URLSearchParams();
         params.set('context', activeContext);
-        params.set('industry', activeIndustry);
         window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
-      }, [activeContext, activeIndustry]);
+      }, [activeContext]);
       
       useEffect(() => {
         const handleScroll = () => {
@@ -1405,7 +1399,7 @@
                 <div style={{
                   display: 'flex',
                   justifyContent: 'flex-start',
-                  marginBottom: '32px'
+                  marginBottom: '48px'
                 }}>
                   <div style={{
                     display: 'inline-flex',
@@ -1440,44 +1434,6 @@
                       </button>
                     ))}
                   </div>
-                </div>
-                
-                {/* NEW: Industry Pills */}
-                <div style={{
-                  display: 'flex',
-                  gap: '8px',
-                  flexWrap: 'wrap',
-                  marginBottom: '40px'
-                }}>
-                  {['All', 'Financial Services', 'Professional Services', 'SaaS & Tech', 'Construction'].map(ind => {
-                    const slug = ind.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
-                    return (
-                      <button
-                        key={ind}
-                        onClick={() => setActiveIndustry(slug)}
-                        style={{
-                          padding: '8px 16px',
-                          background: activeIndustry === slug 
-                            ? 'rgba(255,255,255,0.2)' 
-                            : 'rgba(255,255,255,0.06)',
-                          border: `1px solid ${activeIndustry === slug
-                            ? 'rgba(255,255,255,0.3)'
-                            : 'rgba(255,255,255,0.12)'}`,
-                          borderRadius: '20px',
-                          color: activeIndustry === slug
-                            ? '#FFF'
-                            : 'rgba(255,255,255,0.6)',
-                          fontSize: '13px',
-                          fontWeight: 500,
-                          cursor: 'pointer',
-                          transition: 'all 0.2s',
-                          fontFamily: 'var(--font-body)'
-                        }}
-                      >
-                        {ind}
-                      </button>
-                    );
-                  })}
                 </div>
                 
                 {/* Dynamic Badge */}
