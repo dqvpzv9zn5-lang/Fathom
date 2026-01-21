@@ -2977,7 +2977,74 @@ Powered by FATHOM
         durationMinutes: 180,
         frequency: 'single',
         eventsPerPeriod: 1,
-        periodLabel: ''
+        periodLabel: '',
+        
+        // Revenue configuration with example data
+        revenue: {
+          tickets: [
+            {
+              id: 'tier-1',
+              name: 'Standard Tickets',
+              allocation: 800,
+              avgPrice: 45,
+              occupancyRate: 0.85
+            },
+            {
+              id: 'tier-2',
+              name: 'Premium Tickets',
+              allocation: 200,
+              avgPrice: 120,
+              occupancyRate: 0.90
+            }
+          ],
+          commercial: [
+            {
+              id: 'food-bev',
+              name: 'Food & Beverage',
+              revenueType: 'per-attendee',
+              avgSpend: 8.50,
+              penetration: 0.65,
+              costOfSales: 0.40
+            },
+            {
+              id: 'merchandise',
+              name: 'Merchandise',
+              revenueType: 'per-attendee',
+              avgSpend: 12,
+              penetration: 0.25,
+              costOfSales: 0.45
+            }
+          ],
+          fixed: [
+            {
+              id: 'sponsorship',
+              name: 'Event Sponsorship',
+              amount: 5000
+            }
+          ]
+        },
+        
+        // Operating costs with example data
+        operatingCosts: [
+          {
+            id: 'utilities',
+            name: 'Utilities',
+            amount: 2500,
+            category: 'facilities'
+          },
+          {
+            id: 'cleaning',
+            name: 'Cleaning',
+            amount: 1500,
+            category: 'facilities'
+          },
+          {
+            id: 'security-ext',
+            name: 'External Security',
+            amount: 3000,
+            category: 'security'
+          }
+        ]
       });
 
       const handleSave = () => {
@@ -3237,6 +3304,874 @@ Powered by FATHOM
               >
                 Save Changes
               </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Revenue & Operating Costs Configuration Modal
+    function RevenueConfigPanel({ config, setConfig, onClose, formatCurrency }) {
+      const eventConfig = config.meta?.eventConfig || {};
+      const [activeTab, setActiveTab] = useState('tickets');
+      
+      const [revenue, setRevenue] = useState(eventConfig.revenue || {
+        tickets: [],
+        commercial: [],
+        fixed: []
+      });
+      
+      const [operatingCosts, setOperatingCosts] = useState(eventConfig.operatingCosts || []);
+      
+      // Ticket management
+      const addTicket = () => {
+        setRevenue(prev => ({
+          ...prev,
+          tickets: [...prev.tickets, {
+            id: `tier-${Date.now()}`,
+            name: 'New Ticket Tier',
+            allocation: 100,
+            avgPrice: 50,
+            occupancyRate: 0.8
+          }]
+        }));
+      };
+      
+      const updateTicket = (index, field, value) => {
+        setRevenue(prev => ({
+          ...prev,
+          tickets: prev.tickets.map((t, i) => i === index ? { ...t, [field]: value } : t)
+        }));
+      };
+      
+      const deleteTicket = (index) => {
+        setRevenue(prev => ({
+          ...prev,
+          tickets: prev.tickets.filter((_, i) => i !== index)
+        }));
+      };
+      
+      // Commercial management
+      const addCommercial = () => {
+        setRevenue(prev => ({
+          ...prev,
+          commercial: [...prev.commercial, {
+            id: `comm-${Date.now()}`,
+            name: 'New Revenue Stream',
+            revenueType: 'per-attendee',
+            avgSpend: 10,
+            penetration: 0.5,
+            costOfSales: 0.3
+          }]
+        }));
+      };
+      
+      const updateCommercial = (index, field, value) => {
+        setRevenue(prev => ({
+          ...prev,
+          commercial: prev.commercial.map((c, i) => i === index ? { ...c, [field]: value } : c)
+        }));
+      };
+      
+      const deleteCommercial = (index) => {
+        setRevenue(prev => ({
+          ...prev,
+          commercial: prev.commercial.filter((_, i) => i !== index)
+        }));
+      };
+      
+      // Fixed revenue management
+      const addFixed = () => {
+        setRevenue(prev => ({
+          ...prev,
+          fixed: [...prev.fixed, {
+            id: `fixed-${Date.now()}`,
+            name: 'New Fixed Revenue',
+            amount: 1000
+          }]
+        }));
+      };
+      
+      const updateFixed = (index, field, value) => {
+        setRevenue(prev => ({
+          ...prev,
+          fixed: prev.fixed.map((f, i) => i === index ? { ...f, [field]: value } : f)
+        }));
+      };
+      
+      const deleteFixed = (index) => {
+        setRevenue(prev => ({
+          ...prev,
+          fixed: prev.fixed.filter((_, i) => i !== index)
+        }));
+      };
+      
+      // Operating costs management
+      const addOperatingCost = () => {
+        setOperatingCosts(prev => [...prev, {
+          id: `cost-${Date.now()}`,
+          name: 'New Operating Cost',
+          amount: 1000,
+          category: 'facilities'
+        }]);
+      };
+      
+      const updateOperatingCost = (index, field, value) => {
+        setOperatingCosts(prev => prev.map((c, i) => i === index ? { ...c, [field]: value } : c));
+      };
+      
+      const deleteOperatingCost = (index) => {
+        setOperatingCosts(prev => prev.filter((_, i) => i !== index));
+      };
+      
+      const handleSave = () => {
+        setConfig(prev => ({
+          ...prev,
+          meta: {
+            ...prev.meta,
+            eventConfig: {
+              ...prev.meta.eventConfig,
+              revenue,
+              operatingCosts
+            }
+          }
+        }));
+        onClose();
+      };
+      
+      // Calculate totals for display
+      const ticketTotal = revenue.tickets.reduce((sum, t) => sum + (t.allocation * t.avgPrice * t.occupancyRate), 0);
+      const commercialTotal = revenue.commercial.reduce((sum, c) => {
+        if (c.revenueType === 'per-attendee') {
+          const gross = (eventConfig.capacity || 0) * c.avgSpend * c.penetration;
+          return sum + (gross * (1 - c.costOfSales));
+        }
+        return sum;
+      }, 0);
+      const fixedTotal = revenue.fixed.reduce((sum, f) => sum + f.amount, 0);
+      const operatingTotal = operatingCosts.reduce((sum, c) => sum + c.amount, 0);
+      
+      const tabStyle = (tab) => ({
+        padding: '10px 20px',
+        background: activeTab === tab ? '#192B45' : 'transparent',
+        color: activeTab === tab ? '#FFF' : '#6E7B8C',
+        border: 'none',
+        borderRadius: '6px 6px 0 0',
+        cursor: 'pointer',
+        fontSize: '13px',
+        fontWeight: 600,
+        fontFamily: "'Interstate', sans-serif"
+      });
+      
+      return (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(12, 22, 32, 0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: '20px' }}>
+          <div style={{ background: '#FFF', borderRadius: '12px', width: '100%', maxWidth: '900px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', fontFamily: "'Interstate', sans-serif" }}>
+            
+            {/* Header */}
+            <div style={{ padding: '24px', borderBottom: '2px solid #E4E7EB' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#192B45' }}>💰 Revenue & Operating Costs</h3>
+                  <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#6E7B8C' }}>Configure revenue streams and operational costs</p>
+                </div>
+                <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#6E7B8C' }}>×</button>
+              </div>
+            </div>
+            
+            {/* Tabs */}
+            <div style={{ padding: '0 24px', background: '#F4F5F7', display: 'flex', gap: '4px', borderBottom: '1px solid #E4E7EB' }}>
+              <button onClick={() => setActiveTab('tickets')} style={tabStyle('tickets')}>🎟️ Tickets</button>
+              <button onClick={() => setActiveTab('commercial')} style={tabStyle('commercial')}>🛍️ Commercial</button>
+              <button onClick={() => setActiveTab('fixed')} style={tabStyle('fixed')}>📺 Fixed</button>
+              <button onClick={() => setActiveTab('costs')} style={tabStyle('costs')}>💸 Costs</button>
+            </div>
+            
+            {/* Content */}
+            <div style={{ flex: 1, overflow: 'auto', padding: '24px' }}>
+              
+              {/* TICKETS TAB */}
+              {activeTab === 'tickets' && (
+                <div>
+                  <div style={{ marginBottom: '16px', fontSize: '13px', color: '#6E7B8C' }}>
+                    Configure ticket tiers with allocation, pricing, and expected occupancy rates.
+                  </div>
+                  
+                  {revenue.tickets.map((ticket, index) => (
+                    <div key={ticket.id} style={{ background: '#F4F5F7', borderRadius: '8px', padding: '16px', marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <input
+                          type="text"
+                          value={ticket.name}
+                          onChange={(e) => updateTicket(index, 'name', e.target.value)}
+                          style={{ flex: 1, padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px', fontWeight: 600 }}
+                        />
+                        <button onClick={() => deleteTicket(index)} style={{ marginLeft: '12px', padding: '8px 12px', background: '#F5E0E3', color: '#B84A5A', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>Delete</button>
+                      </div>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', color: '#556275', marginBottom: '4px' }}>Allocation (seats)</label>
+                          <input
+                            type="number"
+                            value={ticket.allocation}
+                            onChange={(e) => updateTicket(index, 'allocation', parseInt(e.target.value) || 0)}
+                            style={{ width: '100%', padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', color: '#556275', marginBottom: '4px' }}>Avg Price (£)</label>
+                          <input
+                            type="number"
+                            value={ticket.avgPrice}
+                            onChange={(e) => updateTicket(index, 'avgPrice', parseFloat(e.target.value) || 0)}
+                            step="0.01"
+                            style={{ width: '100%', padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', color: '#556275', marginBottom: '4px' }}>Occupancy (%)</label>
+                          <input
+                            type="number"
+                            value={Math.round(ticket.occupancyRate * 100)}
+                            onChange={(e) => updateTicket(index, 'occupancyRate', (parseInt(e.target.value) || 0) / 100)}
+                            min="0"
+                            max="100"
+                            style={{ width: '100%', padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px' }}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div style={{ marginTop: '12px', padding: '8px', background: '#FFF', borderRadius: '6px', fontSize: '13px', color: '#192B45', fontWeight: 600 }}>
+                        Revenue: {formatCurrency(ticket.allocation * ticket.avgPrice * ticket.occupancyRate)}
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <button onClick={addTicket} style={{ width: '100%', padding: '12px', background: '#E9EEF4', border: '2px dashed #9BB1C7', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 600, color: '#192B45' }}>
+                    + Add Ticket Tier
+                  </button>
+                  
+                  <div style={{ marginTop: '16px', padding: '16px', background: '#FAF0D6', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '14px', color: '#8B6914', fontWeight: 600 }}>Total Ticket Revenue</span>
+                    <span style={{ fontSize: '20px', fontWeight: 700, color: '#8B6914' }}>{formatCurrency(ticketTotal)}</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* COMMERCIAL TAB */}
+              {activeTab === 'commercial' && (
+                <div>
+                  <div style={{ marginBottom: '16px', fontSize: '13px', color: '#6E7B8C' }}>
+                    Configure commercial revenue streams like F&B, merchandise, parking (net of COGS).
+                  </div>
+                  
+                  {revenue.commercial.map((item, index) => (
+                    <div key={item.id} style={{ background: '#F4F5F7', borderRadius: '8px', padding: '16px', marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <input
+                          type="text"
+                          value={item.name}
+                          onChange={(e) => updateCommercial(index, 'name', e.target.value)}
+                          style={{ flex: 1, padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px', fontWeight: 600 }}
+                        />
+                        <button onClick={() => deleteCommercial(index)} style={{ marginLeft: '12px', padding: '8px 12px', background: '#F5E0E3', color: '#B84A5A', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>Delete</button>
+                      </div>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', color: '#556275', marginBottom: '4px' }}>Avg Spend (£)</label>
+                          <input
+                            type="number"
+                            value={item.avgSpend}
+                            onChange={(e) => updateCommercial(index, 'avgSpend', parseFloat(e.target.value) || 0)}
+                            step="0.01"
+                            style={{ width: '100%', padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', color: '#556275', marginBottom: '4px' }}>Penetration (%)</label>
+                          <input
+                            type="number"
+                            value={Math.round(item.penetration * 100)}
+                            onChange={(e) => updateCommercial(index, 'penetration', (parseInt(e.target.value) || 0) / 100)}
+                            min="0"
+                            max="100"
+                            style={{ width: '100%', padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', color: '#556275', marginBottom: '4px' }}>COGS (%)</label>
+                          <input
+                            type="number"
+                            value={Math.round(item.costOfSales * 100)}
+                            onChange={(e) => updateCommercial(index, 'costOfSales', (parseInt(e.target.value) || 0) / 100)}
+                            min="0"
+                            max="100"
+                            style={{ width: '100%', padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px' }}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div style={{ marginTop: '12px', padding: '8px', background: '#FFF', borderRadius: '6px', fontSize: '12px', color: '#192B45' }}>
+                        Gross: {formatCurrency((eventConfig.capacity || 0) * item.avgSpend * item.penetration)} • 
+                        Net: {formatCurrency((eventConfig.capacity || 0) * item.avgSpend * item.penetration * (1 - item.costOfSales))}
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <button onClick={addCommercial} style={{ width: '100%', padding: '12px', background: '#E9EEF4', border: '2px dashed #9BB1C7', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 600, color: '#192B45' }}>
+                    + Add Commercial Stream
+                  </button>
+                  
+                  <div style={{ marginTop: '16px', padding: '16px', background: '#FAF0D6', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '14px', color: '#8B6914', fontWeight: 600 }}>Total Commercial Revenue (Net)</span>
+                    <span style={{ fontSize: '20px', fontWeight: 700, color: '#8B6914' }}>{formatCurrency(commercialTotal)}</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* FIXED TAB */}
+              {activeTab === 'fixed' && (
+                <div>
+                  <div style={{ marginBottom: '16px', fontSize: '13px', color: '#6E7B8C' }}>
+                    Fixed revenue per event (sponsorships, broadcast fees, etc.).
+                  </div>
+                  
+                  {revenue.fixed.map((item, index) => (
+                    <div key={item.id} style={{ background: '#F4F5F7', borderRadius: '8px', padding: '16px', marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <input
+                          type="text"
+                          value={item.name}
+                          onChange={(e) => updateFixed(index, 'name', e.target.value)}
+                          style={{ flex: 1, padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px', fontWeight: 600 }}
+                        />
+                        <button onClick={() => deleteFixed(index)} style={{ marginLeft: '12px', padding: '8px 12px', background: '#F5E0E3', color: '#B84A5A', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>Delete</button>
+                      </div>
+                      
+                      <div>
+                        <label style={{ display: 'block', fontSize: '11px', color: '#556275', marginBottom: '4px' }}>Amount (£)</label>
+                        <input
+                          type="number"
+                          value={item.amount}
+                          onChange={(e) => updateFixed(index, 'amount', parseFloat(e.target.value) || 0)}
+                          step="0.01"
+                          style={{ width: '100%', padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px' }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <button onClick={addFixed} style={{ width: '100%', padding: '12px', background: '#E9EEF4', border: '2px dashed #9BB1C7', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 600, color: '#192B45' }}>
+                    + Add Fixed Revenue
+                  </button>
+                  
+                  <div style={{ marginTop: '16px', padding: '16px', background: '#FAF0D6', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '14px', color: '#8B6914', fontWeight: 600 }}>Total Fixed Revenue</span>
+                    <span style={{ fontSize: '20px', fontWeight: 700, color: '#8B6914' }}>{formatCurrency(fixedTotal)}</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* OPERATING COSTS TAB */}
+              {activeTab === 'costs' && (
+                <div>
+                  <div style={{ marginBottom: '16px', fontSize: '13px', color: '#6E7B8C' }}>
+                    Operating costs beyond staff (utilities, cleaning, security, etc.).
+                  </div>
+                  
+                  {operatingCosts.map((cost, index) => (
+                    <div key={cost.id} style={{ background: '#F4F5F7', borderRadius: '8px', padding: '16px', marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <input
+                          type="text"
+                          value={cost.name}
+                          onChange={(e) => updateOperatingCost(index, 'name', e.target.value)}
+                          style={{ flex: 1, padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px', fontWeight: 600 }}
+                        />
+                        <button onClick={() => deleteOperatingCost(index)} style={{ marginLeft: '12px', padding: '8px 12px', background: '#F5E0E3', color: '#B84A5A', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>Delete</button>
+                      </div>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px' }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', color: '#556275', marginBottom: '4px' }}>Category</label>
+                          <select
+                            value={cost.category || 'facilities'}
+                            onChange={(e) => updateOperatingCost(index, 'category', e.target.value)}
+                            style={{ width: '100%', padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px', background: '#FFF' }}
+                          >
+                            <option value="facilities">Facilities</option>
+                            <option value="security">Security</option>
+                            <option value="safety">Safety</option>
+                            <option value="equipment">Equipment</option>
+                            <option value="insurance">Insurance</option>
+                            <option value="other">Other</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', color: '#556275', marginBottom: '4px' }}>Cost (£)</label>
+                          <input
+                            type="number"
+                            value={cost.amount}
+                            onChange={(e) => updateOperatingCost(index, 'amount', parseFloat(e.target.value) || 0)}
+                            step="0.01"
+                            style={{ width: '100%', padding: '8px', border: '2px solid #E4E7EB', borderRadius: '6px', fontSize: '14px' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <button onClick={addOperatingCost} style={{ width: '100%', padding: '12px', background: '#E9EEF4', border: '2px dashed #9BB1C7', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 600, color: '#192B45' }}>
+                    + Add Operating Cost
+                  </button>
+                  
+                  <div style={{ marginTop: '16px', padding: '16px', background: '#F5E0E3', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '14px', color: '#B84A5A', fontWeight: 600 }}>Total Operating Costs</span>
+                    <span style={{ fontSize: '20px', fontWeight: 700, color: '#B84A5A' }}>{formatCurrency(operatingTotal)}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Footer */}
+            <div style={{ padding: '16px 24px', borderTop: '2px solid #E4E7EB', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button onClick={onClose} style={{ padding: '10px 20px', background: '#F4F5F7', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }}>
+                Cancel
+              </button>
+              <button onClick={handleSave} style={{ padding: '10px 24px', background: '#2D8A6E', color: '#FFF', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }}>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ============================================
+    // ECONOMICS CALCULATION FUNCTIONS
+    // ============================================
+
+    // Calculate ticket revenue from all tiers
+    function calculateTicketRevenue(tickets, capacity) {
+      if (!tickets || tickets.length === 0) return { total: 0, breakdown: [] };
+      
+      const breakdown = tickets.map(tier => {
+        const expectedSales = Math.round(tier.allocation * tier.occupancyRate);
+        const revenue = expectedSales * tier.avgPrice;
+        return {
+          ...tier,
+          expectedSales,
+          revenue
+        };
+      });
+      
+      const total = breakdown.reduce((sum, item) => sum + item.revenue, 0);
+      
+      return { total, breakdown };
+    }
+
+    // Calculate commercial revenue (net of COGS)
+    function calculateCommercialRevenue(commercial, actualAttendance) {
+      if (!commercial || commercial.length === 0) return { totalNet: 0, totalGross: 0, totalCOGS: 0, breakdown: [] };
+      
+      const breakdown = commercial.map(item => {
+        let gross = 0;
+        
+        if (item.revenueType === 'per-attendee') {
+          gross = actualAttendance * (item.avgSpend || 0) * (item.penetration || 0);
+        } else if (item.revenueType === 'capacity') {
+          gross = (item.capacity || 0) * (item.pricePerUnit || 0) * (item.occupancyRate || 1);
+        }
+        
+        const cogs = gross * (item.costOfSales || 0);
+        const net = gross - cogs;
+        
+        return {
+          ...item,
+          gross,
+          cogs,
+          net
+        };
+      });
+      
+      const totalGross = breakdown.reduce((sum, item) => sum + item.gross, 0);
+      const totalCOGS = breakdown.reduce((sum, item) => sum + item.cogs, 0);
+      const totalNet = breakdown.reduce((sum, item) => sum + item.net, 0);
+      
+      return { totalNet, totalGross, totalCOGS, breakdown };
+    }
+
+    // Calculate fixed revenue
+    function calculateFixedRevenue(fixed) {
+      if (!fixed || fixed.length === 0) return { total: 0, breakdown: [] };
+      
+      const breakdown = fixed.map(item => ({
+        ...item,
+        revenue: item.amount || 0
+      }));
+      
+      const total = breakdown.reduce((sum, item) => sum + item.revenue, 0);
+      
+      return { total, breakdown };
+    }
+
+    // Calculate operating costs (non-staff)
+    function calculateOperatingCosts(operatingCosts) {
+      if (!operatingCosts || operatingCosts.length === 0) return { total: 0, breakdown: [], byCategory: {} };
+      
+      const breakdown = operatingCosts.map(cost => ({
+        ...cost,
+        cost: cost.amount || 0
+      }));
+      
+      const total = breakdown.reduce((sum, item) => sum + item.cost, 0);
+      
+      // Group by category
+      const byCategory = breakdown.reduce((acc, item) => {
+        const cat = item.category || 'other';
+        if (!acc[cat]) acc[cat] = 0;
+        acc[cat] += item.cost;
+        return acc;
+      }, {});
+      
+      return { total, breakdown, byCategory };
+    }
+
+    // Main economics calculation - Returns complete P&L
+    function calculateEventEconomics(eventConfig, personas) {
+      const capacity = eventConfig.capacity || 0;
+      const actualAttendance = capacity; // Could use funnel data later
+      
+      // Revenue calculations
+      const revenue = eventConfig.revenue || { tickets: [], commercial: [], fixed: [] };
+      const tickets = calculateTicketRevenue(revenue.tickets, capacity);
+      const commercial = calculateCommercialRevenue(revenue.commercial, actualAttendance);
+      const fixed = calculateFixedRevenue(revenue.fixed);
+      
+      const totalRevenue = tickets.total + commercial.totalNet + fixed.total;
+      
+      // Cost calculations
+      const staffCosts = personas
+        .filter(p => !p.isExternal)
+        .reduce((sum, p) => {
+          const deployment = p.eventDeployment || { headcount: 1, hoursPerEvent: 4, rateType: 'hourly' };
+          const hourlyRate = calculateFullyLoadedRate(p);
+          
+          if (deployment.rateType === 'fixed') {
+            return sum + ((deployment.fixedFeePerEvent || 0) * (deployment.headcount || 1));
+          } else if (deployment.rateType === 'external') {
+            return sum + (deployment.externalRecharge || 0);
+          } else {
+            return sum + (hourlyRate * (deployment.hoursPerEvent || 0) * (deployment.headcount || 1));
+          }
+        }, 0);
+      
+      const operating = calculateOperatingCosts(eventConfig.operatingCosts);
+      const totalCosts = staffCosts + operating.total;
+      
+      // P&L metrics
+      const profit = totalRevenue - totalCosts;
+      const profitMargin = totalRevenue > 0 ? (profit / totalRevenue) * 100 : 0;
+      const profitPerAttendee = actualAttendance > 0 ? profit / actualAttendance : 0;
+      const revenuePerAttendee = actualAttendance > 0 ? totalRevenue / actualAttendance : 0;
+      const costPerAttendee = actualAttendance > 0 ? totalCosts / actualAttendance : 0;
+      
+      // Break-even
+      const breakEvenAttendance = revenuePerAttendee > 0 
+        ? Math.ceil(totalCosts / revenuePerAttendee)
+        : 0;
+      
+      const eventsPerPeriod = eventConfig.eventsPerPeriod || 1;
+      
+      return {
+        revenue: {
+          tickets,
+          commercial,
+          fixed,
+          total: totalRevenue
+        },
+        costs: {
+          staff: staffCosts,
+          operating,
+          total: totalCosts
+        },
+        profit,
+        profitMargin,
+        profitPerAttendee,
+        revenuePerAttendee,
+        costPerAttendee,
+        breakEvenAttendance,
+        actualAttendance,
+        capacity,
+        eventsPerPeriod,
+        periodTotal: {
+          revenue: totalRevenue * eventsPerPeriod,
+          costs: totalCosts * eventsPerPeriod,
+          profit: profit * eventsPerPeriod
+        }
+      };
+    }
+
+    // Economics Dashboard Panel - Complete P&L Analysis for Event Mode
+    function EconomicsDashboardPanel({ config, formatTime, formatCurrency }) {
+      const eventConfig = config.meta?.eventConfig || {};
+      const personas = config.personas || [];
+      
+      // Calculate complete economics using our function
+      const economics = calculateEventEconomics(eventConfig, personas);
+      
+      // Early return if no revenue configured
+      if (!eventConfig.revenue || economics.revenue.total === 0) {
+        return (
+          <div style={{ padding: '40px', textAlign: 'center', fontFamily: "'Interstate', sans-serif" }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>💰</div>
+            <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#192B45', marginBottom: '8px' }}>
+              No Revenue Configured
+            </h3>
+            <p style={{ fontSize: '14px', color: '#6E7B8C', marginBottom: '24px' }}>
+              Configure revenue streams and operating costs to see complete P&L analysis.
+            </p>
+            <div style={{ fontSize: '13px', color: '#8A95A5', background: '#F4F5F7', padding: '12px', borderRadius: '8px', maxWidth: '400px', margin: '0 auto' }}>
+              💡 Use "Configure Revenue & Costs" in the Structure tab to get started
+            </div>
+          </div>
+        );
+      }
+      
+      return (
+        <div style={{ padding: '24px', fontFamily: "'Interstate', sans-serif" }}>
+          
+          {/* Hero Metrics */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+            {/* Profit Per Attendee - Hero */}
+            <div style={{ 
+              background: 'linear-gradient(135deg, #C4942A 0%, #8B6914 100%)', 
+              borderRadius: '12px', 
+              padding: '24px', 
+              color: '#FFF',
+              gridColumn: window.innerWidth > 768 ? 'span 2' : 'span 1'
+            }}>
+              <div style={{ fontSize: '12px', opacity: 0.8, marginBottom: '4px' }}>Profit Per Attendee</div>
+              <div style={{ fontSize: '42px', fontWeight: 700, marginBottom: '4px' }}>
+                {formatCurrency(economics.profitPerAttendee)}
+              </div>
+              <div style={{ fontSize: '12px', opacity: 0.8' }}>
+                {formatCurrency(economics.profit)} ÷ {economics.actualAttendance.toLocaleString()} capacity
+              </div>
+            </div>
+            
+            {/* Total Profit */}
+            <div style={{ background: '#FFF', borderRadius: '12px', padding: '20px', border: '1px solid #E4E7EB' }}>
+              <div style={{ fontSize: '11px', color: '#6E7B8C', marginBottom: '4px' }}>Total Event Profit</div>
+              <div style={{ fontSize: '28px', fontWeight: 700, color: economics.profit >= 0 ? '#2D8A6E' : '#B84A5A' }}>
+                {formatCurrency(economics.profit)}
+              </div>
+            </div>
+            
+            {/* Profit Margin */}
+            <div style={{ background: '#FFF', borderRadius: '12px', padding: '20px', border: '1px solid #E4E7EB' }}>
+              <div style={{ fontSize: '11px', color: '#6E7B8C', marginBottom: '4px' }}>Profit Margin</div>
+              <div style={{ fontSize: '28px', fontWeight: 700, color: '#192B45' }}>
+                {economics.profitMargin.toFixed(1)}%
+              </div>
+            </div>
+            
+            {/* Break-Even */}
+            <div style={{ background: '#FFF', borderRadius: '12px', padding: '20px', border: '1px solid #E4E7EB' }}>
+              <div style={{ fontSize: '11px', color: '#6E7B8C', marginBottom: '4px' }}>Break-Even Attendance</div>
+              <div style={{ fontSize: '28px', fontWeight: 700, color: '#192B45' }}>
+                {economics.breakEvenAttendance.toLocaleString()}
+              </div>
+              <div style={{ fontSize: '11px', color: '#8A95A5', marginTop: '4px' }}>
+                {((economics.breakEvenAttendance / economics.capacity) * 100).toFixed(0)}% of capacity
+              </div>
+            </div>
+          </div>
+          
+          {/* Season/Period Summary (if applicable) */}
+          {eventConfig.frequency !== 'single' && economics.eventsPerPeriod > 1 && (
+            <div style={{ background: '#FAF0D6', borderRadius: '12px', padding: '24px', marginBottom: '32px', border: '1px solid #E4C87A' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                <div>
+                  <div style={{ fontSize: '12px', color: '#8B6914', marginBottom: '4px' }}>
+                    {eventConfig.periodLabel || 'Season'} Total ({economics.eventsPerPeriod} events)
+                  </div>
+                  <div style={{ fontSize: '36px', fontWeight: 700, color: '#8B6914' }}>
+                    {formatCurrency(economics.periodTotal.profit)}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '22px', fontWeight: 700, color: '#8B6914' }}>
+                      {formatCurrency(economics.periodTotal.revenue)}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#A67C1A' }}>Total Revenue</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '22px', fontWeight: 700, color: '#8B6914' }}>
+                      {formatCurrency(economics.periodTotal.costs)}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#A67C1A' }}>Total Costs</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '22px', fontWeight: 700, color: '#8B6914' }}>
+                      {(economics.capacity * economics.eventsPerPeriod).toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#A67C1A' }}>Total Capacity</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Two Column Layout - Revenue vs Costs */}
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: window.innerWidth > 768 ? 'repeat(2, 1fr)' : '1fr',
+            gap: '24px',
+            marginBottom: '32px'
+          }}>
+            
+            {/* Revenue Breakdown */}
+            <div style={{ background: '#FFF', borderRadius: '12px', padding: '24px', border: '1px solid #E4E7EB' }}>
+              <h4 style={{ margin: '0 0 20px', fontSize: '16px', fontWeight: 600, color: '#192B45' }}>
+                📊 Revenue Breakdown
+              </h4>
+              
+              {/* Tickets */}
+              {economics.revenue.tickets.total > 0 && (
+                <div style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #E4E7EB' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#192B45' }}>🎟️ Ticket Revenue</span>
+                    <span style={{ fontSize: '16px', fontWeight: 700, color: '#192B45' }}>
+                      {formatCurrency(economics.revenue.tickets.total)}
+                    </span>
+                  </div>
+                  {economics.revenue.tickets.breakdown.map((tier, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#6E7B8C', marginTop: '4px', paddingLeft: '16px' }}>
+                      <span>{tier.name}</span>
+                      <span>{formatCurrency(tier.revenue)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Commercial */}
+              {economics.revenue.commercial.totalNet > 0 && (
+                <div style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #E4E7EB' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#192B45' }}>🛍️ Commercial (Net)</span>
+                    <span style={{ fontSize: '16px', fontWeight: 700, color: '#192B45' }}>
+                      {formatCurrency(economics.revenue.commercial.totalNet)}
+                    </span>
+                  </div>
+                  {economics.revenue.commercial.breakdown.map((item, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#6E7B8C', marginTop: '4px', paddingLeft: '16px' }}>
+                      <span>{item.name}</span>
+                      <span>{formatCurrency(item.net)}</span>
+                    </div>
+                  ))}
+                  {economics.revenue.commercial.totalCOGS > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#B84A5A', marginTop: '4px', paddingLeft: '16px', fontStyle: 'italic' }}>
+                      <span>COGS</span>
+                      <span>-{formatCurrency(economics.revenue.commercial.totalCOGS)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Fixed */}
+              {economics.revenue.fixed.total > 0 && (
+                <div style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #E4E7EB' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#192B45' }}>📺 Fixed Revenue</span>
+                    <span style={{ fontSize: '16px', fontWeight: 700, color: '#192B45' }}>
+                      {formatCurrency(economics.revenue.fixed.total)}
+                    </span>
+                  </div>
+                  {economics.revenue.fixed.breakdown.map((item, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#6E7B8C', marginTop: '4px', paddingLeft: '16px' }}>
+                      <span>{item.name}</span>
+                      <span>{formatCurrency(item.revenue)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Total */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '16px', borderTop: '2px solid #192B45' }}>
+                <span style={{ fontSize: '16px', fontWeight: 700, color: '#192B45' }}>TOTAL REVENUE</span>
+                <span style={{ fontSize: '20px', fontWeight: 700, color: '#192B45' }}>
+                  {formatCurrency(economics.revenue.total)}
+                </span>
+              </div>
+            </div>
+            
+            {/* Cost Breakdown */}
+            <div style={{ background: '#FFF', borderRadius: '12px', padding: '24px', border: '1px solid #E4E7EB' }}>
+              <h4 style={{ margin: '0 0 20px', fontSize: '16px', fontWeight: 600, color: '#192B45' }}>
+                💸 Cost Breakdown
+              </h4>
+              
+              {/* Staff */}
+              {economics.costs.staff > 0 && (
+                <div style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #E4E7EB' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#192B45' }}>👥 Staff Costs</span>
+                    <span style={{ fontSize: '16px', fontWeight: 700, color: '#192B45' }}>
+                      {formatCurrency(economics.costs.staff)}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#8A95A5', paddingLeft: '16px' }}>
+                    Configured in Role Management
+                  </div>
+                </div>
+              )}
+              
+              {/* Operating Costs */}
+              {economics.costs.operating.total > 0 && (
+                <div style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #E4E7EB' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#192B45' }}>🏗️ Operating Costs</span>
+                    <span style={{ fontSize: '16px', fontWeight: 700, color: '#192B45' }}>
+                      {formatCurrency(economics.costs.operating.total)}
+                    </span>
+                  </div>
+                  {economics.costs.operating.breakdown.map((cost, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#6E7B8C', marginTop: '4px', paddingLeft: '16px' }}>
+                      <span>{cost.name}</span>
+                      <span>{formatCurrency(cost.cost)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Total */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '16px', borderTop: '2px solid #192B45' }}>
+                <span style={{ fontSize: '16px', fontWeight: 700, color: '#192B45' }}>TOTAL COSTS</span>
+                <span style={{ fontSize: '20px', fontWeight: 700, color: '#192B45' }}>
+                  {formatCurrency(economics.costs.total)}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Quick Summary Card */}
+          <div style={{ 
+            background: economics.profit >= 0 ? '#D4EDE5' : '#F5E0E3',
+            borderRadius: '12px',
+            padding: '20px',
+            border: `2px solid ${economics.profit >= 0 ? '#2D8A6E' : '#B84A5A'}`,
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '14px', color: economics.profit >= 0 ? '#2D8A6E' : '#B84A5A', fontWeight: 600, marginBottom: '8px' }}>
+              {economics.profit >= 0 ? '✅ PROFITABLE EVENT' : '⚠️ OPERATING AT LOSS'}
+            </div>
+            <div style={{ fontSize: '12px', color: economics.profit >= 0 ? '#2D8A6E' : '#B84A5A' }}>
+              Revenue: {formatCurrency(economics.revenue.total)} • 
+              Costs: {formatCurrency(economics.costs.total)} • 
+              {economics.profit >= 0 ? 'Profit' : 'Loss'}: {formatCurrency(Math.abs(economics.profit))}
             </div>
           </div>
         </div>
@@ -8222,6 +9157,7 @@ FATHOM - Journey intelligence for modern operations`);
       const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
       const [showShareModal, setShowShareModal] = useState(false);
       const [showJourneySettings, setShowJourneySettings] = useState(false);
+      const [showRevenueConfig, setShowRevenueConfig] = useState(false); // Revenue & Costs config modal
       const [showProfileMenu, setShowProfileMenu] = useState(false);
       const [showSurveyRequestModal, setShowSurveyRequestModal] = useState(null); // { stepId, personaId }
       const [showBulkSurveyModal, setShowBulkSurveyModal] = useState(false); // New bulk survey modal
@@ -12379,6 +13315,28 @@ FATHOM - Journey intelligence for modern operations`);
                         🎪 Event
                       </button>
                     )}
+                    {config.meta?.costModel === 'event' && showCosts && (
+                      <button 
+                        onClick={() => setDashboardTab('economics')}
+                        style={{ 
+                          padding: '8px 14px', 
+                          background: dashboardTab === 'economics' ? '#FFF' : 'transparent',
+                          color: dashboardTab === 'economics' ? '#192B45' : 'rgba(255,255,255,0.7)',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontFamily: "'Interstate', sans-serif",
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          transition: 'all 0.15s'
+                        }}
+                      >
+                        💰 Economics
+                      </button>
+                    )}
                     <button 
                       onClick={() => setDashboardTab('plan')}
                       style={{ 
@@ -12523,7 +13481,51 @@ FATHOM - Journey intelligence for modern operations`);
                     </div>
                   )}
                   {dashboardTab === 'event' && config.meta?.costModel === 'event' && showCosts && (
-                    <EventEconomicsPanel config={config} formatTime={formatTime} />
+                    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                      {/* Event Tab Header with Revenue Config Button */}
+                      {canEdit && (
+                        <div style={{ 
+                          padding: '16px 24px', 
+                          borderBottom: '1px solid #E4E7EB',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          background: '#FFF'
+                        }}>
+                          <div style={{ fontSize: '14px', color: '#6E7B8C', fontFamily: "'Interstate', sans-serif" }}>
+                            Configure revenue streams and operating costs for complete P&L analysis
+                          </div>
+                          <button
+                            onClick={() => setShowRevenueConfig(true)}
+                            style={{
+                              padding: '10px 16px',
+                              background: '#FAF0D6',
+                              border: '2px solid #C4942A',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                              fontSize: '14px',
+                              fontWeight: 600,
+                              color: '#8B6914',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              fontFamily: "'Interstate', sans-serif",
+                              transition: 'all 0.15s'
+                            }}
+                            onMouseOver={(e) => { e.currentTarget.style.background = '#F0DDA8'; }}
+                            onMouseOut={(e) => { e.currentTarget.style.background = '#FAF0D6'; }}
+                          >
+                            💰 Configure Revenue & Costs
+                          </button>
+                        </div>
+                      )}
+                      <div style={{ flex: 1, overflow: 'auto' }}>
+                        <EventEconomicsPanel config={config} formatTime={formatTime} />
+                      </div>
+                    </div>
+                  )}
+                  {dashboardTab === 'economics' && config.meta?.costModel === 'event' && showCosts && (
+                    <EconomicsDashboardPanel config={config} formatTime={formatTime} formatCurrency={formatCurrency} />
                   )}
                   {dashboardTab === 'plan' && (
                     <ImprovementPlan config={config} stages={config.stages} personas={config.personas} formatTime={formatTime} updateConfig={setConfig} />
@@ -12598,6 +13600,9 @@ FATHOM - Journey intelligence for modern operations`);
           
           {/* Journey Settings Modal */}
           {showJourneySettings && <JourneySettingsPanel config={config} setConfig={setConfig} onClose={() => setShowJourneySettings(false)} />}
+          
+          {/* Revenue & Operating Costs Config Modal */}
+          {showRevenueConfig && <RevenueConfigPanel config={config} setConfig={setConfig} onClose={() => setShowRevenueConfig(false)} formatCurrency={formatCurrency} />}
           
           {/* Password Prompt Modal - only in legacy (non-Supabase) mode */}
           {showPasswordPrompt && !isSupabaseMode && (
