@@ -829,13 +829,25 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: #FFF;
+      background: #F4F5F7;
       min-width: 0;
       min-height: 0;
+      position: relative;
+    }
+    .canvas-with-sidebar::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://steveyoung74.github.io/journeymaps/topography-light.svg') center/600px 600px repeat;
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 0;
     }
     .canvas-with-sidebar > main {
       flex: 1;
       overflow: auto;
+      position: relative;
+      z-index: 1;
     }
     @media (max-width: 768px) {
       .sidebar-nav {
