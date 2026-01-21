@@ -827,9 +827,15 @@
     }
     .canvas-with-sidebar {
       flex: 1;
-      overflow: auto;
+      display: flex;
+      flex-direction: column;
       background: #FFF;
       min-width: 0;
+      min-height: 0;
+    }
+    .canvas-with-sidebar > main {
+      flex: 1;
+      overflow: auto;
     }
     @media (max-width: 768px) {
       .sidebar-nav {
@@ -10811,9 +10817,9 @@ FATHOM - Journey intelligence for modern operations`);
                 </div>
               </div>
               
-              {/* Right side: Export & Settings - Desktop only (mobile shows in row 2) */}
+              {/* Right side: Stats + Journey Cost + Profile */}
               {!isMobile && (
-              <div className="no-print" style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
+              <div className="no-print" style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
                 {editMode ? (
                   <>
                     <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#F4F5F7', opacity: 0.7, marginRight: '4px' }}>✏️ Editing</span>
@@ -10826,34 +10832,34 @@ FATHOM - Journey intelligence for modern operations`);
                   </>
                 ) : (
                   <>
-                    {/* Settings Dropdown - hidden for view-only users in Supabase mode */}
-                    {(!isSupabaseMode || canAccessSettings) && (
-                    <div style={{ position: 'relative' }}>
-                      <button onClick={(e) => { 
-                        e.stopPropagation(); 
-                        // In Supabase mode, use role-based access; in legacy mode, use password
-                        const hasAccess = isSupabaseMode ? canAccessSettings : isSettingsUnlocked;
-                        if (hasAccess) {
-                          setShowSettingsMenu(!showSettingsMenu);
-                        } else if (!isSupabaseMode) {
-                          setShowPasswordPrompt(true);
-                        }
-                      }} style={{ padding: '6px 10px', background: showSettingsMenu ? '#556275' : 'transparent', color: '#F4F5F7', border: '1px solid rgba(255,255,255,0.4)', borderRadius: '4px', cursor: 'pointer', fontFamily: "'Interstate', sans-serif", fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }} title="Settings">
-                        {(isSupabaseMode ? canAccessSettings : isSettingsUnlocked) ? '⚙️' : '🔒'} <span style={{ fontSize: '8px' }}>▼</span>
-                      </button>
-                      {showSettingsMenu && (isSupabaseMode ? canAccessSettings : isSettingsUnlocked) && (
-                        <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', background: '#FFF', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)', overflow: 'hidden', zIndex: 9999, minWidth: '220px', padding: '8px 0' }}>
-                          {!isSupabaseMode && (
-                            <>
-                              <div style={{ color: '#6E7B8C', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '8px 16px 4px' }}>Data</div>
-                              <button onClick={() => { setShowGitHubSettings(true); setShowSettingsMenu(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '10px 16px', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', fontFamily: "'Interstate', sans-serif", fontSize: '14px', color: '#3D4A5C', transition: 'background 0.1s' }} onMouseOver={(e) => e.currentTarget.style.background = '#F4F5F7'} onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
-                                <span style={{ width: '18px', textAlign: 'center' }}>🐙</span> GitHub Settings
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      )}
+                    {/* Stats Badges */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Total Time">
+                      <span style={{ fontSize: '12px' }}>⏱️</span>
+                      <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{formatTime(totalTime)}</span>
                     </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Average Friction">
+                      <span style={{ fontSize: '12px' }}>{frictionConfig[Math.round(stats.avgFriction) || 3]?.emoji || '😕'}</span>
+                      <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{stats.avgFriction}/5</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Pain Points">
+                      <span style={{ fontSize: '12px' }}>⚠️</span>
+                      <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{stats.totalPainPoints}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="High Improvement Opportunities">
+                      <span style={{ fontSize: '12px' }}>🎯</span>
+                      <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{stats.highAutomation}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Regulatory Requirements">
+                      <span style={{ fontSize: '12px' }}>📋</span>
+                      <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{stats.totalRegReqs}</span>
+                    </div>
+                    
+                    {/* Journey Cost */}
+                    {showCosts && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: '#C4942A', borderRadius: '6px', marginLeft: '4px' }} title="Total Journey Cost">
+                        <span style={{ fontSize: '12px' }}>💰</span>
+                        <span style={{ fontWeight: 700, color: '#FFF', fontSize: '13px', fontFamily: "'Interstate', sans-serif" }}>{formatCurrency(stats.totalCost)}</span>
+                      </div>
                     )}
                     
                     {/* Profile Dropdown (Supabase mode only) */}
@@ -11243,92 +11249,6 @@ FATHOM - Journey intelligence for modern operations`);
             </div>
           )}
 
-          {/* Stats Bar */}
-          <div className="stats-bar" style={{ background: '#FFF', borderBottom: '1px solid #E0E0E0', padding: '10px 24px', display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', flexShrink: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#F4F5F7', borderRadius: '6px' }} title="Total Time">
-              <span style={{ fontSize: '14px' }}>⏱️</span>
-              <span style={{ fontWeight: 600, fontSize: '13px', fontFamily: "'Interstate', sans-serif", color: '#3D4A5C' }}>{formatTime(totalTime)}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#F4F5F7', borderRadius: '6px' }} title="Average Friction">
-              <span style={{ fontSize: '14px' }}>{frictionConfig[Math.round(stats.avgFriction) || 3]?.emoji || '😕'}</span>
-              <span style={{ fontWeight: 600, fontSize: '13px', fontFamily: "'Interstate', sans-serif", color: frictionConfig[Math.round(stats.avgFriction) || 3]?.color || '#556275' }}>{stats.avgFriction}/5</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#F4F5F7', borderRadius: '6px' }} title="Pain Points">
-              <span style={{ fontSize: '14px' }}>⚠️</span>
-              <span style={{ fontWeight: 600, fontSize: '13px', fontFamily: "'Interstate', sans-serif", color: '#3D4A5C' }}>{stats.totalPainPoints}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#F4F5F7', borderRadius: '6px' }} title="High Improvement Opportunities">
-              <span style={{ fontSize: '14px' }}>🎯</span>
-              <span style={{ fontWeight: 600, fontSize: '13px', fontFamily: "'Interstate', sans-serif", color: '#3D4A5C' }}>{stats.highAutomation}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#F4F5F7', borderRadius: '6px' }} title="Regulatory Requirements">
-              <span style={{ fontSize: '14px' }}>📋</span>
-              <span style={{ fontWeight: 600, fontSize: '13px', fontFamily: "'Interstate', sans-serif", color: '#3D4A5C' }}>{stats.totalRegReqs}</span>
-            </div>
-            {showCosts && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#FAF0D6', borderRadius: '6px' }} title="Total Journey Cost">
-                  <span style={{ fontSize: '14px' }}>💰</span>
-                  <span style={{ fontWeight: 600, color: '#8B6914', fontSize: '14px', fontFamily: "'Interstate', sans-serif" }}>{formatCurrency(stats.totalCost)}</span>
-                </div>
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '6px', 
-                  padding: highlightOpportunities ? '6px 12px' : '0', 
-                  background: '#2D8A6E', 
-                  borderRadius: '6px',
-                  maxWidth: highlightOpportunities ? '300px' : '0',
-                  opacity: highlightOpportunities ? 1 : 0,
-                  overflow: 'hidden',
-                  transition: 'max-width 0.3s ease, opacity 0.3s ease, padding 0.3s ease',
-                  whiteSpace: 'nowrap'
-                }} title="Potential Savings from Improvement Opportunities">
-                    <span style={{ fontSize: '14px' }}>✨</span>
-                    <span style={{ fontWeight: 600, color: '#FFF', fontSize: '13px', fontFamily: "'Interstate', sans-serif" }}>
-                      {(() => {
-                        const totalSavings = config.stages.reduce((acc, stage) => 
-                          acc + stage.steps.reduce((stepAcc, step) => {
-                            const stepCost = calculateStepCost(step, config.personas);
-                            const savings = step.automationOpportunity === 'high' ? stepCost * 0.7 
-                              : step.automationOpportunity === 'medium' ? stepCost * 0.4 
-                              : step.automationOpportunity === 'low' ? stepCost * 0.1 : 0;
-                            return stepAcc + savings;
-                          }, 0), 0);
-                        const percentage = stats.totalCost > 0 ? Math.round((totalSavings / stats.totalCost) * 100) : 0;
-                        return `Save ${formatCurrency(totalSavings)} (${percentage}%)`;
-                      })()}
-                    </span>
-                </div>
-                {funnelMetrics && (
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '8px', 
-                    padding: showFunnel ? '6px 12px' : '0',
-                    background: '#5A5B8A', 
-                    borderRadius: '6px',
-                    maxWidth: showFunnel ? '400px' : '0',
-                    opacity: showFunnel ? 1 : 0,
-                    overflow: 'hidden',
-                    transition: 'max-width 0.3s ease, opacity 0.3s ease, padding 0.3s ease',
-                    whiteSpace: 'nowrap'
-                  }} title="Funnel Analysis">
-                    <span style={{ fontSize: '14px' }}>🔻</span>
-                    <span style={{ fontWeight: 600, color: '#FFF', fontSize: '13px', fontFamily: "'Interstate', sans-serif" }}>
-                      {funnelMetrics.initialVolume}→{funnelMetrics.finalVolume}
-                    </span>
-                    <span style={{ padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, background: 'rgba(255,255,255,0.2)', color: '#FFF' }}>
-                      {funnelMetrics.overallConversionRate.toFixed(0)}%
-                    </span>
-                    <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px' }}>|</span>
-                    <span style={{ color: '#FFF', fontSize: '12px' }}>✓{formatCurrency(funnelMetrics.totalStageInvestment)}</span>
-                    <span style={{ background: 'rgba(239,68,68,0.9)', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>💸{formatCurrency(funnelMetrics.totalWastedCost)}</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
 
           {/* Perspective Filter - only show in steps view */}
           {viewMode === 'steps' && (
@@ -11382,11 +11302,7 @@ FATHOM - Journey intelligence for modern operations`);
 
           {/* Main Journey Map */}
           <main className="main-content" style={{ 
-            padding: isMobile ? '20px 16px' : '40px', 
-            flex: isMobile ? 'none' : 1, 
-            overflow: 'visible', 
-            display: 'flex', 
-            flexDirection: 'column' 
+            padding: isMobile ? '20px 16px' : '40px'
           }}>
             <div className="stages-container" style={{ 
               display: 'flex', 
