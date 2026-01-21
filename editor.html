@@ -660,6 +660,201 @@
       from { opacity: 0; transform: translateX(20px); }
       to { opacity: 1; transform: translateX(0); }
     }
+    
+    /* ========================================
+       SIDEBAR NAVIGATION
+       ======================================== */
+    .main-layout-with-sidebar {
+      display: flex;
+      height: calc(100vh - 80px);
+    }
+    .sidebar-nav {
+      width: 240px;
+      background: var(--slate-50);
+      border-right: 1px solid var(--slate-100);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      transition: width 0.2s ease-in-out;
+      box-shadow: 2px 0 8px rgba(25, 43, 69, 0.05);
+      flex-shrink: 0;
+      z-index: 50;
+    }
+    .sidebar-nav.collapsed {
+      width: 60px;
+    }
+    .sidebar-section {
+      padding: 0 12px;
+      margin-top: 24px;
+    }
+    .sidebar-section:first-child {
+      margin-top: 16px;
+    }
+    .sidebar-section-header {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--slate-500);
+      padding: 0 12px 8px;
+      font-family: var(--font-display);
+      opacity: 1;
+      transition: opacity 0.2s;
+    }
+    .sidebar-nav.collapsed .sidebar-section-header {
+      opacity: 0;
+      height: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--slate-900);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 2px;
+      text-decoration: none;
+      font-family: var(--font-display);
+      position: relative;
+    }
+    .sidebar-item:hover {
+      background: var(--slate-100);
+    }
+    .sidebar-item.active {
+      background: var(--navy-700);
+      color: #FFF;
+    }
+    .sidebar-item.nav-link {
+      background: var(--navy-50);
+      border: 1px solid var(--navy-200);
+      font-weight: 600;
+      margin-bottom: 0;
+    }
+    .sidebar-item.nav-link:hover {
+      background: var(--navy-200);
+      border-color: var(--navy-300);
+    }
+    .sidebar-item .sidebar-icon {
+      font-size: 16px;
+      margin-right: 12px;
+      min-width: 16px;
+      text-align: center;
+    }
+    .sidebar-nav.collapsed .sidebar-item .sidebar-icon {
+      margin-right: 0;
+    }
+    .sidebar-item .sidebar-label {
+      white-space: nowrap;
+      opacity: 1;
+      transition: opacity 0.2s;
+    }
+    .sidebar-nav.collapsed .sidebar-item .sidebar-label {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+    }
+    .sidebar-item.checkbox-item {
+      position: relative;
+      padding-left: 36px;
+    }
+    .sidebar-item.checkbox-item::before {
+      content: '';
+      position: absolute;
+      left: 12px;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--slate-400);
+      border-radius: 3px;
+      transition: all 0.15s;
+    }
+    .sidebar-item.checkbox-item.checked::before {
+      background: var(--navy-700);
+      border-color: var(--navy-700);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='white' stroke='white' stroke-width='2' d='M3 8l3 3 7-7'/%3E%3C/svg%3E");
+      background-size: 12px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .sidebar-nav.collapsed .sidebar-item.checkbox-item {
+      padding-left: 12px;
+    }
+    .sidebar-nav.collapsed .sidebar-item.checkbox-item::before {
+      display: none;
+    }
+    .sidebar-item.radio-item {
+      position: relative;
+      padding-left: 36px;
+    }
+    .sidebar-item.radio-item::before {
+      content: '';
+      position: absolute;
+      left: 12px;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--slate-400);
+      border-radius: 50%;
+      transition: all 0.15s;
+    }
+    .sidebar-item.radio-item.active::before {
+      border-color: var(--navy-700);
+      background: var(--navy-700);
+      box-shadow: inset 0 0 0 3px var(--slate-50);
+    }
+    .sidebar-nav.collapsed .sidebar-item.radio-item {
+      padding-left: 12px;
+    }
+    .sidebar-nav.collapsed .sidebar-item.radio-item::before {
+      display: none;
+    }
+    .sidebar-toggle-btn {
+      background: none;
+      border: none;
+      color: #FFF;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .sidebar-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .canvas-with-sidebar {
+      flex: 1;
+      overflow: auto;
+      background: #FFF;
+      min-width: 0;
+    }
+    @media (max-width: 768px) {
+      .sidebar-nav {
+        position: fixed;
+        left: 0;
+        top: 80px;
+        height: calc(100vh - 80px);
+        z-index: 90;
+        transform: translateX(-100%);
+        transition: transform 0.2s ease-in-out;
+      }
+      .sidebar-nav.mobile-open {
+        transform: translateX(0);
+      }
+      .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 89;
+      }
+      .sidebar-backdrop.active {
+        display: block;
+      }
+    }
   </style>
 </head>
 <body>
@@ -9020,6 +9215,15 @@ FATHOM - Journey intelligence for modern operations`);
         window.scrollTo(0, 0);
       }, []);
       
+      // Restore sidebar collapsed state from localStorage
+      React.useEffect(() => {
+        const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        const sidebar = document.getElementById('sidebar-nav');
+        if (collapsed && sidebar) {
+          sidebar.classList.add('collapsed');
+        }
+      }, []);
+      
       // Load config - Supabase for new maps, GitHub for legacy
       React.useEffect(() => {
         const loadConfig = async () => {
@@ -10435,8 +10639,23 @@ FATHOM - Journey intelligence for modern operations`);
             }}>
             {/* Row 1: Back + Logo + Title (left) | Desktop nav + Export/Settings (right) */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
-              {/* Left side: Back Button (multi-user mode) + Logo + Divider + Title */}
+              {/* Left side: Sidebar Toggle + Back Button (multi-user mode) + Logo + Divider + Title */}
               <div className="header-logo-title" style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '16px', flex: 1, minWidth: 0 }}>
+                {/* Sidebar Toggle Button */}
+                <button
+                  className="sidebar-toggle-btn"
+                  onClick={() => {
+                    const sidebar = document.getElementById('sidebar-nav');
+                    if (sidebar) {
+                      sidebar.classList.toggle('collapsed');
+                      localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                    }
+                  }}
+                  title="Toggle sidebar"
+                >
+                  ☰
+                </button>
+                
                 {/* Back to Dashboard Button - show in Supabase mode OR legacy multi-user mode */}
                 {(isSupabaseMode || isMultiUserMode) && (
                   <button
@@ -11213,6 +11432,130 @@ FATHOM - Journey intelligence for modern operations`);
               </div>
             )}
           </header>
+
+          {/* Main Layout with Sidebar */}
+          <div className="main-layout-with-sidebar">
+            
+            {/* Sidebar Navigation */}
+            <nav className="sidebar-nav" id="sidebar-nav">
+              
+              {/* Dashboard Link */}
+              <div className="sidebar-section">
+                <a href="dashboard.html" className="sidebar-item nav-link">
+                  <span className="sidebar-icon">⊞</span>
+                  <span className="sidebar-label">Dashboard</span>
+                </a>
+              </div>
+              
+              {/* Divider */}
+              <div style={{ height: '1px', background: '#E4E7EB', margin: '16px 12px' }}></div>
+              
+              {/* VIEW Section */}
+              <div className="sidebar-section">
+                <div className="sidebar-section-header">VIEW</div>
+                <div 
+                  className={`sidebar-item radio-item ${viewMode === 'stages' ? 'active' : ''}`}
+                  onClick={() => {
+                    setViewMode('stages');
+                  }}
+                >
+                  <span className="sidebar-icon">🗂️</span>
+                  <span className="sidebar-label">Stages</span>
+                </div>
+                <div 
+                  className={`sidebar-item radio-item ${viewMode === 'steps' ? 'active' : ''}`}
+                  onClick={() => {
+                    setViewMode('steps');
+                  }}
+                >
+                  <span className="sidebar-icon">📝</span>
+                  <span className="sidebar-label">Steps</span>
+                </div>
+              </div>
+              
+              {/* SHOW Section */}
+              <div className="sidebar-section">
+                <div className="sidebar-section-header">SHOW</div>
+                <div 
+                  className={`sidebar-item checkbox-item ${highlightOpportunities ? 'checked' : ''}`}
+                  onClick={() => {
+                    setHighlightOpportunities(!highlightOpportunities);
+                    if (!highlightOpportunities) setShowFunnel(false);
+                  }}
+                >
+                  <span className="sidebar-icon">⚠️</span>
+                  <span className="sidebar-label">Opportunities</span>
+                </div>
+                <div 
+                  className={`sidebar-item checkbox-item ${showFunnel ? 'checked' : ''}`}
+                  onClick={() => {
+                    setShowFunnel(!showFunnel);
+                    if (!showFunnel) setHighlightOpportunities(false);
+                  }}
+                >
+                  <span className="sidebar-icon">🔻</span>
+                  <span className="sidebar-label">Funnel</span>
+                </div>
+              </div>
+              
+              {/* CONFIGURE Section */}
+              <div className="sidebar-section">
+                <div className="sidebar-section-header">CONFIGURE</div>
+                <div 
+                  className="sidebar-item"
+                  onClick={() => setShowStructurePanel(true)}
+                >
+                  <span className="sidebar-icon">🏗️</span>
+                  <span className="sidebar-label">Structure</span>
+                </div>
+                {config.meta?.costModel === 'event' && (
+                  <div 
+                    className="sidebar-item"
+                    onClick={() => setShowRevenueConfig(true)}
+                  >
+                    <span className="sidebar-icon">💰</span>
+                    <span className="sidebar-label">Economics</span>
+                  </div>
+                )}
+                <div 
+                  className="sidebar-item"
+                  onClick={() => setShowRoleManagement(true)}
+                >
+                  <span className="sidebar-icon">👥</span>
+                  <span className="sidebar-label">Roles</span>
+                </div>
+                <div 
+                  className="sidebar-item"
+                  onClick={() => setShowJourneySettings(true)}
+                >
+                  <span className="sidebar-icon">⚙️</span>
+                  <span className="sidebar-label">Journey</span>
+                </div>
+              </div>
+              
+              {/* COLLABORATE Section */}
+              <div className="sidebar-section">
+                <div className="sidebar-section-header">COLLABORATE</div>
+                <div 
+                  className="sidebar-item"
+                  onClick={() => setShowBulkSurveyModal(true)}
+                >
+                  <span className="sidebar-icon">📋</span>
+                  <span className="sidebar-label">Request Feedback</span>
+                </div>
+                <div 
+                  className="sidebar-item"
+                  onClick={() => setShowShareModal(true)}
+                >
+                  <span className="sidebar-icon">🔗</span>
+                  <span className="sidebar-label">Share</span>
+                </div>
+              </div>
+              
+            </nav>
+            
+            {/* Main Canvas with Content */}
+            <div className="canvas-with-sidebar">
 
           {/* GitHub Status Toast */}
           {gitHubStatus.message && !showGitHubSettings && (
@@ -13666,6 +14009,10 @@ FATHOM - Journey intelligence for modern operations`);
               </div>
             </div>
           )}
+          
+            </div> {/* Close canvas-with-sidebar */}
+          </div> {/* Close main-layout-with-sidebar */}
+          
         </div>
         </>
       );
