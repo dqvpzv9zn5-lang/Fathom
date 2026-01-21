@@ -10665,6 +10665,60 @@ FATHOM - Journey intelligence for modern operations`);
                 
                 {/* Title */}
                 <div className="header-title-wrapper" style={{ minWidth: 0, flex: 1, display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  {/* Cost Model Badge - BEFORE title */}
+                  {config.meta?.costModel === 'event' ? (
+                    <span style={{
+                      background: '#C4942A',
+                      color: '#FFF',
+                      padding: '3px 10px',
+                      borderRadius: '12px',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      flexShrink: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}>
+                      🎪 Event
+                    </span>
+                  ) : config.meta?.costModel === 'project' ? (
+                    <span style={{
+                      background: '#5A5B8A',
+                      color: '#FFF',
+                      padding: '3px 10px',
+                      borderRadius: '12px',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      flexShrink: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}>
+                      🎯 Project
+                    </span>
+                  ) : (
+                    <span style={{
+                      background: '#5B8A9A',
+                      color: '#FFF',
+                      padding: '3px 10px',
+                      borderRadius: '12px',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      flexShrink: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}>
+                      💼 Client
+                    </span>
+                  )}
+                  
                   <h1 style={{ margin: 0, fontSize: isMobile ? '16px' : '18px', fontWeight: 500, letterSpacing: '-0.3px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     {editingTitle ? (
                       <input 
@@ -10739,59 +10793,7 @@ FATHOM - Journey intelligence for modern operations`);
                       </div>
                     )}
                   </h1>
-                  {/* Cost Model Badge */}
-                  {config.meta?.costModel === 'event' ? (
-                    <span style={{
-                      background: '#C4942A',
-                      color: '#FFF',
-                      padding: '3px 10px',
-                      borderRadius: '12px',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      flexShrink: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px'
-                    }}>
-                      🎪 Event
-                    </span>
-                  ) : config.meta?.costModel === 'project' ? (
-                    <span style={{
-                      background: '#5A5B8A',
-                      color: '#FFF',
-                      padding: '3px 10px',
-                      borderRadius: '12px',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      flexShrink: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px'
-                    }}>
-                      🎯 Project
-                    </span>
-                  ) : (
-                    <span style={{
-                      background: '#5B8A9A',
-                      color: '#FFF',
-                      padding: '3px 10px',
-                      borderRadius: '12px',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      flexShrink: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px'
-                    }}>
-                      🚶 Client
-                    </span>
-                  )}
+                  
                   {/* Read-only badge */}
                   {isSupabaseMode && authChecked && !canEdit && (
                     <span style={{
@@ -10841,56 +10843,14 @@ FATHOM - Journey intelligence for modern operations`);
                       </button>
                       {showSettingsMenu && (isSupabaseMode ? canAccessSettings : isSettingsUnlocked) && (
                         <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', background: '#FFF', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)', overflow: 'hidden', zIndex: 9999, minWidth: '220px', padding: '8px 0' }}>
-                          <div style={{ color: '#6E7B8C', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '8px 16px 4px' }}>Configuration</div>
-                          {canEdit && (
-                            <button onClick={() => { setShowJourneySettings(true); setShowSettingsMenu(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '10px 16px', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', fontFamily: "'Interstate', sans-serif", fontSize: '14px', color: '#3D4A5C', transition: 'background 0.1s' }} onMouseOver={(e) => e.currentTarget.style.background = '#F4F5F7'} onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
-                              <span style={{ width: '18px', textAlign: 'center' }}>⚙️</span> Journey Settings
-                              {config.meta?.costModel === 'event' && <span style={{ marginLeft: 'auto', padding: '2px 6px', background: '#FAF0D6', color: '#8B6914', borderRadius: '4px', fontSize: '9px', fontWeight: 600 }}>EVENT</span>}
-                            </button>
-                          )}
                           {!isSupabaseMode && (
                             <>
-                              <div style={{ height: '1px', background: '#E4E7EB', margin: '4px 0' }} />
                               <div style={{ color: '#6E7B8C', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '8px 16px 4px' }}>Data</div>
                               <button onClick={() => { setShowGitHubSettings(true); setShowSettingsMenu(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '10px 16px', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', fontFamily: "'Interstate', sans-serif", fontSize: '14px', color: '#3D4A5C', transition: 'background 0.1s' }} onMouseOver={(e) => e.currentTarget.style.background = '#F4F5F7'} onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
                                 <span style={{ width: '18px', textAlign: 'center' }}>🐙</span> GitHub Settings
                               </button>
                             </>
                           )}
-                          <div style={{ height: '1px', background: '#E4E7EB', margin: '4px 0' }} />
-                          <button 
-                            onClick={() => setShowCosts(!showCosts)} 
-                            style={{ 
-                              display: 'flex', 
-                              alignItems: 'center', 
-                              gap: '12px', 
-                              width: '100%', 
-                              padding: '10px 16px', 
-                              border: 'none', 
-                              background: 'transparent', 
-                              cursor: 'pointer', 
-                              textAlign: 'left', 
-                              fontFamily: "'Interstate', sans-serif", 
-                              fontSize: '14px', 
-                              color: '#3D4A5C',
-                              transition: 'background 0.1s'
-                            }} 
-                            onMouseOver={(e) => e.currentTarget.style.background = '#F4F5F7'} 
-                            onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
-                          >
-                            <span style={{ width: '18px', textAlign: 'center' }}>{showCosts ? '💰' : '🚫'}</span> 
-                            <span style={{ flex: 1 }}>Cost Data</span>
-                            <span style={{ 
-                              padding: '3px 10px', 
-                              borderRadius: '12px', 
-                              fontSize: '10px', 
-                              fontWeight: 600,
-                              background: showCosts ? 'rgba(45, 138, 110, 0.15)' : 'rgba(184, 74, 90, 0.15)',
-                              color: showCosts ? '#2D8A6E' : '#B84A5A'
-                            }}>
-                              {showCosts ? 'VISIBLE' : 'HIDDEN'}
-                            </span>
-                          </button>
                         </div>
                       )}
                     </div>
@@ -11059,56 +11019,14 @@ FATHOM - Journey intelligence for modern operations`);
                     </button>
                     {showSettingsMenu && (isSupabaseMode ? canAccessSettings : isSettingsUnlocked) && (
                       <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', background: '#FFF', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)', overflow: 'hidden', zIndex: 9999, minWidth: '220px', padding: '8px 0' }}>
-                        <div style={{ color: '#6E7B8C', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '8px 16px 4px' }}>Configuration</div>
-                        {canEdit && (
-                          <button onClick={() => { setShowJourneySettings(true); setShowSettingsMenu(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '10px 16px', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', fontFamily: "'Interstate', sans-serif", fontSize: '14px', color: '#3D4A5C', transition: 'background 0.1s' }} onMouseOver={(e) => e.currentTarget.style.background = '#F4F5F7'} onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
-                            <span style={{ width: '18px', textAlign: 'center' }}>⚙️</span> Journey Settings
-                            {config.meta?.costModel === 'event' && <span style={{ marginLeft: 'auto', padding: '2px 6px', background: '#FAF0D6', color: '#8B6914', borderRadius: '4px', fontSize: '9px', fontWeight: 600 }}>EVENT</span>}
-                          </button>
-                        )}
                         {!isSupabaseMode && (
                           <>
-                            <div style={{ height: '1px', background: '#E4E7EB', margin: '4px 0' }} />
                             <div style={{ color: '#6E7B8C', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '8px 16px 4px' }}>Data</div>
                             <button onClick={() => { setShowGitHubSettings(true); setShowSettingsMenu(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '10px 16px', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', fontFamily: "'Interstate', sans-serif", fontSize: '14px', color: '#3D4A5C', transition: 'background 0.1s' }} onMouseOver={(e) => e.currentTarget.style.background = '#F4F5F7'} onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
                               <span style={{ width: '18px', textAlign: 'center' }}>🐙</span> GitHub Settings
                             </button>
                           </>
                         )}
-                        <div style={{ height: '1px', background: '#E4E7EB', margin: '4px 0' }} />
-                        <button 
-                          onClick={() => setShowCosts(!showCosts)} 
-                          style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            gap: '12px', 
-                            width: '100%', 
-                            padding: '10px 16px', 
-                            border: 'none', 
-                            background: 'transparent', 
-                            cursor: 'pointer', 
-                            textAlign: 'left', 
-                            fontFamily: "'Interstate', sans-serif", 
-                            fontSize: '14px', 
-                            color: '#3D4A5C',
-                            transition: 'background 0.1s'
-                          }} 
-                          onMouseOver={(e) => e.currentTarget.style.background = '#F4F5F7'} 
-                          onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
-                        >
-                          <span style={{ width: '18px', textAlign: 'center' }}>{showCosts ? '💰' : '🚫'}</span> 
-                          <span style={{ flex: 1 }}>Cost Data</span>
-                          <span style={{ 
-                            padding: '3px 10px', 
-                            borderRadius: '12px', 
-                            fontSize: '10px', 
-                            fontWeight: 600,
-                            background: showCosts ? 'rgba(45, 138, 110, 0.15)' : 'rgba(184, 74, 90, 0.15)',
-                            color: showCosts ? '#2D8A6E' : '#B84A5A'
-                          }}>
-                            {showCosts ? 'VISIBLE' : 'HIDDEN'}
-                          </span>
-                        </button>
                       </div>
                     )}
                   </div>
@@ -11223,9 +11141,58 @@ FATHOM - Journey intelligence for modern operations`);
                 <div 
                   className="sidebar-item"
                   onClick={() => setShowJourneySettings(true)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
                   <span className="sidebar-icon">⚙️</span>
                   <span className="sidebar-label">Journey</span>
+                  {config.meta?.costModel === 'event' && (
+                    <span style={{
+                      background: '#C4942A',
+                      color: '#FFF',
+                      padding: '2px 6px',
+                      borderRadius: '8px',
+                      fontSize: '9px',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.3px',
+                      marginLeft: 'auto',
+                      flexShrink: 0
+                    }}>
+                      EVENT
+                    </span>
+                  )}
+                  {config.meta?.costModel === 'project' && (
+                    <span style={{
+                      background: '#5A5B8A',
+                      color: '#FFF',
+                      padding: '2px 6px',
+                      borderRadius: '8px',
+                      fontSize: '9px',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.3px',
+                      marginLeft: 'auto',
+                      flexShrink: 0
+                    }}>
+                      PROJECT
+                    </span>
+                  )}
+                  {(!config.meta?.costModel || config.meta?.costModel === 'client') && (
+                    <span style={{
+                      background: '#5B8A9A',
+                      color: '#FFF',
+                      padding: '2px 6px',
+                      borderRadius: '8px',
+                      fontSize: '9px',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.3px',
+                      marginLeft: 'auto',
+                      flexShrink: 0
+                    }}>
+                      CLIENT
+                    </span>
+                  )}
                 </div>
               </div>
               
