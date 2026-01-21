@@ -10656,32 +10656,6 @@ FATHOM - Journey intelligence for modern operations`);
                   ☰
                 </button>
                 
-                {/* Back to Dashboard Button - show in Supabase mode OR legacy multi-user mode */}
-                {(isSupabaseMode || isMultiUserMode) && (
-                  <button
-                    onClick={() => window.location.href = 'dashboard.html'}
-                    style={{
-                      background: 'rgba(255,255,255,0.1)',
-                      border: '1px solid rgba(255,255,255,0.3)',
-                      borderRadius: '6px',
-                      padding: isMobile ? '6px 10px' : '8px 12px',
-                      color: '#FFF',
-                      cursor: 'pointer',
-                      fontFamily: "'Interstate', sans-serif",
-                      fontSize: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      flexShrink: 0,
-                      transition: 'all 0.15s'
-                    }}
-                    onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; }}
-                    onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
-                    title="Back to Dashboard"
-                  >
-                    ←
-                  </button>
-                )}
                 
                 {/* Fathom Logo - Light version for dark background */}
                 <img src="logo_light.png" alt="FATHOM" style={{ height: '32px', width: 'auto', flexShrink: 0 }} />
@@ -10835,141 +10809,9 @@ FATHOM - Journey intelligence for modern operations`);
                 </div>
               </div>
               
-              {/* Desktop Menu - between title and export */}
-              {!isMobile && !editMode && (
-                <>
-                  <div className="header-divider" style={{ width: '1px', height: '32px', background: 'rgba(255,255,255,0.2)', flexShrink: 0 }} />
-                  <div className="no-print" style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
-                    
-                    {/* GROUP 1: View Mode */}
-                    <div style={{ display: 'flex', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.3)' }}>
-                      <button onClick={() => { setViewMode('stages'); }} style={{ padding: '6px 10px', background: viewMode === 'stages' ? '#556275' : 'transparent', color: '#F4F5F7', border: 'none', cursor: 'pointer', fontFamily: "'Interstate', sans-serif", fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        📁{!isCompact && ' Stages'}
-                      </button>
-                      <button onClick={() => setViewMode('steps')} style={{ padding: '6px 10px', background: viewMode === 'steps' ? '#556275' : 'transparent', color: '#F4F5F7', border: 'none', borderLeft: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', fontFamily: "'Interstate', sans-serif", fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        📋{!isCompact && ' Steps'}
-                      </button>
-                    </div>
-                    
-                    {/* GROUP 2: View Layers (what info shows on cards) */}
-                    {(showCosts || config.funnel?.enabled) && (
-                      <>
-                        <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.15)', margin: '0 2px' }} />
-                        {!isCompact && <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontFamily: "'Interstate', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px' }}>Show</span>}
-                        <div style={{ display: 'flex', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.3)' }}>
-                          {showCosts && (
-                            <button 
-                              onClick={() => { 
-                                if (highlightOpportunities) {
-                                  setHighlightOpportunities(false);
-                                } else {
-                                  setHighlightOpportunities(true);
-                                  setShowFunnel(false);
-                                }
-                              }} 
-                              style={{ 
-                                padding: '6px 10px', 
-                                background: highlightOpportunities ? '#2D8A6E' : 'transparent', 
-                                color: '#F4F5F7', 
-                                border: 'none', 
-                                cursor: 'pointer', 
-                                fontFamily: "'Interstate', sans-serif", 
-                                fontSize: '11px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                borderRight: config.funnel?.enabled ? '1px solid rgba(255,255,255,0.2)' : 'none'
-                              }}
-                            >
-                              🎯{!isCompact && ' Opps'}
-                            </button>
-                          )}
-                          {config.funnel?.enabled && (
-                            <button 
-                              onClick={() => { 
-                                if (showFunnel) {
-                                  setShowFunnel(false);
-                                } else {
-                                  setShowFunnel(true);
-                                  setHighlightOpportunities(false);
-                                }
-                              }} 
-                              style={{ 
-                                padding: '6px 10px', 
-                                background: showFunnel ? '#5A5B8A' : 'transparent', 
-                                color: '#F4F5F7', 
-                                border: 'none', 
-                                cursor: 'pointer', 
-                                fontFamily: "'Interstate', sans-serif", 
-                                fontSize: '11px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px'
-                              }}
-                            >
-                              🔻{!isCompact && ' Funnel'}
-                            </button>
-                          )}
-                        </div>
-                      </>
-                    )}
-                    
-                    {/* GROUP 3: Dashboard */}
-                    <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.15)', margin: '0 2px' }} />
-                    <button 
-                      onClick={() => setShowDashboard(true)} 
-                      style={{ 
-                        padding: '6px 10px', 
-                        background: 'transparent', 
-                        color: '#F4F5F7', 
-                        border: '1px solid rgba(255,255,255,0.3)', 
-                        borderRadius: '4px',
-                        cursor: 'pointer', 
-                        fontFamily: "'Interstate', sans-serif", 
-                        fontSize: '11px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px'
-                      }}
-                    >
-                      📊{!isCompact && ' Dashboard'}
-                    </button>
-                    
-                  </div>
-                </>
-              )}
-              
-              {/* Right side: Configure Structure + Export & Settings - Desktop only (mobile shows in row 2) */}
+              {/* Right side: Export & Settings - Desktop only (mobile shows in row 2) */}
               {!isMobile && (
               <div className="no-print" style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
-                {!editMode && (
-                  <>
-                    {/* Configure Structure Button - Always visible */}
-                    <button 
-                      onClick={() => setShowStructurePanel(true)}
-                      style={{ 
-                        padding: '6px 10px', 
-                        background: 'transparent', 
-                        color: '#F4F5F7', 
-                        border: '1px solid rgba(255,255,255,0.4)', 
-                        borderRadius: '4px', 
-                        cursor: 'pointer', 
-                        fontFamily: "'Interstate', sans-serif", 
-                        fontSize: '11px', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '4px',
-                        transition: 'all 0.15s'
-                      }}
-                      onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
-                      onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                      title="Add, remove, and reorder stages and steps"
-                    >
-                      🏗️{!isCompact && ' Structure'}
-                    </button>
-                    <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.15)' }} />
-                  </>
-                )}
                 {editMode ? (
                   <>
                     <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#F4F5F7', opacity: 0.7, marginRight: '4px' }}>✏️ Editing</span>
@@ -10982,54 +10824,6 @@ FATHOM - Journey intelligence for modern operations`);
                   </>
                 ) : (
                   <>
-                    {/* Request Surveys Button - NEW */}
-                    <button 
-                      onClick={() => setShowBulkSurveyModal(true)}
-                      style={{ 
-                        padding: '6px 10px', 
-                        background: 'transparent', 
-                        color: '#F4F5F7', 
-                        border: '1px solid rgba(255,255,255,0.4)', 
-                        borderRadius: '4px', 
-                        cursor: 'pointer', 
-                        fontFamily: "'Interstate', sans-serif", 
-                        fontSize: '11px', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '4px',
-                        transition: 'all 0.15s'
-                      }}
-                      onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
-                      onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                      title="Request survey feedback from team members"
-                    >
-                      📋 Surveys
-                    </button>
-                    
-                    {/* Share Button (Supabase mode only) */}
-                    {isSupabaseMode && canAccessSettings && (
-                      <button 
-                        onClick={() => setShowShareModal(true)}
-                        style={{ 
-                          padding: '6px 10px', 
-                          background: 'transparent', 
-                          color: '#F4F5F7', 
-                          border: '1px solid rgba(255,255,255,0.4)', 
-                          borderRadius: '4px', 
-                          cursor: 'pointer', 
-                          fontFamily: "'Interstate', sans-serif", 
-                          fontSize: '11px', 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: '4px',
-                          marginRight: '8px'
-                        }}
-                        title="Share this map"
-                      >
-                        🔗 Share
-                      </button>
-                    )}
-                    
                     {/* Settings Dropdown - hidden for view-only users in Supabase mode */}
                     {(!isSupabaseMode || canAccessSettings) && (
                     <div style={{ position: 'relative' }}>
@@ -11245,118 +11039,9 @@ FATHOM - Journey intelligence for modern operations`);
             
             {/* Row 2: View Toggles - Mobile only */}
             {isMobile && !editMode && (
-              <div className="no-print header-buttons" style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
-                {/* GROUP 1: View Mode */}
-                <div style={{ display: 'flex', borderRadius: '5px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.35)' }}>
-                  <button onClick={() => { setViewMode('stages'); }} style={{ padding: '7px 12px', background: viewMode === 'stages' ? '#556275' : 'transparent', color: '#F4F5F7', border: 'none', cursor: 'pointer', fontFamily: "'Interstate', sans-serif", fontSize: '11px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    📁 Stages
-                  </button>
-                  <button onClick={() => setViewMode('steps')} style={{ padding: '7px 12px', background: viewMode === 'steps' ? '#556275' : 'transparent', color: '#F4F5F7', border: 'none', borderLeft: '1px solid rgba(255,255,255,0.25)', cursor: 'pointer', fontFamily: "'Interstate', sans-serif", fontSize: '11px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    📋 Steps
-                  </button>
-                </div>
-                
-                {/* GROUP 2: View Layers */}
-                {(showCosts || config.funnel?.enabled) && (
-                  <div style={{ display: 'flex', borderRadius: '5px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.35)' }}>
-                    {showCosts && (
-                      <button 
-                        onClick={() => { 
-                          if (highlightOpportunities) {
-                            setHighlightOpportunities(false);
-                          } else {
-                            setHighlightOpportunities(true);
-                            setShowFunnel(false);
-                          }
-                        }} 
-                        style={{ 
-                          padding: '7px 12px', 
-                          background: highlightOpportunities ? '#2D8A6E' : 'transparent', 
-                          color: '#F4F5F7', 
-                          border: 'none', 
-                          cursor: 'pointer', 
-                          fontFamily: "'Interstate', sans-serif", 
-                          fontSize: '11px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '5px',
-                          borderRight: config.funnel?.enabled ? '1px solid rgba(255,255,255,0.25)' : 'none'
-                        }}
-                      >
-                        🎯
-                      </button>
-                    )}
-                    {config.funnel?.enabled && (
-                      <button 
-                        onClick={() => { 
-                          if (showFunnel) {
-                            setShowFunnel(false);
-                          } else {
-                            setShowFunnel(true);
-                            setHighlightOpportunities(false);
-                          }
-                        }} 
-                        style={{ 
-                          padding: '7px 12px', 
-                          background: showFunnel ? '#5A5B8A' : 'transparent', 
-                          color: '#F4F5F7', 
-                          border: 'none', 
-                          cursor: 'pointer', 
-                          fontFamily: "'Interstate', sans-serif", 
-                          fontSize: '11px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '5px'
-                        }}
-                      >
-                        🔻
-                      </button>
-                    )}
-                  </div>
-                )}
-                
-                {/* GROUP 3: Dashboard + Configure Structure */}
-                <button 
-                  onClick={() => setShowDashboard(true)} 
-                  style={{ 
-                    padding: '7px 12px', 
-                    background: 'transparent', 
-                    color: '#F4F5F7', 
-                    border: '1px solid rgba(255,255,255,0.35)', 
-                    borderRadius: '5px',
-                    cursor: 'pointer', 
-                    fontFamily: "'Interstate', sans-serif", 
-                    fontSize: '11px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px'
-                  }}
-                >
-                  📊
-                </button>
-                
-                <button 
-                  onClick={() => setShowStructurePanel(true)} 
-                  style={{ 
-                    padding: '7px 12px', 
-                    background: 'transparent', 
-                    color: '#F4F5F7', 
-                    border: '1px solid rgba(255,255,255,0.35)', 
-                    borderRadius: '5px',
-                    cursor: 'pointer', 
-                    fontFamily: "'Interstate', sans-serif", 
-                    fontSize: '11px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px'
-                  }}
-                  title="Configure Structure"
-                >
-                  🏗️
-                </button>
-                
-                {/* Settings - pushed to right */}
-                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginLeft: 'auto' }}>
+              <div className="no-print header-buttons" style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', marginLeft: 'auto' }}>
+                {/* Settings - Mobile */}
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>>
                   {/* Settings Dropdown - hidden for view-only users in Supabase mode */}
                   {(!isSupabaseMode || canAccessSettings) && (
                   <div style={{ position: 'relative' }}>
@@ -11457,6 +11142,7 @@ FATHOM - Journey intelligence for modern operations`);
                   className={`sidebar-item radio-item ${viewMode === 'stages' ? 'active' : ''}`}
                   onClick={() => {
                     setViewMode('stages');
+                    setShowDashboard(false);
                   }}
                 >
                   <span className="sidebar-icon">🗂️</span>
@@ -11466,10 +11152,20 @@ FATHOM - Journey intelligence for modern operations`);
                   className={`sidebar-item radio-item ${viewMode === 'steps' ? 'active' : ''}`}
                   onClick={() => {
                     setViewMode('steps');
+                    setShowDashboard(false);
                   }}
                 >
                   <span className="sidebar-icon">📝</span>
                   <span className="sidebar-label">Steps</span>
+                </div>
+                <div 
+                  className={`sidebar-item radio-item ${showDashboard ? 'active' : ''}`}
+                  onClick={() => {
+                    setShowDashboard(true);
+                  }}
+                >
+                  <span className="sidebar-icon">📊</span>
+                  <span className="sidebar-label">Analytics</span>
                 </div>
               </div>
               
@@ -13563,12 +13259,12 @@ FATHOM - Journey intelligence for modern operations`);
           {showDashboard && (
             <div className="dashboard-modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(12,22,32,0.6)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3000, padding: '12px' }} onClick={() => setShowDashboard(false)}>
               <div className="dashboard-modal-content" onClick={(e) => e.stopPropagation()} style={{ background: '#FFF', borderRadius: '12px', maxWidth: '1400px', width: '100%', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
-                {/* Dashboard Header with Tabs */}
+                {/* Analytics Header with Tabs */}
                 <div style={{ background: '#192B45', padding: '12px 16px', paddingTop: 'max(12px, env(safe-area-inset-top))', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexShrink: 0 }}>
                   {/* Left: Icon + Title (title hidden on mobile) */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                     <span style={{ fontSize: '18px' }}>📊</span>
-                    <h2 className="dashboard-title-text" style={{ margin: 0, color: '#FFF', fontSize: '16px', fontWeight: 500, fontFamily: "'Interstate', sans-serif" }}>Dashboard</h2>
+                    <h2 className="dashboard-title-text" style={{ margin: 0, color: '#FFF', fontSize: '16px', fontWeight: 500, fontFamily: "'Interstate', sans-serif" }}>Analytics</h2>
                   </div>
                   {/* Center: Tabs */}
                   <div style={{ display: 'flex', gap: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', padding: '4px' }}>
