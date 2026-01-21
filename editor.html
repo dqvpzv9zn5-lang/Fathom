@@ -9389,6 +9389,7 @@ FATHOM - Journey intelligence for modern operations`);
       const [showJourneySettings, setShowJourneySettings] = useState(false);
       const [showRevenueConfig, setShowRevenueConfig] = useState(false); // Revenue & Costs config modal
       const [showProfileMenu, setShowProfileMenu] = useState(false);
+      const [showRoleManagement, setShowRoleManagement] = useState(false); // Manage Roles modal
       const [showSurveyRequestModal, setShowSurveyRequestModal] = useState(null); // { stepId, personaId }
       const [showBulkSurveyModal, setShowBulkSurveyModal] = useState(false); // New bulk survey modal
       const [shares, setShares] = useState([]);
@@ -13478,6 +13479,7 @@ FATHOM - Journey intelligence for modern operations`);
           {showAddStage && <AddStageModal onAdd={addStage} onClose={() => setShowAddStage(false)} />}
           {addStepTo && <AddStepModal stageId={addStepTo.id} stageName={addStepTo.name} personas={config.personas} onAdd={addStep} onClose={() => setAddStepTo(null)} />}
           {showSalarySettings && <SalarySettingsModal personas={config.personas} config={config} onUpdate={updateSalaries} onClose={() => setShowSalarySettings(false)} />}
+          {showRoleManagement && <SalarySettingsModal personas={config.personas} config={config} onUpdate={updateSalaries} onClose={() => setShowRoleManagement(false)} />}
           {showSurveyRequestModal && (
             <SurveyRequestModal 
               stepId={showSurveyRequestModal.stepId}
