@@ -10673,9 +10673,22 @@ FATHOM - Journey intelligence for modern operations`);
                   className="sidebar-toggle-btn"
                   onClick={() => {
                     const sidebar = document.getElementById('sidebar-nav');
+                    const isMobileView = window.innerWidth < 768;
+                    
                     if (sidebar) {
-                      sidebar.classList.toggle('collapsed');
-                      localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                      if (isMobileView) {
+                        // Mobile: toggle mobile-open class
+                        sidebar.classList.toggle('mobile-open');
+                        // Also toggle backdrop
+                        const backdrop = document.querySelector('.sidebar-backdrop');
+                        if (backdrop) {
+                          backdrop.classList.toggle('active');
+                        }
+                      } else {
+                        // Desktop: toggle collapsed class
+                        sidebar.classList.toggle('collapsed');
+                        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                      }
                     }
                   }}
                   title="Toggle sidebar"
@@ -11024,43 +11037,7 @@ FATHOM - Journey intelligence for modern operations`);
               )}
             </div>
             
-            {/* Row 2: View Toggles - Mobile only */}
-            {isMobile && !editMode && (
-              <div className="no-print header-buttons" style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', marginLeft: 'auto' }}>
-                {/* Settings - Mobile */}
-                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>>
-                  {/* Settings Dropdown - hidden for view-only users in Supabase mode */}
-                  {(!isSupabaseMode || canAccessSettings) && (
-                  <div style={{ position: 'relative' }}>
-                    <button onClick={(e) => { 
-                      e.stopPropagation(); 
-                      // In Supabase mode, use role-based access; in legacy mode, use password
-                      const hasAccess = isSupabaseMode ? canAccessSettings : isSettingsUnlocked;
-                      if (hasAccess) {
-                        setShowSettingsMenu(!showSettingsMenu);
-                      } else if (!isSupabaseMode) {
-                        setShowPasswordPrompt(true);
-                      }
-                    }} style={{ padding: '7px 10px', background: showSettingsMenu ? '#556275' : 'transparent', color: '#F4F5F7', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '5px', cursor: 'pointer', fontFamily: "'Interstate', sans-serif", fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }} title="Settings">
-                      {(isSupabaseMode ? canAccessSettings : isSettingsUnlocked) ? '⚙️' : '🔒'} <span style={{ fontSize: '8px' }}>▼</span>
-                    </button>
-                    {showSettingsMenu && (isSupabaseMode ? canAccessSettings : isSettingsUnlocked) && (
-                      <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', background: '#FFF', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)', overflow: 'hidden', zIndex: 9999, minWidth: '220px', padding: '8px 0' }}>
-                        {!isSupabaseMode && (
-                          <>
-                            <div style={{ color: '#6E7B8C', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '8px 16px 4px' }}>Data</div>
-                            <button onClick={() => { setShowGitHubSettings(true); setShowSettingsMenu(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '10px 16px', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', fontFamily: "'Interstate', sans-serif", fontSize: '14px', color: '#3D4A5C', transition: 'background 0.1s' }} onMouseOver={(e) => e.currentTarget.style.background = '#F4F5F7'} onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
-                              <span style={{ width: '18px', textAlign: 'center' }}>🐙</span> GitHub Settings
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  )}
-                </div>
-              </div>
-            )}
+            {/* Mobile: No additional buttons needed - use sidebar */}
           </header>
 
           {/* Main Layout with Sidebar */}
@@ -11243,6 +11220,17 @@ FATHOM - Journey intelligence for modern operations`);
               </div>
               
             </nav>
+            
+            {/* Mobile Sidebar Backdrop */}
+            <div 
+              className="sidebar-backdrop"
+              onClick={() => {
+                const sidebar = document.getElementById('sidebar-nav');
+                const backdrop = document.querySelector('.sidebar-backdrop');
+                if (sidebar) sidebar.classList.remove('mobile-open');
+                if (backdrop) backdrop.classList.remove('active');
+              }}
+            ></div>
             
             {/* Main Canvas with Content */}
             <div className="canvas-with-sidebar">
