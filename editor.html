@@ -2156,6 +2156,182 @@ Powered by FATHOM
       }).format(amount);
     };
 
+    // ============================================
+    // EVENT MODE: Hybrid Cost Calculation Functions
+    // Phase 1: Data Layer
+    // ============================================
+    
+    /**
+     * Get capacity for a specific step (with fallback to event capacity)
+     * Allows per-stage capacity overrides (e.g., fans leaving early)
+     */
+    const getStepCapacity = (step, config) => {
+      const eventConfig = config?.meta?.eventConfig;
+      if (!eventConfig) return 40000; // Default fallback
+      
+      // Check for stage-specific capacity override
+      if (step.stageId && eventConfig.capacityPerEvent?.[step.stageId]) {
+        return eventConfig.capacityPerEvent[step.stageId];
+      }
+      
+      // Use global event capacity
+      return eventConfig.capacity || 40000;
+    };
+    
+    /**
+     * Get capacity for a stage
+     */
+    const getStageCapacity = (stage, config) => {
+      const eventConfig = config?.meta?.eventConfig;
+      if (!eventConfig) return 40000;
+      
+      // Check for stage-specific capacity override
+      if (stage.id && eventConfig.capacityPerEvent?.[stage.id]) {
+        return eventConfig.capacityPerEvent[stage.id];
+      }
+      
+      return eventConfig.capacity || 40000;
+    };
+    
+    /**
+     * Calculate cost per attendee
+     */
+    const calculateCostPerAttendee = (cost, capacity) => {
+      if (!capacity || capacity === 0) return 0;
+      return cost / capacity;
+    };
+    
+    /**
+     * Calculate season cost (event cost × number of events)
+     */
+    const calculateSeasonCost = (eventCost, config) => {
+      const eventsPerSeason = config?.meta?.eventConfig?.eventsPerSeason || 19;
+      return eventCost * eventsPerSeason;
+    };
+    
+    /**
+     * Format cost per attendee for display
+     */
+    const formatCostPerAttendee = (amount) => {
+      if (amount < 0.01) {
+        return '<£0.01/fan';
+      }
+      return new Intl.NumberFormat('en-GB', {
+        style: 'currency',
+        currency: 'GBP',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(amount) + '/fan';
+    };
+    
+    /**
+     * Calculate total staff deployed across all roles
+     */
+    const calculateTotalStaffDeployed = (personas) => {
+      return personas
+        .filter(p => !p.isExternal && p.eventDeployment)
+        .reduce((total, p) => total + (p.eventDeployment.headcount || 0), 0);
+    };
+    
+    /**
+     * Calculate total staff hours per event
+     */
+    const calculateTotalStaffHours = (personas) => {
+      return personas
+        .filter(p => !p.isExternal && p.eventDeployment)
+        .reduce((total, p) => {
+          const deployment = p.eventDeployment;
+          const headcount = deployment.headcount || 0;
+          const hoursPerEvent = deployment.hoursPerEvent || 0;
+          return total + (headcount * hoursPerEvent);
+        }, 0);
+    };
+    
+    /**
+     * Calculate average cost per staff hour
+     */
+    const calculateAvgCostPerStaffHour = (totalCost, totalStaffHours) => {
+      if (totalStaffHours === 0) return 0;
+      return totalCost / totalStaffHours;
+    };
+    
+    /**
+     * Get all event mode metrics for a journey
+     * Returns: { eventCost, perAttendee, seasonCost, capacity, eventsPerSeason }
+     */
+    const getEventMetrics = (totalCost, config) => {
+      const capacity = config?.meta?.eventConfig?.capacity || 40000;
+      const eventsPerSeason = config?.meta?.eventConfig?.eventsPerSeason || 19;
+      
+      return {
+        eventCost: totalCost,
+        perAttendee: calculateCostPerAttendee(totalCost, capacity),
+        seasonCost: calculateSeasonCost(totalCost, config),
+        capacity,
+        eventsPerSeason
+      };
+    };
+    
+    /**
+     * Get staffing metrics for analytics
+     */
+    const getStaffingMetrics = (config) => {
+      const personas = config.personas || [];
+      const totalStaff = calculateTotalStaffDeployed(personas);
+      const totalHours = calculateTotalStaffHours(personas);
+      
+      // Calculate total labour cost
+      const allSteps = (config.stages || []).flatMap(stage => stage.steps || []);
+      const totalLabourCost = allSteps.reduce((acc, step) => 
+        acc + calculateStepLabourCost(step, personas, config), 0
+      );
+      
+      return {
+        totalStaff,
+        totalHours,
+        avgCostPerHour: calculateAvgCostPerStaffHour(totalLabourCost, totalHours),
+        totalLabourCost
+      };
+    };
+
+    /*
+     * PHASE 1 TEST - Event Mode Hybrid Cost Calculations
+     * 
+     * To test in browser console:
+     * 
+     * // Test configuration
+     * const testConfig = {
+     *   meta: {
+     *     costModel: 'event',
+     *     eventConfig: {
+     *       capacity: 40000,
+     *       eventsPerSeason: 19
+     *     }
+     *   }
+     * };
+     * 
+     * // Test calculations
+     * const eventCost = 911;  // e.g., £911 for a step
+     * 
+     * console.log('Event Cost:', formatCurrency(eventCost));
+     * console.log('Per Attendee:', formatCostPerAttendee(calculateCostPerAttendee(eventCost, 40000)));
+     * console.log('Season Cost:', formatCurrency(calculateSeasonCost(eventCost, testConfig)));
+     * 
+     * // Expected results:
+     * // Event Cost: £911
+     * // Per Attendee: £0.02/fan
+     * // Season Cost: £17,309
+     * 
+     * // Test staffing metrics
+     * const testPersonas = [
+     *   { id: 'police', isExternal: false, eventDeployment: { headcount: 50, hoursPerEvent: 4 } },
+     *   { id: 'steward', isExternal: false, eventDeployment: { headcount: 100, hoursPerEvent: 6 } }
+     * ];
+     * 
+     * console.log('Total Staff:', calculateTotalStaffDeployed(testPersonas));  // Expected: 150
+     * console.log('Total Hours:', calculateTotalStaffHours(testPersonas));     // Expected: 800
+     */
+
     // Export Report Function - generates printable HTML
     const exportReport = (reportType, config, data) => {
       const journeyTitle = config.title || 'Journey Map';
@@ -10962,10 +11138,22 @@ FATHOM - Journey intelligence for modern operations`);
                     
                     {/* Journey Cost */}
                     {showCosts && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: '#C4942A', borderRadius: '6px', marginLeft: '4px' }} title="Total Journey Cost">
-                        <span style={{ fontSize: '12px' }}>💰</span>
-                        <span style={{ fontWeight: 700, color: '#FFF', fontSize: '13px', fontFamily: "'Interstate', sans-serif" }}>{formatCurrency(stats.totalCost)}</span>
-                      </div>
+                      <>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: '#C4942A', borderRadius: '6px', marginLeft: '4px' }} title="Total Journey Cost">
+                          <span style={{ fontSize: '12px' }}>💰</span>
+                          <span style={{ fontWeight: 700, color: '#FFF', fontSize: '13px', fontFamily: "'Interstate', sans-serif" }}>{formatCurrency(stats.totalCost)}</span>
+                        </div>
+                        
+                        {/* Per Attendee Badge - Event Mode only */}
+                        {config.meta?.costModel === 'event' && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(196, 148, 42, 0.3)', borderRadius: '6px' }} title="Cost Per Attendee">
+                            <span style={{ fontSize: '12px' }}>📊</span>
+                            <span style={{ fontWeight: 600, color: '#FFF', fontSize: '11px', fontFamily: "'Interstate', sans-serif" }}>
+                              {formatCostPerAttendee(calculateCostPerAttendee(stats.totalCost, config.meta?.eventConfig?.capacity || 40000))}
+                            </span>
+                          </div>
+                        )}
+                      </>
                     )}
                     
                     {/* Profile Dropdown (Supabase mode only) */}
@@ -11479,9 +11667,37 @@ FATHOM - Journey intelligence for modern operations`);
                           </div>
                           <div style={{ textAlign: 'right' }}>
                             <div style={{ fontSize: '16px', fontWeight: 600 }}>{formatTime(stageTime)}</div>
-                            {showCosts && <div style={{ fontSize: '12px', opacity: 0.8 }}>{formatCurrency(stageCost)}</div>}
+                            {showCosts && (
+                              <>
+                                <div style={{ fontSize: '12px', opacity: 0.8 }}>{formatCurrency(stageCost)}</div>
+                                {config.meta?.costModel === 'event' && (
+                                  <div style={{ fontSize: '10px', opacity: 0.7 }}>
+                                    {formatCostPerAttendee(calculateCostPerAttendee(stageCost, getStageCapacity(stage, config)))}
+                                  </div>
+                                )}
+                              </>
+                            )}
                           </div>
                         </div>
+                        
+                        {/* Season Cost Row - Event Mode only */}
+                        {showCosts && config.meta?.costModel === 'event' && (
+                          <div style={{ 
+                            marginTop: '10px', 
+                            paddingTop: '10px',
+                            borderTop: '1px solid rgba(255,255,255,0.15)',
+                            fontSize: '10px',
+                            opacity: 0.85,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                          }}>
+                            <span>Season Total:</span>
+                            <span style={{ fontWeight: 600, fontSize: '11px' }}>
+                              {formatCurrency(calculateSeasonCost(stageCost, config))} ({config.meta?.eventConfig?.eventsPerSeason || 19} events)
+                            </span>
+                          </div>
+                        )}
                         
                         {/* Funnel row (when enabled) */}
                         {stageFunnelData && (
@@ -11620,7 +11836,47 @@ FATHOM - Journey intelligence for modern operations`);
                                     {formatTime(Math.round(stepTimeSavings))} · {formatCurrency(stepSavings)} ({isHighOpp ? '70' : '40'}%)
                                   </span>
                                 ) : (
-                                  <span style={{ color: '#556275', fontSize: '12px', position: 'relative', zIndex: 1 }}>{formatTime(step.timeMinutes)}</span>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', position: 'relative', zIndex: 1 }}>
+                                    {/* Time Badge */}
+                                    <span style={{ 
+                                      padding: '3px 8px', 
+                                      background: '#E9EEF4', 
+                                      color: '#556275', 
+                                      borderRadius: '4px',
+                                      fontWeight: 500,
+                                      fontSize: '11px'
+                                    }}>
+                                      {formatTime(step.timeMinutes)}
+                                    </span>
+                                    
+                                    {/* Cost Badge - only in Event Mode when showCosts enabled */}
+                                    {showCosts && config.meta?.costModel === 'event' && (
+                                      <>
+                                        <span style={{ 
+                                          padding: '3px 8px', 
+                                          background: '#FAF0D6', 
+                                          color: '#8B6914', 
+                                          borderRadius: '4px',
+                                          fontWeight: 500,
+                                          fontSize: '11px'
+                                        }}>
+                                          {formatCurrency(stepCost)}
+                                        </span>
+                                        
+                                        {/* Per Attendee Badge */}
+                                        <span style={{ 
+                                          padding: '3px 8px', 
+                                          background: 'rgba(196, 148, 42, 0.12)', 
+                                          color: '#8B6914', 
+                                          borderRadius: '4px',
+                                          fontWeight: 500,
+                                          fontSize: '10px'
+                                        }}>
+                                          {formatCostPerAttendee(calculateCostPerAttendee(stepCost, getStepCapacity(step, config)))}
+                                        </span>
+                                      </>
+                                    )}
+                                  </div>
                                 )}
                               </div>
                             );})}
@@ -11787,9 +12043,16 @@ FATHOM - Journey intelligence for modern operations`);
                             <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 600, lineHeight: 1.2 }}>{stage.name}</h2>
                           )}
                         </div>
-                        <div style={{ textAlign: 'right' }}>
+                        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
                           <div style={{ fontSize: '16px', fontWeight: 600 }}>{formatTime(stageTime)}</div>
-                          {showCosts && <div style={{ fontSize: '12px', opacity: 0.8 }}>{formatCurrency(stageCost)}</div>}
+                          {showCosts && (
+                            <>
+                              <div style={{ fontSize: '12px', opacity: 0.9 }}>{formatCurrency(stageCost)}</div>
+                              {config.meta?.costModel === 'event' && config.meta?.eventConfig?.capacity > 0 && (
+                                <div style={{ fontSize: '10px', opacity: 0.8 }}>{formatCurrencyDetailed(calculateCostPerAttendee(stageCost, config))}/fan</div>
+                              )}
+                            </>
+                          )}
                         </div>
                       </div>
                       
@@ -11918,13 +12181,19 @@ FATHOM - Journey intelligence for modern operations`);
                             )}
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                               <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#8A95A5', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Step {stageIndex + 1}.{stepIndex + 1}</span>
-                              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                              <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
                                 <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: '#556275', background: '#E9EEF4', padding: '2px 8px', borderRadius: '10px' }}>{formatTime(step.timeMinutes)}</span>
                                 {showCosts && (
-                                  <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: '#8B6914', background: '#FAF0D6', padding: '2px 8px', borderRadius: '10px', fontWeight: 500 }}>
-                                    {formatCurrency(stepCost)}
-                                    {highlightOpportunities && <span style={{ fontSize: '10px', marginLeft: '3px', opacity: 0.8 }}>({formatCurrencyDetailed(costPerMinute)}/m)</span>}
-                                  </span>
+                                  <>
+                                    <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: '#8B6914', background: '#FAF0D6', padding: '2px 8px', borderRadius: '10px', fontWeight: 500 }}>
+                                      {formatCurrency(stepCost)}
+                                    </span>
+                                    {config.meta?.costModel === 'event' && config.meta?.eventConfig?.capacity > 0 && (
+                                      <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#5B8A9A', background: '#E1EEF2', padding: '2px 8px', borderRadius: '10px', fontWeight: 500 }}>
+                                        {formatCurrencyDetailed(calculateCostPerAttendee(stepCost, config))}/fan
+                                      </span>
+                                    )}
+                                  </>
                                 )}
                               </div>
                             </div>
@@ -12395,22 +12664,87 @@ FATHOM - Journey intelligence for modern operations`);
                         }}>
                           💰 Cost Breakdown
                         </label>
-                        <div style={{ textAlign: 'right' }}>
-                          <div style={{
-                            fontFamily: "'Interstate', sans-serif",
-                            fontSize: '20px',
-                            fontWeight: 700,
-                            color: '#8B6914'
-                          }}>
-                            {formatCurrency(calculateStepCost(selectedStep, config.personas, config))}
-                          </div>
-                          <div style={{
-                            fontFamily: "'Interstate', sans-serif",
-                            fontSize: '11px',
-                            color: '#C4942A'
-                          }}>
-                            {formatCurrencyDetailed(selectedStep.timeMinutes > 0 ? calculateStepCost(selectedStep, config.personas, config) / selectedStep.timeMinutes : 0)}/min
-                          </div>
+                        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
+                          {config.meta?.costModel === 'event' ? (
+                            <>
+                              {/* Event Mode: Show Event Cost, Per Attendee, and Season Cost */}
+                              <div style={{
+                                fontFamily: "'Interstate', sans-serif",
+                                fontSize: '20px',
+                                fontWeight: 700,
+                                color: '#8B6914'
+                              }}>
+                                {formatCurrency(calculateStepCost(selectedStep, config.personas, config))}
+                              </div>
+                              <div style={{
+                                fontFamily: "'Interstate', sans-serif",
+                                fontSize: '10px',
+                                color: '#8B6914',
+                                opacity: 0.7,
+                                marginTop: '-2px'
+                              }}>
+                                Event Cost
+                              </div>
+                              <div style={{
+                                fontFamily: "'Interstate', sans-serif",
+                                fontSize: '12px',
+                                color: '#5B8A9A',
+                                fontWeight: 600,
+                                marginTop: '6px'
+                              }}>
+                                {formatCostPerAttendee(calculateCostPerAttendee(
+                                  calculateStepCost(selectedStep, config.personas, config),
+                                  getStepCapacity(selectedStep, config)
+                                ))}
+                              </div>
+                              <div style={{
+                                fontFamily: "'Interstate', sans-serif",
+                                fontSize: '9px',
+                                color: '#5B8A9A',
+                                opacity: 0.8,
+                                marginTop: '-2px'
+                              }}>
+                                Per Attendee ({getStepCapacity(selectedStep, config).toLocaleString()} capacity)
+                              </div>
+                              <div style={{
+                                fontFamily: "'Interstate', sans-serif",
+                                fontSize: '11px',
+                                color: '#C4942A',
+                                fontWeight: 600,
+                                marginTop: '6px'
+                              }}>
+                                {formatCurrency(calculateSeasonCost(calculateStepCost(selectedStep, config.personas, config), config))}
+                              </div>
+                              <div style={{
+                                fontFamily: "'Interstate', sans-serif",
+                                fontSize: '9px',
+                                color: '#C4942A',
+                                opacity: 0.8,
+                                marginTop: '-2px'
+                              }}>
+                                Season Cost ({config.meta?.eventConfig?.eventsPerSeason || 19} events)
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              {/* Client/Project Mode: Show total cost only */}
+                              <div style={{
+                                fontFamily: "'Interstate', sans-serif",
+                                fontSize: '20px',
+                                fontWeight: 700,
+                                color: '#8B6914'
+                              }}>
+                                {formatCurrency(calculateStepCost(selectedStep, config.personas, config))}
+                              </div>
+                              <div style={{
+                                fontFamily: "'Interstate', sans-serif",
+                                fontSize: '11px',
+                                color: '#C4942A'
+                              }}>
+                                {formatCurrencyDetailed(selectedStep.timeMinutes > 0 ? calculateStepCost(selectedStep, config.personas, config) / selectedStep.timeMinutes : 0)}/min
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
                       
