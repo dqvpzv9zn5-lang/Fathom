@@ -2032,8 +2032,9 @@ Powered by FATHOM
     };
     
     // Calculate labour cost only (excluding additional costs)
-    const calculateStepLabourCost = (step, personas) => {
+    const calculateStepLabourCost = (step, personas, config) => {
       let totalCost = 0;
+      const isEventMode = config?.meta?.costModel === 'event';
       
       // NEW FORMAT: roleInvolvement
       if (step.roleInvolvement && Object.keys(step.roleInvolvement).length > 0) {
@@ -2041,9 +2042,27 @@ Powered by FATHOM
           const persona = personas.find(p => p.id === roleId);
           if (persona && !persona.isExternal && (persona.annualSalary > 0 || persona.salary > 0)) {
             const fullyLoadedRate = calculateFullyLoadedRate(persona);
-            const hours = (involvement.timeMinutes || 0) / 60;
-            const headcount = involvement.headcount || 1;
-            totalCost += fullyLoadedRate * hours * headcount;
+            
+            if (isEventMode && persona.eventDeployment) {
+              // Event Mode: Use event deployment config
+              const deployment = persona.eventDeployment;
+              const headcount = deployment.headcount || 1;
+              const hoursPerEvent = deployment.hoursPerEvent || 0;
+              
+              if (deployment.rateType === 'fixed') {
+                totalCost += (deployment.fixedFeePerEvent || 0) * headcount;
+              } else if (deployment.rateType === 'external') {
+                totalCost += deployment.externalRecharge || 0;
+              } else {
+                // hourly or salary - both use hourly rate
+                totalCost += fullyLoadedRate * hoursPerEvent * headcount;
+              }
+            } else {
+              // Client/Project Mode: Use step-specific involvement
+              const hours = (involvement.timeMinutes || 0) / 60;
+              const headcount = involvement.headcount || 1;
+              totalCost += fullyLoadedRate * hours * headcount;
+            }
           }
         });
       }
@@ -2052,8 +2071,25 @@ Powered by FATHOM
         const persona = personas.find(p => p.id === step.owner);
         if (persona && !persona.isExternal && (persona.annualSalary > 0 || persona.salary > 0)) {
           const fullyLoadedRate = calculateFullyLoadedRate(persona);
-          const hours = step.timeMinutes / 60;
-          totalCost += fullyLoadedRate * hours;
+          
+          if (isEventMode && persona.eventDeployment) {
+            // Event Mode: Use event deployment config
+            const deployment = persona.eventDeployment;
+            const headcount = deployment.headcount || 1;
+            const hoursPerEvent = deployment.hoursPerEvent || 0;
+            
+            if (deployment.rateType === 'fixed') {
+              totalCost += (deployment.fixedFeePerEvent || 0) * headcount;
+            } else if (deployment.rateType === 'external') {
+              totalCost += deployment.externalRecharge || 0;
+            } else {
+              totalCost += fullyLoadedRate * hoursPerEvent * headcount;
+            }
+          } else {
+            // Client/Project Mode: Use step time
+            const hours = step.timeMinutes / 60;
+            totalCost += fullyLoadedRate * hours;
+          }
         }
       }
       
@@ -12379,13 +12415,33 @@ FATHOM - Journey intelligence for modern operations`);
                       {/* Labour Costs Section */}
                       <div style={{ marginBottom: '16px' }}>
                         <div style={{ fontFamily: "'Interstate', sans-serif", fontSize: '10px', color: '#8B6914', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', fontWeight: 600 }}>
-                          👤 Labour Costs ({formatCurrency(calculateStepLabourCost(selectedStep, config.personas))})
+                          👤 Labour Costs ({formatCurrency(calculateStepLabourCost(selectedStep, config.personas, config))})
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           {config.personas.filter(p => !p.isExternal).map(persona => {
                             const involvement = (editingStep || selectedStep).roleInvolvement?.[persona.id] || { timeMinutes: 0, headcount: 1 };
                             const fullyLoadedRate = calculateFullyLoadedRate(persona);
-                            const roleCost = (involvement.timeMinutes / 60) * fullyLoadedRate * (involvement.headcount || 1);
+                            
+                            // Calculate cost based on mode
+                            let roleCost = 0;
+                            if (config.meta?.costModel === 'event' && persona.eventDeployment) {
+                              // Event Mode: Use event deployment config
+                              const deployment = persona.eventDeployment;
+                              const headcount = deployment.headcount || 1;
+                              const hoursPerEvent = deployment.hoursPerEvent || 0;
+                              
+                              if (deployment.rateType === 'fixed') {
+                                roleCost = (deployment.fixedFeePerEvent || 0) * headcount;
+                              } else if (deployment.rateType === 'external') {
+                                roleCost = deployment.externalRecharge || 0;
+                              } else {
+                                // hourly or salary - both use hourly rate
+                                roleCost = fullyLoadedRate * hoursPerEvent * headcount;
+                              }
+                            } else {
+                              // Client/Project Mode: Use step-specific involvement
+                              roleCost = (involvement.timeMinutes / 60) * fullyLoadedRate * (involvement.headcount || 1);
+                            }
                             
                             if (!editingStep && involvement.timeMinutes === 0) return null;
                             
@@ -12481,7 +12537,17 @@ FATHOM - Journey intelligence for modern operations`);
                                 ) : (
                                   <>
                                     <div style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: '#556275' }}>
-                                      {involvement.timeMinutes}m × {involvement.headcount || 1} {(involvement.headcount || 1) > 1 ? 'people' : 'person'}
+                                      {config.meta?.costModel === 'event' && persona.eventDeployment ? (
+                                        // Event Mode: Show event deployment
+                                        <>
+                                          {persona.eventDeployment.headcount || 1} {(persona.eventDeployment.headcount || 1) > 1 ? 'people' : 'person'} × {persona.eventDeployment.hoursPerEvent || 0}h/event
+                                        </>
+                                      ) : (
+                                        // Client/Project Mode: Show step-specific involvement
+                                        <>
+                                          {involvement.timeMinutes}m × {involvement.headcount || 1} {(involvement.headcount || 1) > 1 ? 'people' : 'person'}
+                                        </>
+                                      )}
                                     </div>
                                   </>
                                 )}
