@@ -729,10 +729,20 @@
     .sidebar-nav.collapsed .sidebar-item {
       padding: 6px 8px; /* Tighter padding when collapsed */
       justify-content: center;
+      align-items: center;
+      gap: 0 !important; /* Remove any gap when collapsed */
+      display: flex; /* Keep flex for proper height */
+      position: relative; /* For absolute positioning of icon */
     }
     .sidebar-nav.collapsed .sidebar-item > * {
       margin-left: 0 !important; /* Override any marginLeft on child elements when collapsed */
       margin-right: 0 !important;
+    }
+    .sidebar-nav.collapsed .sidebar-item .sidebar-icon {
+      margin: 0 !important; /* Ensure icon has no margins when collapsed */
+      position: absolute; /* Position absolutely for perfect centering */
+      left: 50%;
+      transform: translateX(-50%); /* Center horizontally */
     }
     .sidebar-item:hover {
       background: #2F5070; /* Navy 500 hover */
@@ -840,7 +850,10 @@
     }
     .sidebar-toggle-btn:focus {
       outline: none; /* Remove focus outline */
-      background: rgba(255, 255, 255, 0.1);
+      background: none; /* Don't keep background after click */
+    }
+    .sidebar-toggle-btn:focus:hover {
+      background: rgba(255, 255, 255, 0.1); /* Show background only when actively hovering */
     }
     /* Fixed topographic background layer - behind everything */
     .topo-background {
