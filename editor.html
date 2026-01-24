@@ -670,13 +670,13 @@
     }
     .sidebar-nav {
       width: 240px;
-      background: #1A2332; /* Darker background - Slate 900 */
-      border-right: 1px solid #2A3544; /* Darker border - Slate 800 */
+      background: #243D5C; /* Navy 600 - lighter navy blue */
+      border-right: 1px solid #2F5070; /* Navy 500 border */
       display: flex;
       flex-direction: column;
       overflow-y: auto;
       transition: width 0.2s ease-in-out;
-      box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
+      box-shadow: 2px 0 12px rgba(36, 61, 92, 0.4);
       flex-shrink: 0;
       z-index: 100; /* Higher z-index to sit above header */
     }
@@ -731,7 +731,7 @@
       justify-content: center;
     }
     .sidebar-item:hover {
-      background: #2A3544; /* Slate 800 hover */
+      background: #2F5070; /* Navy 500 hover */
     }
     .sidebar-item.active {
       background: #192B45; /* Navy 700 - brand color */
@@ -11319,7 +11319,7 @@ FATHOM - Journey intelligence for modern operations`);
               {/* Workspace Section - At top */}
               <div className="sidebar-section" style={{ 
                 padding: '16px', 
-                borderBottom: '1px solid #2A3544',
+                borderBottom: '1px solid #2F5070',
                 marginTop: 0
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -11336,7 +11336,7 @@ FATHOM - Journey intelligence for modern operations`);
                     fontWeight: 600,
                     color: '#FFF',
                     flexShrink: 0,
-                    border: '2px solid #2A3544'
+                    border: '2px solid #2F5070'
                   }}>
                     {userProfile?.display_name?.charAt(0)?.toUpperCase() || 'S'}
                   </div>
@@ -11379,7 +11379,7 @@ FATHOM - Journey intelligence for modern operations`);
               </div>
               
               {/* Divider */}
-              <div style={{ height: '1px', background: '#2A3544', margin: '16px 12px' }}></div>
+              <div style={{ height: '1px', background: '#2F5070', margin: '16px 12px' }}></div>
               
               {/* VIEW Section */}
               <div className="sidebar-section">
