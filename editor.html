@@ -730,6 +730,10 @@
       padding: 6px 8px; /* Tighter padding when collapsed */
       justify-content: center;
     }
+    .sidebar-nav.collapsed .sidebar-item > * {
+      margin-left: 0 !important; /* Override any marginLeft on child elements when collapsed */
+      margin-right: 0 !important;
+    }
     .sidebar-item:hover {
       background: #2F5070; /* Navy 500 hover */
     }
@@ -11377,7 +11381,7 @@ FATHOM - Journey intelligence for modern operations`);
               
               {/* Dashboard Link */}
               <div className="sidebar-section">
-                <a href="dashboard.html" className="sidebar-item nav-link">
+                <a href="dashboard.html" className="sidebar-item nav-link" title="Dashboard">
                   <span className="sidebar-icon">⊞</span>
                   <span className="sidebar-label">Dashboard</span>
                 </a>
@@ -11395,6 +11399,7 @@ FATHOM - Journey intelligence for modern operations`);
                     setViewMode('stages');
                     setShowDashboard(false);
                   }}
+                  title="Stages"
                 >
                   <span className="sidebar-icon">🗂️</span>
                   <span className="sidebar-label">Stages</span>
@@ -11405,6 +11410,7 @@ FATHOM - Journey intelligence for modern operations`);
                     setViewMode('steps');
                     setShowDashboard(false);
                   }}
+                  title="Steps"
                 >
                   <span className="sidebar-icon">📝</span>
                   <span className="sidebar-label">Steps</span>
@@ -11414,6 +11420,7 @@ FATHOM - Journey intelligence for modern operations`);
                   onClick={() => {
                     setShowDashboard(true);
                   }}
+                  title="Analytics"
                 >
                   <span className="sidebar-icon">📊</span>
                   <span className="sidebar-label">Analytics</span>
@@ -11429,6 +11436,7 @@ FATHOM - Journey intelligence for modern operations`);
                     setHighlightOpportunities(!highlightOpportunities);
                     if (!highlightOpportunities) setShowFunnel(false);
                   }}
+                  title="Opportunities"
                 >
                   <span className="sidebar-icon">⚠️</span>
                   <span className="sidebar-label">Opportunities</span>
@@ -11439,6 +11447,7 @@ FATHOM - Journey intelligence for modern operations`);
                     setShowFunnel(!showFunnel);
                     if (!showFunnel) setHighlightOpportunities(false);
                   }}
+                  title="Funnel"
                 >
                   <span className="sidebar-icon">🔻</span>
                   <span className="sidebar-label">Funnel</span>
@@ -11451,6 +11460,7 @@ FATHOM - Journey intelligence for modern operations`);
                 <div 
                   className="sidebar-item"
                   onClick={() => setShowStructurePanel(true)}
+                  title="Structure"
                 >
                   <span className="sidebar-icon">🏗️</span>
                   <span className="sidebar-label">Structure</span>
@@ -11459,6 +11469,7 @@ FATHOM - Journey intelligence for modern operations`);
                   <div 
                     className="sidebar-item"
                     onClick={() => setShowRevenueConfig(true)}
+                    title="Economics"
                   >
                     <span className="sidebar-icon">💰</span>
                     <span className="sidebar-label">Economics</span>
@@ -11467,6 +11478,7 @@ FATHOM - Journey intelligence for modern operations`);
                 <div 
                   className="sidebar-item"
                   onClick={() => setShowRoleManagement(true)}
+                  title="Roles"
                 >
                   <span className="sidebar-icon">👥</span>
                   <span className="sidebar-label">Roles</span>
@@ -11474,12 +11486,12 @@ FATHOM - Journey intelligence for modern operations`);
                 <div 
                   className="sidebar-item"
                   onClick={() => setShowJourneySettings(true)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                  title="Journey Settings"
                 >
                   <span className="sidebar-icon">⚙️</span>
                   <span className="sidebar-label">Journey</span>
                   {config.meta?.costModel === 'event' && (
-                    <span style={{
+                    <span className="sidebar-label" style={{
                       background: '#C4942A',
                       color: '#FFF',
                       padding: '2px 6px',
@@ -11495,7 +11507,7 @@ FATHOM - Journey intelligence for modern operations`);
                     </span>
                   )}
                   {config.meta?.costModel === 'project' && (
-                    <span style={{
+                    <span className="sidebar-label" style={{
                       background: '#5A5B8A',
                       color: '#FFF',
                       padding: '2px 6px',
@@ -11511,7 +11523,7 @@ FATHOM - Journey intelligence for modern operations`);
                     </span>
                   )}
                   {(!config.meta?.costModel || config.meta?.costModel === 'client') && (
-                    <span style={{
+                    <span className="sidebar-label" style={{
                       background: '#5B8A9A',
                       color: '#FFF',
                       padding: '2px 6px',
@@ -11535,6 +11547,7 @@ FATHOM - Journey intelligence for modern operations`);
                 <div 
                   className="sidebar-item"
                   onClick={() => setShowBulkSurveyModal(true)}
+                  title="Request Feedback"
                 >
                   <span className="sidebar-icon">📋</span>
                   <span className="sidebar-label">Request Feedback</span>
@@ -11542,6 +11555,7 @@ FATHOM - Journey intelligence for modern operations`);
                 <div 
                   className="sidebar-item"
                   onClick={() => setShowShareModal(true)}
+                  title="Share"
                 >
                   <span className="sidebar-icon">🔗</span>
                   <span className="sidebar-label">Share</span>
