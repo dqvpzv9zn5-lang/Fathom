@@ -12047,14 +12047,35 @@ FATHOM - Journey intelligence for modern operations`);
                           <div style={{ fontSize: '16px', fontWeight: 600 }}>{formatTime(stageTime)}</div>
                           {showCosts && (
                             <>
-                              <div style={{ fontSize: '12px', opacity: 0.9 }}>{formatCurrency(stageCost)}</div>
-                              {config.meta?.costModel === 'event' && config.meta?.eventConfig?.capacity > 0 && (
-                                <div style={{ fontSize: '10px', opacity: 0.8 }}>{formatCurrencyDetailed(calculateCostPerAttendee(stageCost, config))}/fan</div>
+                              <div style={{ fontSize: '12px', opacity: 0.8 }}>{formatCurrency(stageCost)}</div>
+                              {config.meta?.costModel === 'event' && (
+                                <div style={{ fontSize: '10px', opacity: 0.7 }}>
+                                  {formatCostPerAttendee(calculateCostPerAttendee(stageCost, getStageCapacity(stage, config)))}
+                                </div>
                               )}
                             </>
                           )}
                         </div>
                       </div>
+                      
+                      {/* Season Cost Row - Event Mode only */}
+                      {showCosts && config.meta?.costModel === 'event' && (
+                        <div style={{ 
+                          marginTop: '10px', 
+                          paddingTop: '10px',
+                          borderTop: '1px solid rgba(255,255,255,0.15)',
+                          fontSize: '10px',
+                          opacity: 0.85,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}>
+                          <span>Season Total:</span>
+                          <span style={{ fontWeight: 600, fontSize: '11px' }}>
+                            {formatCurrency(calculateSeasonCost(stageCost, config))} ({config.meta?.eventConfig?.eventsPerSeason || 19} events)
+                          </span>
+                        </div>
+                      )}
                       
                       {/* Funnel row (when enabled) */}
                       {stageFunnelData && (
@@ -12188,9 +12209,9 @@ FATHOM - Journey intelligence for modern operations`);
                                     <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: '#8B6914', background: '#FAF0D6', padding: '2px 8px', borderRadius: '10px', fontWeight: 500 }}>
                                       {formatCurrency(stepCost)}
                                     </span>
-                                    {config.meta?.costModel === 'event' && config.meta?.eventConfig?.capacity > 0 && (
+                                    {config.meta?.costModel === 'event' && (
                                       <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#5B8A9A', background: '#E1EEF2', padding: '2px 8px', borderRadius: '10px', fontWeight: 500 }}>
-                                        {formatCurrencyDetailed(calculateCostPerAttendee(stepCost, config))}/fan
+                                        {formatCostPerAttendee(calculateCostPerAttendee(stepCost, getStepCapacity({ ...step, stageId: stage.id }, config)))}
                                       </span>
                                     )}
                                   </>
