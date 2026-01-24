@@ -10860,7 +10860,8 @@ FATHOM - Journey intelligence for modern operations`);
         const highAutomation = allSteps.filter(s => s.automationOpportunity === 'high').length;
         const totalRegReqs = allSteps.reduce((acc, s) => acc + (s.regulatoryRequirements?.length || 0), 0);
         const totalCost = allSteps.reduce((acc, s) => acc + calculateStepCost(s, config.personas, config), 0);
-        return { totalPainPoints, avgFriction, highAutomation, totalRegReqs, totalSteps: allSteps.length, totalCost };
+        const totalTime = allSteps.reduce((acc, s) => acc + s.timeMinutes, 0);
+        return { totalPainPoints, avgFriction, highAutomation, totalRegReqs, totalSteps: allSteps.length, totalCost, totalTime };
       }, [config.stages, config.personas]);
 
       // Funnel metrics calculation
@@ -14169,14 +14170,13 @@ FATHOM - Journey intelligence for modern operations`);
                             const headcount = deployment.headcount || 0;
                             const hoursPerEvent = deployment.hoursPerEvent || 0;
                             const totalHours = headcount * hoursPerEvent;
-                            const hourlyRate = deployment.rateType === 'hourly' 
-                              ? (deployment.hourlyRate || 0)
-                              : deployment.rateType === 'fixed'
-                                ? (deployment.fixedCost || 0) / Math.max(hoursPerEvent, 1)
-                                : 0;
-                            const roleCost = deployment.rateType === 'fixed'
-                              ? (deployment.fixedCost || 0) * headcount
-                              : totalHours * hourlyRate;
+                            
+                            // Calculate hourly rate from annual salary
+                            const annualSalary = persona.salary || 0;
+                            const hourlyRate = annualSalary / 2080; // Assuming 2080 working hours/year
+                            
+                            // Calculate total role cost
+                            const roleCost = totalHours * hourlyRate;
                             
                             return {
                               label: persona.label,
@@ -14685,7 +14685,46 @@ FATHOM - Journey intelligence for modern operations`);
                     </div>
                   )}
                   {dashboardTab === 'economics' && config.meta?.costModel === 'event' && showCosts && (
-                    <EconomicsDashboardPanel config={config} formatTime={formatTime} formatCurrency={formatCurrency} />
+                    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                      {/* Economics Tab Header with Revenue Config Button */}
+                      <div style={{ 
+                        padding: '16px 24px', 
+                        borderBottom: '1px solid #E4E7EB',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: '#FFF'
+                      }}>
+                        <div style={{ fontSize: '14px', color: '#6E7B8C', fontFamily: "'Interstate', sans-serif" }}>
+                          Configure revenue streams and operating costs to see complete P&L analysis
+                        </div>
+                        <button
+                          onClick={() => setShowRevenueConfig(true)}
+                          style={{
+                            padding: '10px 16px',
+                            background: '#FAF0D6',
+                            border: '2px solid #C4942A',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#8B6914',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontFamily: "'Interstate', sans-serif",
+                            transition: 'all 0.15s'
+                          }}
+                          onMouseOver={(e) => { e.currentTarget.style.background = '#F0DDA8'; }}
+                          onMouseOut={(e) => { e.currentTarget.style.background = '#FAF0D6'; }}
+                        >
+                          💰 Configure Revenue & Costs
+                        </button>
+                      </div>
+                      <div style={{ flex: 1, overflow: 'auto' }}>
+                        <EconomicsDashboardPanel config={config} formatTime={formatTime} formatCurrency={formatCurrency} />
+                      </div>
+                    </div>
                   )}
                   {dashboardTab === 'plan' && (
                     <ImprovementPlan config={config} stages={config.stages} personas={config.personas} formatTime={formatTime} updateConfig={setConfig} />
