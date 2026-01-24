@@ -9627,6 +9627,7 @@ FATHOM - Journey intelligence for modern operations`);
       const [showFunnelSettings, setShowFunnelSettings] = useState(false);
       const [showDashboard, setShowDashboard] = useState(false);
       const [dashboardTab, setDashboardTab] = useState('time'); // 'time', 'costs', 'funnel'
+      const [stakeholderTab, setStakeholderTab] = useState('finance'); // 'finance', 'operations', 'experience'
       const [highlightOpportunities, setHighlightOpportunities] = useState(false);
       const [viewMode, setViewMode] = useState('stages'); // 'steps' or 'stages';
       const [showSettingsMenu, setShowSettingsMenu] = useState(false);
@@ -13874,44 +13875,813 @@ FATHOM - Journey intelligence for modern operations`);
                   )}
                   {dashboardTab === 'event' && config.meta?.costModel === 'event' && showCosts && (
                     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                      {/* Event Tab Header with Revenue Config Button */}
+                      {/* Stakeholder Sub-Tabs */}
                       <div style={{ 
                         padding: '16px 24px', 
-                        borderBottom: '1px solid #E4E7EB',
+                        borderBottom: '2px solid #E4E7EB',
+                        background: '#F9FAFB',
                         display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        background: '#FFF'
+                        gap: '8px',
+                        overflowX: 'auto'
                       }}>
-                        <div style={{ fontSize: '14px', color: '#6E7B8C', fontFamily: "'Interstate', sans-serif" }}>
-                          Configure revenue streams and operating costs for complete P&L analysis
-                        </div>
                         <button
-                          onClick={() => setShowRevenueConfig(true)}
+                          onClick={() => setStakeholderTab('finance')}
                           style={{
-                            padding: '10px 16px',
-                            background: '#FAF0D6',
-                            border: '2px solid #C4942A',
+                            padding: '10px 18px',
+                            background: stakeholderTab === 'finance' ? '#C4942A' : 'transparent',
+                            color: stakeholderTab === 'finance' ? '#FFF' : '#6E7B8C',
+                            border: stakeholderTab === 'finance' ? 'none' : '1px solid #E4E7EB',
                             borderRadius: '8px',
                             cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: 600,
-                            color: '#8B6914',
+                            fontFamily: "'Interstate', sans-serif",
+                            fontSize: '13px',
+                            fontWeight: stakeholderTab === 'finance' ? 600 : 500,
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px',
-                            fontFamily: "'Interstate', sans-serif",
-                            transition: 'all 0.15s'
+                            gap: '6px',
+                            transition: 'all 0.15s',
+                            whiteSpace: 'nowrap'
                           }}
-                          onMouseOver={(e) => { e.currentTarget.style.background = '#F0DDA8'; }}
-                          onMouseOut={(e) => { e.currentTarget.style.background = '#FAF0D6'; }}
                         >
-                          💰 Configure Revenue & Costs
+                          💰 Finance
+                        </button>
+                        <button
+                          onClick={() => setStakeholderTab('operations')}
+                          style={{
+                            padding: '10px 18px',
+                            background: stakeholderTab === 'operations' ? '#5B8A9A' : 'transparent',
+                            color: stakeholderTab === 'operations' ? '#FFF' : '#6E7B8C',
+                            border: stakeholderTab === 'operations' ? 'none' : '1px solid #E4E7EB',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontFamily: "'Interstate', sans-serif",
+                            fontSize: '13px',
+                            fontWeight: stakeholderTab === 'operations' ? 600 : 500,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            transition: 'all 0.15s',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          👥 Operations
+                        </button>
+                        <button
+                          onClick={() => setStakeholderTab('experience')}
+                          style={{
+                            padding: '10px 18px',
+                            background: stakeholderTab === 'experience' ? '#2D8A6E' : 'transparent',
+                            color: stakeholderTab === 'experience' ? '#FFF' : '#6E7B8C',
+                            border: stakeholderTab === 'experience' ? 'none' : '1px solid #E4E7EB',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontFamily: "'Interstate', sans-serif",
+                            fontSize: '13px',
+                            fontWeight: stakeholderTab === 'experience' ? 600 : 500,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            transition: 'all 0.15s',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          😊 Experience
                         </button>
                       </div>
-                      <div style={{ flex: 1, overflow: 'auto' }}>
-                        <EventEconomicsPanel config={config} formatTime={formatTime} />
-                      </div>
+
+                      {/* Finance Tab Content */}
+                      {stakeholderTab === 'finance' && (() => {
+                        const eventMetrics = getEventMetrics(stats.totalCost, config);
+                        const capacity = config.meta?.eventConfig?.capacity || 40000;
+                        const eventsPerSeason = config.meta?.eventConfig?.eventsPerSeason || 19;
+                        
+                        // Calculate cost breakdown by stage
+                        const stageCosts = config.stages.map((stage, idx) => {
+                          const stageCost = stage.steps.reduce((acc, step) => 
+                            acc + calculateStepCost(step, config.personas, config), 0
+                          );
+                          return {
+                            name: stage.name,
+                            cost: stageCost,
+                            perAttendee: calculateCostPerAttendee(stageCost, capacity),
+                            seasonCost: calculateSeasonCost(stageCost, config)
+                          };
+                        });
+                        
+                        // Top 5 most expensive steps
+                        const allSteps = config.stages.flatMap((stage, stageIdx) => 
+                          stage.steps.map(step => ({
+                            ...step,
+                            stageName: stage.name,
+                            cost: calculateStepCost(step, config.personas, config)
+                          }))
+                        );
+                        const topExpensiveSteps = allSteps
+                          .sort((a, b) => b.cost - a.cost)
+                          .slice(0, 5);
+                        
+                        return (
+                          <div style={{ flex: 1, overflow: 'auto', padding: '24px' }}>
+                            {/* Season Summary Card */}
+                            <div style={{ 
+                              background: 'linear-gradient(135deg, #FAF0D6 0%, #F0DDA8 100%)',
+                              border: '2px solid #C4942A',
+                              borderRadius: '12px',
+                              padding: '24px',
+                              marginBottom: '24px'
+                            }}>
+                              <h3 style={{ 
+                                margin: '0 0 16px', 
+                                fontSize: '16px', 
+                                fontWeight: 600,
+                                color: '#8B6914',
+                                fontFamily: "'Interstate', sans-serif",
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                              }}>
+                                Season Economics
+                              </h3>
+                              <div style={{ 
+                                display: 'grid', 
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                                gap: '16px'
+                              }}>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#8B6914', marginBottom: '4px', fontFamily: "'Interstate', sans-serif", textTransform: 'uppercase', opacity: 0.8 }}>Event Cost</div>
+                                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#8B6914', fontFamily: "'Interstate', sans-serif" }}>
+                                    {formatCurrency(eventMetrics.eventCost)}
+                                  </div>
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#8B6914', marginBottom: '4px', fontFamily: "'Interstate', sans-serif", textTransform: 'uppercase', opacity: 0.8 }}>Per Attendee</div>
+                                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#5B8A9A', fontFamily: "'Interstate', sans-serif" }}>
+                                    {formatCostPerAttendee(eventMetrics.perAttendee)}
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: '#8B6914', opacity: 0.7, fontFamily: "'Interstate', sans-serif" }}>
+                                    {capacity.toLocaleString()} capacity
+                                  </div>
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#8B6914', marginBottom: '4px', fontFamily: "'Interstate', sans-serif", textTransform: 'uppercase', opacity: 0.8 }}>Season Total</div>
+                                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#C4942A', fontFamily: "'Interstate', sans-serif" }}>
+                                    {formatCurrency(eventMetrics.seasonCost)}
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: '#8B6914', opacity: 0.7, fontFamily: "'Interstate', sans-serif" }}>
+                                    {eventsPerSeason} events
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Cost by Stage */}
+                            <div style={{ marginBottom: '24px' }}>
+                              <h3 style={{ 
+                                margin: '0 0 16px', 
+                                fontSize: '14px', 
+                                fontWeight: 600,
+                                color: '#3D4A5C',
+                                fontFamily: "'Interstate', sans-serif",
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                              }}>
+                                Cost Breakdown by Stage
+                              </h3>
+                              <div style={{ background: '#FFF', borderRadius: '8px', border: '1px solid #E4E7EB', overflow: 'hidden' }}>
+                                {stageCosts.map((stage, idx) => (
+                                  <div key={idx} style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center',
+                                    padding: '16px 20px',
+                                    borderBottom: idx < stageCosts.length - 1 ? '1px solid #F4F5F7' : 'none',
+                                    gap: '16px'
+                                  }}>
+                                    <div style={{ flex: 1, fontWeight: 500, color: '#3D4A5C', fontFamily: "'Interstate', sans-serif" }}>
+                                      {stage.name}
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '16px', 
+                                      fontWeight: 600, 
+                                      color: '#8B6914',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      minWidth: '100px',
+                                      textAlign: 'right'
+                                    }}>
+                                      {formatCurrency(stage.cost)}
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '12px', 
+                                      color: '#5B8A9A',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      minWidth: '80px',
+                                      textAlign: 'right'
+                                    }}>
+                                      {formatCostPerAttendee(stage.perAttendee)}
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '12px', 
+                                      color: '#C4942A',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      minWidth: '100px',
+                                      textAlign: 'right',
+                                      fontWeight: 500
+                                    }}>
+                                      {formatCurrency(stage.seasonCost)}
+                                      <span style={{ fontSize: '10px', opacity: 0.7 }}>/season</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Top 5 Most Expensive Steps */}
+                            <div>
+                              <h3 style={{ 
+                                margin: '0 0 16px', 
+                                fontSize: '14px', 
+                                fontWeight: 600,
+                                color: '#3D4A5C',
+                                fontFamily: "'Interstate', sans-serif",
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                              }}>
+                                Top 5 Most Expensive Steps
+                              </h3>
+                              <div style={{ background: '#FFF', borderRadius: '8px', border: '1px solid #E4E7EB', overflow: 'hidden' }}>
+                                {topExpensiveSteps.map((step, idx) => (
+                                  <div key={step.id} style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center',
+                                    padding: '16px 20px',
+                                    borderBottom: idx < topExpensiveSteps.length - 1 ? '1px solid #F4F5F7' : 'none',
+                                    gap: '16px'
+                                  }}>
+                                    <div style={{ 
+                                      width: '32px',
+                                      height: '32px',
+                                      borderRadius: '50%',
+                                      background: idx === 0 ? '#C4942A' : idx === 1 ? '#D4AA4D' : '#F0DDA8',
+                                      color: idx < 2 ? '#FFF' : '#8B6914',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      fontWeight: 700,
+                                      fontSize: '14px',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      flexShrink: 0
+                                    }}>
+                                      {idx + 1}
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                      <div style={{ fontWeight: 500, color: '#3D4A5C', fontFamily: "'Interstate', sans-serif", marginBottom: '2px' }}>
+                                        {step.name}
+                                      </div>
+                                      <div style={{ fontSize: '11px', color: '#8A95A5', fontFamily: "'Interstate', sans-serif" }}>
+                                        {step.stageName}
+                                      </div>
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '18px', 
+                                      fontWeight: 700, 
+                                      color: '#8B6914',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      minWidth: '120px',
+                                      textAlign: 'right'
+                                    }}>
+                                      {formatCurrency(step.cost)}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Operations Tab - Full Implementation */}
+                      {stakeholderTab === 'operations' && (() => {
+                        const staffingMetrics = getStaffingMetrics(config);
+                        
+                        // Get staff deployment by role
+                        const staffByRole = config.personas
+                          .filter(p => !p.isExternal && p.eventDeployment)
+                          .map(persona => {
+                            const deployment = persona.eventDeployment;
+                            const headcount = deployment.headcount || 0;
+                            const hoursPerEvent = deployment.hoursPerEvent || 0;
+                            const totalHours = headcount * hoursPerEvent;
+                            const hourlyRate = deployment.rateType === 'hourly' 
+                              ? (deployment.hourlyRate || 0)
+                              : deployment.rateType === 'fixed'
+                                ? (deployment.fixedCost || 0) / Math.max(hoursPerEvent, 1)
+                                : 0;
+                            const roleCost = deployment.rateType === 'fixed'
+                              ? (deployment.fixedCost || 0) * headcount
+                              : totalHours * hourlyRate;
+                            
+                            return {
+                              label: persona.label,
+                              color: persona.color,
+                              headcount,
+                              hoursPerEvent,
+                              totalHours,
+                              hourlyRate,
+                              roleCost
+                            };
+                          })
+                          .sort((a, b) => b.roleCost - a.roleCost);
+                        
+                        // Top 5 most staff-intensive steps
+                        const allSteps = config.stages.flatMap((stage, stageIdx) => 
+                          stage.steps.map(step => {
+                            // Calculate staff hours for this step
+                            const stepLabourCost = calculateStepLabourCost(step, config.personas, config);
+                            const stepStaffHours = step.timeMinutes / 60; // Simplified - actual would need per-role calculation
+                            
+                            return {
+                              ...step,
+                              stageName: stage.name,
+                              staffHours: stepStaffHours,
+                              labourCost: stepLabourCost
+                            };
+                          })
+                        );
+                        const topStaffSteps = allSteps
+                          .sort((a, b) => b.labourCost - a.labourCost)
+                          .slice(0, 5);
+                        
+                        return (
+                          <div style={{ flex: 1, overflow: 'auto', padding: '24px' }}>
+                            {/* Staffing Summary Card */}
+                            <div style={{ 
+                              background: 'linear-gradient(135deg, #E1EEF2 0%, #BDD6DE 100%)',
+                              border: '2px solid #5B8A9A',
+                              borderRadius: '12px',
+                              padding: '24px',
+                              marginBottom: '24px'
+                            }}>
+                              <h3 style={{ 
+                                margin: '0 0 16px', 
+                                fontSize: '16px', 
+                                fontWeight: 600,
+                                color: '#3A6070',
+                                fontFamily: "'Interstate', sans-serif",
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                              }}>
+                                Staffing Overview
+                              </h3>
+                              <div style={{ 
+                                display: 'grid', 
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                                gap: '16px'
+                              }}>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#3A6070', marginBottom: '4px', fontFamily: "'Interstate', sans-serif", textTransform: 'uppercase', opacity: 0.8 }}>Total Staff Deployed</div>
+                                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#3A6070', fontFamily: "'Interstate', sans-serif" }}>
+                                    {staffingMetrics.totalStaff}
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: '#3A6070', opacity: 0.7, fontFamily: "'Interstate', sans-serif" }}>
+                                    people per event
+                                  </div>
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#3A6070', marginBottom: '4px', fontFamily: "'Interstate', sans-serif", textTransform: 'uppercase', opacity: 0.8 }}>Total Staff Hours</div>
+                                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#5B8A9A', fontFamily: "'Interstate', sans-serif" }}>
+                                    {staffingMetrics.totalHours.toFixed(0)}h
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: '#3A6070', opacity: 0.7, fontFamily: "'Interstate', sans-serif" }}>
+                                    per event
+                                  </div>
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#3A6070', marginBottom: '4px', fontFamily: "'Interstate', sans-serif", textTransform: 'uppercase', opacity: 0.8 }}>Avg Cost Per Hour</div>
+                                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#4A7485', fontFamily: "'Interstate', sans-serif" }}>
+                                    {formatCurrency(staffingMetrics.avgCostPerHour)}
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: '#3A6070', opacity: 0.7, fontFamily: "'Interstate', sans-serif" }}>
+                                    blended rate
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Staff Deployment by Role */}
+                            <div style={{ marginBottom: '24px' }}>
+                              <h3 style={{ 
+                                margin: '0 0 16px', 
+                                fontSize: '14px', 
+                                fontWeight: 600,
+                                color: '#3D4A5C',
+                                fontFamily: "'Interstate', sans-serif",
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                              }}>
+                                Staff Deployment by Role
+                              </h3>
+                              <div style={{ background: '#FFF', borderRadius: '8px', border: '1px solid #E4E7EB', overflow: 'hidden' }}>
+                                {staffByRole.map((role, idx) => (
+                                  <div key={idx} style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center',
+                                    padding: '16px 20px',
+                                    borderBottom: idx < staffByRole.length - 1 ? '1px solid #F4F5F7' : 'none',
+                                    gap: '16px'
+                                  }}>
+                                    <div style={{
+                                      width: '12px',
+                                      height: '12px',
+                                      borderRadius: '50%',
+                                      background: role.color,
+                                      flexShrink: 0
+                                    }} />
+                                    <div style={{ flex: 1, fontWeight: 500, color: '#3D4A5C', fontFamily: "'Interstate', sans-serif" }}>
+                                      {role.label}
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '14px', 
+                                      fontWeight: 600, 
+                                      color: '#3A6070',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      minWidth: '80px',
+                                      textAlign: 'right'
+                                    }}>
+                                      {role.headcount} <span style={{ fontSize: '11px', opacity: 0.7 }}>people</span>
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '13px', 
+                                      color: '#5B8A9A',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      minWidth: '80px',
+                                      textAlign: 'right'
+                                    }}>
+                                      {role.hoursPerEvent}h <span style={{ fontSize: '11px', opacity: 0.7 }}>each</span>
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '14px', 
+                                      fontWeight: 600,
+                                      color: '#4A7485',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      minWidth: '100px',
+                                      textAlign: 'right'
+                                    }}>
+                                      {role.totalHours.toFixed(0)}h <span style={{ fontSize: '11px', opacity: 0.7 }}>total</span>
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '15px', 
+                                      fontWeight: 600,
+                                      color: '#8B6914',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      minWidth: '100px',
+                                      textAlign: 'right'
+                                    }}>
+                                      {formatCurrency(role.roleCost)}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Top 5 Staff-Intensive Steps */}
+                            <div>
+                              <h3 style={{ 
+                                margin: '0 0 16px', 
+                                fontSize: '14px', 
+                                fontWeight: 600,
+                                color: '#3D4A5C',
+                                fontFamily: "'Interstate', sans-serif",
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                              }}>
+                                Top 5 Staff-Intensive Steps
+                              </h3>
+                              <div style={{ background: '#FFF', borderRadius: '8px', border: '1px solid #E4E7EB', overflow: 'hidden' }}>
+                                {topStaffSteps.map((step, idx) => (
+                                  <div key={step.id} style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center',
+                                    padding: '16px 20px',
+                                    borderBottom: idx < topStaffSteps.length - 1 ? '1px solid #F4F5F7' : 'none',
+                                    gap: '16px'
+                                  }}>
+                                    <div style={{ 
+                                      width: '32px',
+                                      height: '32px',
+                                      borderRadius: '50%',
+                                      background: idx === 0 ? '#5B8A9A' : idx === 1 ? '#74A0AE' : '#BDD6DE',
+                                      color: idx < 2 ? '#FFF' : '#3A6070',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      fontWeight: 700,
+                                      fontSize: '14px',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      flexShrink: 0
+                                    }}>
+                                      {idx + 1}
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                      <div style={{ fontWeight: 500, color: '#3D4A5C', fontFamily: "'Interstate', sans-serif", marginBottom: '2px' }}>
+                                        {step.name}
+                                      </div>
+                                      <div style={{ fontSize: '11px', color: '#8A95A5', fontFamily: "'Interstate', sans-serif" }}>
+                                        {step.stageName}
+                                      </div>
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '18px', 
+                                      fontWeight: 700, 
+                                      color: '#3A6070',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      minWidth: '120px',
+                                      textAlign: 'right'
+                                    }}>
+                                      {formatCurrency(step.labourCost)}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Experience Tab - Full Implementation */}
+                      {stakeholderTab === 'experience' && (() => {
+                        // Calculate friction by stage
+                        const stageFriction = config.stages.map((stage, idx) => {
+                          const steps = stage.steps;
+                          const frictionValues = steps.map(s => {
+                            const f = s.friction || 'none';
+                            return f === 'high' ? 5 : f === 'medium' ? 3 : f === 'low' ? 2 : 1;
+                          });
+                          const avgFriction = frictionValues.length > 0 
+                            ? frictionValues.reduce((a, b) => a + b, 0) / frictionValues.length 
+                            : 1;
+                          const painPoints = steps.reduce((acc, s) => acc + (s.painPoints?.length || 0), 0);
+                          
+                          return {
+                            name: stage.name,
+                            avgFriction: avgFriction,
+                            painPoints,
+                            stepCount: steps.length
+                          };
+                        });
+                        
+                        // Top improvement opportunities (high/medium automation)
+                        const allOpportunities = config.stages.flatMap((stage, stageIdx) => 
+                          stage.steps
+                            .filter(step => step.automationOpportunity === 'high' || step.automationOpportunity === 'medium')
+                            .map(step => {
+                              const stepCost = calculateStepCost(step, config.personas, config);
+                              const savings = step.automationOpportunity === 'high' ? stepCost * 0.7 : stepCost * 0.4;
+                              const timeSavings = step.automationOpportunity === 'high' ? step.timeMinutes * 0.7 : step.timeMinutes * 0.4;
+                              
+                              return {
+                                ...step,
+                                stageName: stage.name,
+                                savings,
+                                timeSavings,
+                                opportunity: step.automationOpportunity
+                              };
+                            })
+                        );
+                        const topOpportunities = allOpportunities
+                          .sort((a, b) => b.savings - a.savings)
+                          .slice(0, 5);
+                        
+                        // Get friction emoji
+                        const getFrictionEmoji = (score) => {
+                          if (score >= 4.5) return '😫';
+                          if (score >= 3.5) return '😟';
+                          if (score >= 2.5) return '😐';
+                          if (score >= 1.5) return '🙂';
+                          return '😊';
+                        };
+                        
+                        return (
+                          <div style={{ flex: 1, overflow: 'auto', padding: '24px' }}>
+                            {/* Journey Quality Summary Card */}
+                            <div style={{ 
+                              background: 'linear-gradient(135deg, #D4EDE5 0%, #96BCC7 100%)',
+                              border: '2px solid #2D8A6E',
+                              borderRadius: '12px',
+                              padding: '24px',
+                              marginBottom: '24px'
+                            }}>
+                              <h3 style={{ 
+                                margin: '0 0 16px', 
+                                fontSize: '16px', 
+                                fontWeight: 600,
+                                color: '#1A5F4F',
+                                fontFamily: "'Interstate', sans-serif",
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                              }}>
+                                Journey Quality
+                              </h3>
+                              <div style={{ 
+                                display: 'grid', 
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                                gap: '16px'
+                              }}>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#1A5F4F', marginBottom: '4px', fontFamily: "'Interstate', sans-serif", textTransform: 'uppercase', opacity: 0.8 }}>Total Journey Time</div>
+                                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#1A5F4F', fontFamily: "'Interstate', sans-serif" }}>
+                                    {formatTime(stats.totalTime)}
+                                  </div>
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#1A5F4F', marginBottom: '4px', fontFamily: "'Interstate', sans-serif", textTransform: 'uppercase', opacity: 0.8 }}>Average Friction</div>
+                                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#2D8A6E', fontFamily: "'Interstate', sans-serif", display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span>{getFrictionEmoji(stats.avgFriction)}</span>
+                                    <span>{stats.avgFriction.toFixed(1)}/5</span>
+                                  </div>
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#1A5F4F', marginBottom: '4px', fontFamily: "'Interstate', sans-serif", textTransform: 'uppercase', opacity: 0.8 }}>Pain Points</div>
+                                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#B84A5A', fontFamily: "'Interstate', sans-serif" }}>
+                                    {stats.totalPainPoints}
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: '#1A5F4F', opacity: 0.7, fontFamily: "'Interstate', sans-serif" }}>
+                                    identified issues
+                                  </div>
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#1A5F4F', marginBottom: '4px', fontFamily: "'Interstate', sans-serif", textTransform: 'uppercase', opacity: 0.8 }}>Regulatory Steps</div>
+                                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#5A5B8A', fontFamily: "'Interstate', sans-serif" }}>
+                                    {stats.totalRegReqs}
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: '#1A5F4F', opacity: 0.7, fontFamily: "'Interstate', sans-serif" }}>
+                                    compliance required
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Friction by Stage */}
+                            <div style={{ marginBottom: '24px' }}>
+                              <h3 style={{ 
+                                margin: '0 0 16px', 
+                                fontSize: '14px', 
+                                fontWeight: 600,
+                                color: '#3D4A5C',
+                                fontFamily: "'Interstate', sans-serif",
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                              }}>
+                                Friction Breakdown by Stage
+                              </h3>
+                              <div style={{ background: '#FFF', borderRadius: '8px', border: '1px solid #E4E7EB', overflow: 'hidden' }}>
+                                {stageFriction.map((stage, idx) => (
+                                  <div key={idx} style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center',
+                                    padding: '16px 20px',
+                                    borderBottom: idx < stageFriction.length - 1 ? '1px solid #F4F5F7' : 'none',
+                                    gap: '16px'
+                                  }}>
+                                    <div style={{ flex: 1, fontWeight: 500, color: '#3D4A5C', fontFamily: "'Interstate', sans-serif" }}>
+                                      {stage.name}
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '24px',
+                                      minWidth: '40px',
+                                      textAlign: 'center'
+                                    }}>
+                                      {getFrictionEmoji(stage.avgFriction)}
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '16px', 
+                                      fontWeight: 600, 
+                                      color: stage.avgFriction >= 3.5 ? '#B84A5A' : stage.avgFriction >= 2.5 ? '#C4942A' : '#2D8A6E',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      minWidth: '60px',
+                                      textAlign: 'right'
+                                    }}>
+                                      {stage.avgFriction.toFixed(1)}/5
+                                    </div>
+                                    <div style={{ 
+                                      flex: 1,
+                                      maxWidth: '200px',
+                                      height: '8px',
+                                      background: '#F4F5F7',
+                                      borderRadius: '4px',
+                                      overflow: 'hidden'
+                                    }}>
+                                      <div style={{
+                                        width: `${(stage.avgFriction / 5) * 100}%`,
+                                        height: '100%',
+                                        background: stage.avgFriction >= 3.5 ? '#B84A5A' : stage.avgFriction >= 2.5 ? '#C4942A' : '#2D8A6E',
+                                        transition: 'width 0.3s ease'
+                                      }} />
+                                    </div>
+                                    {stage.painPoints > 0 && (
+                                      <div style={{ 
+                                        fontSize: '12px', 
+                                        color: '#B84A5A',
+                                        fontFamily: "'Interstate', sans-serif",
+                                        minWidth: '80px',
+                                        textAlign: 'right'
+                                      }}>
+                                        ⚠️ {stage.painPoints} pain
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Top Improvement Opportunities */}
+                            <div>
+                              <h3 style={{ 
+                                margin: '0 0 16px', 
+                                fontSize: '14px', 
+                                fontWeight: 600,
+                                color: '#3D4A5C',
+                                fontFamily: "'Interstate', sans-serif",
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                              }}>
+                                Top 5 Improvement Opportunities
+                              </h3>
+                              <div style={{ background: '#FFF', borderRadius: '8px', border: '1px solid #E4E7EB', overflow: 'hidden' }}>
+                                {topOpportunities.length > 0 ? topOpportunities.map((step, idx) => (
+                                  <div key={step.id} style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center',
+                                    padding: '16px 20px',
+                                    borderBottom: idx < topOpportunities.length - 1 ? '1px solid #F4F5F7' : 'none',
+                                    gap: '16px'
+                                  }}>
+                                    <div style={{ 
+                                      width: '32px',
+                                      height: '32px',
+                                      borderRadius: '50%',
+                                      background: idx === 0 ? '#2D8A6E' : idx === 1 ? '#3A9E7C' : '#D4EDE5',
+                                      color: idx < 2 ? '#FFF' : '#1A5F4F',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      fontWeight: 700,
+                                      fontSize: '14px',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      flexShrink: 0
+                                    }}>
+                                      {idx + 1}
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                      <div style={{ fontWeight: 500, color: '#3D4A5C', fontFamily: "'Interstate', sans-serif", marginBottom: '2px' }}>
+                                        {step.name}
+                                      </div>
+                                      <div style={{ fontSize: '11px', color: '#8A95A5', fontFamily: "'Interstate', sans-serif" }}>
+                                        {step.stageName}
+                                      </div>
+                                    </div>
+                                    <div style={{
+                                      padding: '4px 10px',
+                                      background: step.opportunity === 'high' ? '#D4EDE5' : '#FAF0D6',
+                                      color: step.opportunity === 'high' ? '#2D8A6E' : '#8B6914',
+                                      borderRadius: '12px',
+                                      fontSize: '11px',
+                                      fontWeight: 600,
+                                      fontFamily: "'Interstate', sans-serif",
+                                      textTransform: 'uppercase'
+                                    }}>
+                                      {step.opportunity}
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '14px', 
+                                      fontWeight: 600,
+                                      color: '#2D8A6E',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      minWidth: '100px',
+                                      textAlign: 'right'
+                                    }}>
+                                      Save {formatTime(Math.round(step.timeSavings))}
+                                    </div>
+                                    <div style={{ 
+                                      fontSize: '16px', 
+                                      fontWeight: 700, 
+                                      color: '#8B6914',
+                                      fontFamily: "'Interstate', sans-serif",
+                                      minWidth: '100px',
+                                      textAlign: 'right'
+                                    }}>
+                                      {formatCurrency(step.savings)}
+                                    </div>
+                                  </div>
+                                )) : (
+                                  <div style={{ padding: '40px', textAlign: 'center', color: '#8A95A5' }}>
+                                    <div style={{ fontSize: '14px', fontFamily: "'Interstate', sans-serif" }}>
+                                      No improvement opportunities identified yet
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   )}
                   {dashboardTab === 'economics' && config.meta?.costModel === 'event' && showCosts && (
