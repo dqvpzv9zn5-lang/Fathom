@@ -10902,11 +10902,26 @@ FATHOM - Journey intelligence for modern operations`);
           {/* Fixed topographic background layer */}
           <div className="topo-background"></div>
           
-          {/* Main Layout with Sidebar */}
-          <div className="main-layout-with-sidebar">
-            
-            {/* Sidebar Navigation - Full height */}
-            <nav className="sidebar-nav" id="sidebar-nav">
+          <div className="app-bg" style={{
+            height: isMobile ? 'auto' : '100vh',
+            minHeight: isMobile ? '100vh' : 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            background: 'transparent',
+            fontFamily: "'Interstate', sans-serif",
+            color: '#1A2332',
+            overflow: isMobile ? 'auto' : 'hidden'
+          }}>
+            {/* Header */}
+            <header className="header-container" style={{
+              background: '#192B45',
+              color: '#E9EEF4',
+              padding: '16px 24px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              flexShrink: 0
+            }}>
             {/* Row 1: Back + Logo + Title (left) | Desktop nav + Export/Settings (right) */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
               {/* Left side: Sidebar Toggle + Back Button (multi-user mode) + Logo + Divider + Title */}
