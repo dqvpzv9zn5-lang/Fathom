@@ -437,6 +437,42 @@
     }
     
     /* Mobile Responsive Styles */
+    /* Medium/Tablet screens - allow stats to wrap to second line */
+    @media (max-width: 1200px) {
+      .header-container > div:first-child {
+        flex-wrap: wrap !important;
+      }
+      
+      .header-container .no-print {
+        flex-wrap: wrap !important;
+        order: 3 !important; /* Move stats below title */
+        width: 100% !important;
+        justify-content: flex-start !important;
+      }
+      
+      .header-logo-title {
+        order: 1 !important;
+      }
+      
+      .profile-container {
+        order: 2 !important;
+        margin-left: auto !important;
+      }
+    }
+    
+    /* Small tablets - make badges slightly smaller */
+    @media (max-width: 900px) {
+      .header-container .no-print > div {
+        padding: 3px 8px !important;
+        gap: 4px !important;
+      }
+      
+      .header-container .no-print > div span {
+        font-size: 10px !important;
+      }
+    }
+    
+    /* Mobile - hide stats completely (available in sidebar) */
     @media (max-width: 768px) {
       /* Perspective filter: show dropdown, hide buttons */
       .perspective-buttons {
@@ -453,6 +489,16 @@
       .header-container {
         padding: 16px !important;
         gap: 12px !important;
+      }
+      
+      /* Hide all stat badges on mobile (available via sidebar Analytics) */
+      .header-container .no-print > div {
+        display: none !important;
+      }
+      
+      /* But keep profile container visible */
+      .header-container .no-print .profile-container {
+        display: block !important;
       }
       
       .header-logo-title {
