@@ -10856,7 +10856,7 @@ FATHOM - Journey intelligence for modern operations`);
       const stats = useMemo(() => {
         const allSteps = config.stages.flatMap(s => s.steps);
         const totalPainPoints = allSteps.reduce((acc, s) => acc + s.painPoints.length, 0);
-        const avgFriction = allSteps.length ? (allSteps.reduce((acc, s) => acc + (s.frictionScore || 3), 0) / allSteps.length).toFixed(1) : 0;
+        const avgFriction = allSteps.length ? parseFloat((allSteps.reduce((acc, s) => acc + (s.frictionScore || 3), 0) / allSteps.length).toFixed(1)) : 0;
         const highAutomation = allSteps.filter(s => s.automationOpportunity === 'high').length;
         const totalRegReqs = allSteps.reduce((acc, s) => acc + (s.regulatoryRequirements?.length || 0), 0);
         const totalCost = allSteps.reduce((acc, s) => acc + calculateStepCost(s, config.personas, config), 0);
@@ -14171,9 +14171,8 @@ FATHOM - Journey intelligence for modern operations`);
                             const hoursPerEvent = deployment.hoursPerEvent || 0;
                             const totalHours = headcount * hoursPerEvent;
                             
-                            // Calculate hourly rate from annual salary
-                            const annualSalary = persona.salary || 0;
-                            const hourlyRate = annualSalary / 2080; // Assuming 2080 working hours/year
+                            // Use the same fully loaded rate calculation as step costs
+                            const hourlyRate = calculateFullyLoadedRate(persona);
                             
                             // Calculate total role cost
                             const roleCost = totalHours * hourlyRate;
