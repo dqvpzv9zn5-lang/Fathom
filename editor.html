@@ -666,19 +666,19 @@
        ======================================== */
     .main-layout-with-sidebar {
       display: flex;
-      height: calc(100vh - 80px);
+      height: 100vh; /* Full viewport height */
     }
     .sidebar-nav {
       width: 240px;
-      background: var(--slate-50);
-      border-right: 1px solid var(--slate-100);
+      background: #1A2332; /* Darker background - Slate 900 */
+      border-right: 1px solid #2A3544; /* Darker border - Slate 800 */
       display: flex;
       flex-direction: column;
       overflow-y: auto;
       transition: width 0.2s ease-in-out;
-      box-shadow: 2px 0 8px rgba(25, 43, 69, 0.05);
+      box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
       flex-shrink: 0;
-      z-index: 50;
+      z-index: 100; /* Higher z-index to sit above header */
     }
     .sidebar-nav.collapsed {
       width: 60px;
@@ -688,14 +688,14 @@
       margin-top: 24px;
     }
     .sidebar-section:first-child {
-      margin-top: 16px;
+      margin-top: 0; /* No extra margin for first section (workspace) */
     }
     .sidebar-section-header {
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: var(--slate-500);
+      color: #8A95A5; /* Lighter color for dark background - Slate 400 */
       padding: 0 12px 8px;
       font-family: var(--font-display);
       opacity: 1;
@@ -707,6 +707,10 @@
       padding: 0;
       overflow: hidden;
     }
+    .sidebar-nav.collapsed .sidebar-section {
+      margin-top: 12px; /* Tighter spacing when collapsed */
+      padding: 0 6px; /* Tighter horizontal padding */
+    }
     .sidebar-item {
       display: flex;
       align-items: center;
@@ -714,7 +718,7 @@
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.15s;
-      color: var(--slate-900);
+      color: #C8CED6; /* Light text for dark background - Slate 200 */
       font-size: 13px;
       font-weight: 500;
       margin-bottom: 2px;
@@ -722,22 +726,26 @@
       font-family: var(--font-display);
       position: relative;
     }
+    .sidebar-nav.collapsed .sidebar-item {
+      padding: 10px 8px; /* Tighter padding when collapsed */
+      justify-content: center;
+    }
     .sidebar-item:hover {
-      background: var(--slate-100);
+      background: #2A3544; /* Slate 800 hover */
     }
     .sidebar-item.active {
-      background: var(--navy-700);
+      background: #192B45; /* Navy 700 - brand color */
       color: #FFF;
     }
     .sidebar-item.nav-link {
-      background: var(--navy-50);
-      border: 1px solid var(--navy-200);
+      background: rgba(91, 138, 154, 0.15); /* Steel blue tint */
+      border: 1px solid rgba(91, 138, 154, 0.3);
       font-weight: 600;
       margin-bottom: 0;
     }
     .sidebar-item.nav-link:hover {
-      background: var(--navy-200);
-      border-color: var(--navy-300);
+      background: rgba(91, 138, 154, 0.25);
+      border-color: rgba(91, 138, 154, 0.4);
     }
     .sidebar-item .sidebar-icon {
       font-size: 16px;
@@ -10894,26 +10902,11 @@ FATHOM - Journey intelligence for modern operations`);
           {/* Fixed topographic background layer */}
           <div className="topo-background"></div>
           
-          <div className="app-bg" style={{
-            height: isMobile ? 'auto' : '100vh',
-            minHeight: isMobile ? '100vh' : 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            background: 'transparent',
-            fontFamily: "'Interstate', sans-serif",
-            color: '#1A2332',
-            overflow: isMobile ? 'auto' : 'hidden'
-          }}>
-            {/* Header */}
-            <header className="header-container" style={{
-              background: '#192B45',
-              color: '#E9EEF4',
-              padding: '16px 24px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              flexShrink: 0
-            }}>
+          {/* Main Layout with Sidebar */}
+          <div className="main-layout-with-sidebar">
+            
+            {/* Sidebar Navigation - Full height */}
+            <nav className="sidebar-nav" id="sidebar-nav">
             {/* Row 1: Back + Logo + Title (left) | Desktop nav + Export/Settings (right) */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
               {/* Left side: Sidebar Toggle + Back Button (multi-user mode) + Logo + Divider + Title */}
@@ -11305,8 +11298,62 @@ FATHOM - Journey intelligence for modern operations`);
           {/* Main Layout with Sidebar */}
           <div className="main-layout-with-sidebar">
             
-            {/* Sidebar Navigation */}
+            {/* Sidebar Navigation - Full height */}
             <nav className="sidebar-nav" id="sidebar-nav">
+              
+              {/* Workspace Section - At top */}
+              <div className="sidebar-section" style={{ 
+                padding: '16px', 
+                borderBottom: '1px solid #2A3544',
+                marginTop: 0
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  {/* Workspace Avatar */}
+                  <div style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '8px',
+                    background: '#192B45',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    color: '#FFF',
+                    flexShrink: 0,
+                    border: '2px solid #2A3544'
+                  }}>
+                    {userProfile?.display_name?.charAt(0)?.toUpperCase() || 'S'}
+                  </div>
+                  {/* Workspace Info - Hidden when collapsed */}
+                  <div className="sidebar-label" style={{ 
+                    minWidth: 0, 
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '2px'
+                  }}>
+                    <div style={{ 
+                      fontSize: '13px', 
+                      fontWeight: 600, 
+                      color: '#E9EEF4',
+                      fontFamily: "'Interstate', sans-serif",
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      {userProfile?.display_name || "Steve's Space"}
+                    </div>
+                    <div style={{ 
+                      fontSize: '11px', 
+                      color: '#8A95A5',
+                      fontFamily: "'Interstate', sans-serif"
+                    }}>
+                      Private workspace
+                    </div>
+                  </div>
+                </div>
+              </div>
               
               {/* Dashboard Link */}
               <div className="sidebar-section">
@@ -11317,7 +11364,7 @@ FATHOM - Journey intelligence for modern operations`);
               </div>
               
               {/* Divider */}
-              <div style={{ height: '1px', background: '#E4E7EB', margin: '16px 12px' }}></div>
+              <div style={{ height: '1px', background: '#2A3544', margin: '16px 12px' }}></div>
               
               {/* VIEW Section */}
               <div className="sidebar-section">
