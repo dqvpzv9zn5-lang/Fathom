@@ -229,7 +229,7 @@
     /* Header must sit above everything */
     .header-container {
       position: relative;
-      z-index: 1;
+      z-index: 50; /* Above stage cards but below modals */
     }
     
     /* Stats bar - solid white, no pattern */
@@ -11236,7 +11236,7 @@ FATHOM - Journey intelligence for modern operations`);
                     
                     {/* Profile Dropdown (Supabase mode only) */}
                     {isSupabaseMode && currentUser && (
-                      <div className="profile-container" style={{ position: 'relative', marginLeft: '8px' }}>
+                      <div className="profile-container" style={{ position: 'relative', marginLeft: '8px', zIndex: 9999 }}>
                         <button 
                           onClick={(e) => { e.stopPropagation(); setShowProfileMenu(!showProfileMenu); }}
                           style={{ 
@@ -11299,7 +11299,7 @@ FATHOM - Journey intelligence for modern operations`);
                             boxShadow: '0 8px 32px rgba(0,0,0,0.2)', 
                             minWidth: '220px', 
                             padding: '8px 0',
-                            zIndex: 9999
+                            zIndex: 10000
                           }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1px solid #E4E7EB', marginBottom: '4px' }}>
                               <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#5B8A9A', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '16px', fontWeight: 600, flexShrink: 0, overflow: 'hidden' }}>
