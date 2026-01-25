@@ -228,7 +228,9 @@
     
     /* Header must sit above everything */
     .header-container {
-      z-index: 50; /* Above stage cards but below modals */
+      position: sticky; /* Needed for z-index to work, but doesn't create stacking context like relative */
+      top: 0;
+      z-index: 1; /* Low z-index - below everything */
     }
     
     /* Stats bar - solid white, no pattern */
@@ -12516,7 +12518,7 @@ FATHOM - Journey intelligence for modern operations`);
                       right: 0, 
                       bottom: 0, 
                       background: 'rgba(0,0,0,0.3)', 
-                      zIndex: 10001 
+                      zIndex: 999998 
                     }} 
                   />
                 )}
@@ -12528,7 +12530,7 @@ FATHOM - Journey intelligence for modern operations`);
                   right: 0,
                   bottom: 0,
                   background: '#FFF',
-                  zIndex: 10002,
+                  zIndex: 999999,
                   overflowY: 'auto',
                   borderRadius: 0
                 } : { 
@@ -12540,7 +12542,7 @@ FATHOM - Journey intelligence for modern operations`);
                   maxWidth: '90vw',
                   background: '#FFF', 
                   boxShadow: '-4px 0 24px rgba(0,0,0,0.15)', 
-                  zIndex: 10002,
+                  zIndex: 999999,
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden'
