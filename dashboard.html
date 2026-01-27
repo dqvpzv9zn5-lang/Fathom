@@ -15,21 +15,21 @@
     /* Interstate Font Family - Brand/Display Font */
     @font-face {
       font-family: 'Interstate';
-      src: url('https://steveyoung74.github.io/journeymaps/fonts/Interstate-light.ttf') format('truetype');
+      src: url('https://dqvpzv9zn5-lang.github.io/Fathom/fonts/Interstate-light.ttf') format('truetype');
       font-weight: 300;
       font-style: normal;
       font-display: swap;
     }
     @font-face {
       font-family: 'Interstate';
-      src: url('https://steveyoung74.github.io/journeymaps/fonts/Interstate-regular.ttf') format('truetype');
+      src: url('https://dqvpzv9zn5-lang.github.io/Fathom/fonts/Interstate-regular.ttf') format('truetype');
       font-weight: 400;
       font-style: normal;
       font-display: swap;
     }
     @font-face {
       font-family: 'Interstate';
-      src: url('https://steveyoung74.github.io/journeymaps/fonts/Interstate-bold.ttf') format('truetype');
+      src: url('https://dqvpzv9zn5-lang.github.io/Fathom/fonts/Interstate-bold.ttf') format('truetype');
       font-weight: 700;
       font-style: normal;
       font-display: swap;
@@ -439,7 +439,7 @@
       content: '';
       position: fixed;
       inset: 0;
-      background: url('https://steveyoung74.github.io/journeymaps/topography-light.svg') center/600px 600px repeat;
+      background: url('https://dqvpzv9zn5-lang.github.io/Fathom/topography-light.svg') center/600px 600px repeat;
       opacity: 1;
       pointer-events: none;
       z-index: -1;
@@ -456,7 +456,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: url('https://steveyoung74.github.io/journeymaps/topography-dark.svg') center/600px 600px repeat;
+      background: url('https://dqvpzv9zn5-lang.github.io/Fathom/topography-dark.svg') center/600px 600px repeat;
       opacity: 1;
       pointer-events: none;
       z-index: 0;
@@ -2137,7 +2137,7 @@
           <div className="modal">
             <div className="modal-content">
               <div className="modal-header">
-                <img src="https://steveyoung74.github.io/journeymaps/logo_dark.png" alt="FATHOM" style={{ height: '28px' }} />
+                <img src="https://dqvpzv9zn5-lang.github.io/Fathom/logo_dark.png" alt="FATHOM" style={{ height: '28px' }} />
               </div>
               
               <h2 className="modal-title">Welcome to Fathom</h2>
@@ -2295,7 +2295,7 @@
           <div className="modal">
             <div className="modal-content">
               <div className="modal-header">
-                <img src="https://steveyoung74.github.io/journeymaps/logo_dark.png" alt="FATHOM" style={{ height: '28px' }} />
+                <img src="https://dqvpzv9zn5-lang.github.io/Fathom/logo_dark.png" alt="FATHOM" style={{ height: '28px' }} />
               </div>
               
               <h2 className="modal-title">Welcome to Fathom</h2>
@@ -3011,7 +3011,7 @@
         e.stopPropagation();
         const map = maps.find(m => m.id === mapId);
         const title = map?.config?.meta?.title || map?.title || 'Journey Map';
-        const link = `https://steveyoung74.github.io/journeymaps/editor.html?id=${mapId}&title=${encodeURIComponent(title)}`;
+        const link = `https://dqvpzv9zn5-lang.github.io/Fathom/editor.html?id=${mapId}&title=${encodeURIComponent(title)}`;
         navigator.clipboard.writeText(link).then(() => {
           alert('Link copied to clipboard!');
         });
@@ -3095,7 +3095,7 @@
       if (!profile) {
         return (
           <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--slate-50)', flexDirection: 'column', gap: '16px' }}>
-            <img src="https://steveyoung74.github.io/journeymaps/logo_dark.png" alt="FATHOM" style={{ height: '32px', opacity: 0.5 }} />
+            <img src="https://dqvpzv9zn5-lang.github.io/Fathom/logo_dark.png" alt="FATHOM" style={{ height: '32px', opacity: 0.5 }} />
             <p style={{ color: 'var(--slate-500)', fontSize: '14px' }}>Setting up your workspace...</p>
           </div>
         );
@@ -3108,7 +3108,7 @@
             <div className="nav-inner">
               <div className="nav-left">
                 <a href="index.html">
-                  <img src="https://steveyoung74.github.io/journeymaps/logo_light.png" alt="FATHOM" className="nav-logo" />
+                  <img src="https://dqvpzv9zn5-lang.github.io/Fathom/logo_light.png" alt="FATHOM" className="nav-logo" />
                 </a>
                 <div className="nav-links">
                   <a href="dashboard.html" className="nav-link active">Dashboard</a>
@@ -3773,7 +3773,7 @@
           <footer className="footer">
             <div className="footer-inner">
               <div className="footer-brand">
-                <img src="https://steveyoung74.github.io/journeymaps/logo_light.png" alt="Fathom" className="footer-logo" />
+                <img src="https://dqvpzv9zn5-lang.github.io/Fathom/logo_light.png" alt="Fathom" className="footer-logo" />
                 <span className="footer-version">v9.10.0</span>
               </div>
               <div className="footer-copy">© 2025 Fathom · Journey intelligence for modern operations</div>
@@ -5285,7 +5285,7 @@ RULES:
       
       // Send email notification via mailto
       const sendShareEmail = (recipientEmail, mapTitle, permissionLevel) => {
-        const shareLink = `https://steveyoung74.github.io/journeymaps/editor.html?id=${mapId}`;
+        const shareLink = `https://dqvpzv9zn5-lang.github.io/Fathom/editor.html?id=${mapId}`;
         const senderName = profile?.display_name || user?.email?.split('@')[0] || 'Someone';
         const permissionText = permissionLevel === 'edit' ? 'edit' : 'view';
         
@@ -5398,7 +5398,7 @@ FATHOM - Journey intelligence for modern operations`);
       };
       
       const copyLink = () => {
-        const link = `https://steveyoung74.github.io/journeymaps/editor.html?id=${mapId}`;
+        const link = `https://dqvpzv9zn5-lang.github.io/Fathom/editor.html?id=${mapId}`;
         navigator.clipboard.writeText(link);
         setCopySuccess(true);
         setTimeout(() => setCopySuccess(false), 2000);
@@ -5430,7 +5430,7 @@ FATHOM - Journey intelligence for modern operations`);
                 <input
                   type="text"
                   readOnly
-                  value={`https://steveyoung74.github.io/journeymaps/editor.html?id=${mapId}`}
+                  value={`https://dqvpzv9zn5-lang.github.io/Fathom/editor.html?id=${mapId}`}
                   style={{ 
                     flex: 1, 
                     padding: '8px 12px', 
@@ -5634,7 +5634,7 @@ FATHOM - Journey intelligence for modern operations`);
         return (
           <div className="loading-screen">
             <img 
-              src="https://steveyoung74.github.io/journeymaps/logo_light.png" 
+              src="https://dqvpzv9zn5-lang.github.io/Fathom/logo_light.png" 
               alt="FATHOM" 
               className="loading-logo"
             />
