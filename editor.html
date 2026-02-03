@@ -973,7 +973,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "10.0.0";
+    const APP_VERSION = "10.1.0";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -11845,6 +11845,14 @@ FATHOM - Journey intelligence for modern operations`);
                   // Get funnel metrics for this stage
                   const stageFunnelData = funnelMetrics?.stageMetrics?.[stageIndex];
                   
+                  // Calculate stage-level problem severity (average of all steps)
+                  const stageProblemSeverity = stage.steps.length > 0 
+                    ? stage.steps.reduce((acc, step) => acc + calculateProblemSeverity(step, config.personas, config), 0) / stage.steps.length
+                    : 0;
+                  const stageProblemColor = getProblemColor(stageProblemSeverity);
+                  const isStageProblematic = showProblems && stageProblemSeverity >= 30;
+                  const isStageSmooth = showProblems && stageProblemSeverity < 15;
+                  
                   // Calculate stage-level savings
                   const stageSavings = stage.steps.reduce((acc, step) => {
                     const stepCost = calculateStepCost(step, config.personas, config);
@@ -11867,18 +11875,66 @@ FATHOM - Journey intelligence for modern operations`);
                       width: '320px',
                       minWidth: '280px',
                       maxWidth: '400px',
-                      background: '#FFF', 
+                      background: showProblems ? stageProblemColor.bg : '#FFF', 
                       borderRadius: '12px', 
                       overflow: 'visible',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+                      boxShadow: isStageProblematic 
+                        ? `0 4px 16px rgba(0,0,0,0.1), inset 0 0 0 2px ${stageProblemColor.text}`
+                        : isStageSmooth
+                          ? '0 4px 16px rgba(0,0,0,0.1), inset 0 0 0 2px #1A5F4F'
+                          : '0 4px 16px rgba(0,0,0,0.1)',
                       display: 'flex',
                       flexDirection: 'column',
                       maxHeight: isMobile ? 'none' : '100%',
                       position: 'relative'
                     }}>
+                      {/* Problem Severity Badge for Stage */}
+                      {showProblems && isStageProblematic && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '-10px',
+                          right: '16px',
+                          background: stageProblemColor.text,
+                          color: '#FFF',
+                          padding: '6px 12px',
+                          borderRadius: '12px',
+                          fontSize: '11px',
+                          fontFamily: "'Open Sans', sans-serif",
+                          fontWeight: 600,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                          zIndex: 10
+                        }}>
+                          <Icon name="alert-circle" size={12} color="#FFF" /> {stageProblemColor.label}
+                        </div>
+                      )}
+                      {/* Smooth Stage Badge */}
+                      {showProblems && isStageSmooth && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '-10px',
+                          right: '16px',
+                          background: '#1A5F4F',
+                          color: '#FFF',
+                          padding: '6px 12px',
+                          borderRadius: '12px',
+                          fontSize: '11px',
+                          fontFamily: "'Open Sans', sans-serif",
+                          fontWeight: 600,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                          zIndex: 10
+                        }}>
+                          <Icon name="check-circle" size={12} color="#FFF" /> Smooth
+                        </div>
+                      )}
                       {/* Stage Header */}
                       <div style={{ 
-                        background: getStageColor(stageIndex), 
+                        background: showProblems ? '#556275' : getStageColor(stageIndex), 
                         padding: '16px 20px',
                         color: '#FFF',
                         flexShrink: 0,
@@ -11986,7 +12042,7 @@ FATHOM - Journey intelligence for modern operations`);
                           <div style={{ fontSize: '11px', color: '#8A95A5', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
                             {stage.steps.length} Steps
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: highlightOpportunities ? '8px' : '6px', paddingTop: highlightOpportunities ? '12px' : 0, paddingLeft: highlightOpportunities ? '12px' : 0, overflow: 'visible' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: (highlightOpportunities || showProblems) ? '8px' : '6px', paddingTop: (highlightOpportunities || showProblems) ? '12px' : 0, paddingLeft: (highlightOpportunities || showProblems) ? '12px' : 0, overflow: 'visible' }}>
                             {stage.steps.map((step, idx) => {
                               const timeBarWidth = maxStepTime > 0 ? (step.timeMinutes / maxStepTime) * 100 : 0;
                               const isHighOpp = step.automationOpportunity === 'high';
@@ -11996,22 +12052,33 @@ FATHOM - Journey intelligence for modern operations`);
                               const stepTimeSavings = isHighOpp ? step.timeMinutes * 0.7 : isMedOpp ? step.timeMinutes * 0.4 : 0;
                               const showOppHighlight = highlightOpportunities && (isHighOpp || isMedOpp);
                               const isTopFive = opportunityRanks[step.id] !== undefined;
+                              
+                              // Problem severity for step
+                              const stepProblemSeverity = calculateProblemSeverity(step, config.personas, config);
+                              const stepProblemColor = getProblemColor(stepProblemSeverity);
+                              const isStepProblematic = showProblems && stepProblemSeverity >= 30;
+                              const isStepSmooth = showProblems && stepProblemSeverity < 15;
+                              
                               return (
                               <div key={step.id} className="step-item" style={{ 
                                 display: 'flex', 
                                 alignItems: 'center', 
                                 gap: '8px',
                                 padding: '8px 12px',
-                                background: showOppHighlight 
-                                  ? (isTopFive 
-                                    ? (isHighOpp ? 'linear-gradient(90deg, #D4EDE5 0%, #96BCC7 100%)' : 'linear-gradient(90deg, #FAF0D6 0%, #F0DDA8 100%)')
-                                    : (isHighOpp ? '#E1EEF2' : '#FAF0D6'))
-                                  : '#F4F5F7',
+                                background: showProblems
+                                  ? stepProblemColor.bg
+                                  : showOppHighlight 
+                                    ? (isTopFive 
+                                      ? (isHighOpp ? 'linear-gradient(90deg, #D4EDE5 0%, #96BCC7 100%)' : 'linear-gradient(90deg, #FAF0D6 0%, #F0DDA8 100%)')
+                                      : (isHighOpp ? '#E1EEF2' : '#FAF0D6'))
+                                    : '#F4F5F7',
                                 borderRadius: '6px',
                                 fontSize: '13px',
-                                border: showOppHighlight 
-                                  ? (isTopFive
-                                    ? (isHighOpp ? '2px solid #96BCC7' : '2px solid #FCD34D')
+                                border: showProblems
+                                  ? (isStepProblematic ? `2px solid ${stepProblemColor.text}` : isStepSmooth ? '2px solid #1A5F4F' : '1px solid #E4E7EB')
+                                  : showOppHighlight 
+                                    ? (isTopFive
+                                      ? (isHighOpp ? '2px solid #96BCC7' : '2px solid #FCD34D')
                                     : (isHighOpp ? '1px solid #BBF7D0' : '1px solid #FEF08A'))
                                   : '1px solid transparent',
                                 position: 'relative',
