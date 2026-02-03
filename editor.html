@@ -973,7 +973,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "10.8.0";
+    const APP_VERSION = "11.0.0";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -14018,7 +14018,7 @@ FATHOM - Journey intelligence for modern operations`);
                         transition: 'all 0.15s'
                       }}
                     >
-                      📅 Time
+                      <Icon name="clock" size={14} color={dashboardTab === 'time' ? '#192B45' : 'rgba(255,255,255,0.7)'} /> Time
                     </button>
                     {showCosts && (
                       <button 
@@ -14039,7 +14039,7 @@ FATHOM - Journey intelligence for modern operations`);
                           transition: 'all 0.15s'
                         }}
                       >
-                        💰 Costs
+                        <Icon name="pound-sterling" size={14} color={dashboardTab === 'costs' ? '#192B45' : 'rgba(255,255,255,0.7)'} /> Costs
                       </button>
                     )}
                     {config.funnel?.enabled && (
@@ -14061,7 +14061,7 @@ FATHOM - Journey intelligence for modern operations`);
                           transition: 'all 0.15s'
                         }}
                       >
-                        🔻 Funnel
+                        <Icon name="trending-down" size={14} color={dashboardTab === 'funnel' ? '#192B45' : 'rgba(255,255,255,0.7)'} /> Funnel
                       </button>
                     )}
                     {config.meta?.costModel === 'event' && showCosts && (
@@ -14083,7 +14083,7 @@ FATHOM - Journey intelligence for modern operations`);
                           transition: 'all 0.15s'
                         }}
                       >
-                        🎪 Event
+                        <Icon name="calendar" size={14} color={dashboardTab === 'event' ? '#192B45' : 'rgba(255,255,255,0.7)'} /> Event
                       </button>
                     )}
                     {config.meta?.costModel === 'event' && showCosts && (
@@ -14105,7 +14105,7 @@ FATHOM - Journey intelligence for modern operations`);
                           transition: 'all 0.15s'
                         }}
                       >
-                        💰 Economics
+                        <Icon name="trending-up" size={14} color={dashboardTab === 'economics' ? '#192B45' : 'rgba(255,255,255,0.7)'} /> Economics
                       </button>
                     )}
                     <button 
@@ -14126,7 +14126,7 @@ FATHOM - Journey intelligence for modern operations`);
                         transition: 'all 0.15s'
                       }}
                     >
-                      📋 Plan
+                      <Icon name="list" size={14} color={dashboardTab === 'plan' ? '#192B45' : 'rgba(255,255,255,0.7)'} /> Plan
                     </button>
                   </div>
                   {/* Right: Close button */}
@@ -14281,7 +14281,7 @@ FATHOM - Journey intelligence for modern operations`);
                             whiteSpace: 'nowrap'
                           }}
                         >
-                          💰 Finance
+                          <Icon name="pound-sterling" size={14} color={stakeholderTab === 'finance' ? '#FFF' : '#6E7B8C'} /> Finance
                         </button>
                         <button
                           onClick={() => setStakeholderTab('operations')}
@@ -14302,7 +14302,7 @@ FATHOM - Journey intelligence for modern operations`);
                             whiteSpace: 'nowrap'
                           }}
                         >
-                          👥 Operations
+                          <Icon name="users" size={14} color={stakeholderTab === 'operations' ? '#FFF' : '#6E7B8C'} /> Operations
                         </button>
                         <button
                           onClick={() => setStakeholderTab('experience')}
@@ -14323,7 +14323,7 @@ FATHOM - Journey intelligence for modern operations`);
                             whiteSpace: 'nowrap'
                           }}
                         >
-                          😊 Experience
+                          <Icon name="smile" size={14} color={stakeholderTab === 'experience' ? '#FFF' : '#6E7B8C'} /> Experience
                         </button>
                       </div>
 
