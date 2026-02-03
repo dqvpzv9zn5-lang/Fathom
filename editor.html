@@ -973,7 +973,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "10.3.0";
+    const APP_VERSION = "10.4.0";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -12439,7 +12439,13 @@ FATHOM - Journey intelligence for modern operations`);
                     }}>
                       {stage.steps.map((step, stepIndex) => {
                         const isSelected = selectedStep?.id === step.id;
-                        const isFiltered = activePerspective !== 'all' && !step.actions[activePerspective] && step.owner !== activePerspective && !(activePerspective === 'client' && step.clientTouchpoint);
+                        // Check if step involves the active perspective (either as owner OR in roleInvolvement)
+                        const isInvolved = activePerspective === 'all' 
+                          || step.owner === activePerspective
+                          || (step.roleInvolvement && step.roleInvolvement[activePerspective])
+                          || step.actions?.[activePerspective]
+                          || (activePerspective === 'client' && step.clientTouchpoint);
+                        const isFiltered = !isInvolved;
                         const stepCost = calculateStepCost(step, config.personas, config);
                         const costPerMinute = step.timeMinutes > 0 ? stepCost / step.timeMinutes : 0;
                         const automationSavings = step.automationOpportunity === 'high' ? stepCost * 0.7 
@@ -12733,7 +12739,7 @@ FATHOM - Journey intelligence for modern operations`);
                       right: 0, 
                       bottom: 0, 
                       background: 'rgba(0,0,0,0.3)', 
-                      zIndex: 999998 
+                      zIndex: 9999998 
                     }} 
                   />
                 )}
@@ -12745,7 +12751,7 @@ FATHOM - Journey intelligence for modern operations`);
                   right: 0,
                   bottom: 0,
                   background: '#FFF',
-                  zIndex: 999999,
+                  zIndex: 9999999,
                   overflowY: 'auto',
                   borderRadius: 0
                 } : { 
@@ -12757,7 +12763,7 @@ FATHOM - Journey intelligence for modern operations`);
                   maxWidth: '90vw',
                   background: '#FFF', 
                   boxShadow: '-4px 0 24px rgba(0,0,0,0.15)', 
-                  zIndex: 999999,
+                  zIndex: 9999999,
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden'
