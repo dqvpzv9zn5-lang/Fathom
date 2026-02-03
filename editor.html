@@ -11,7 +11,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     /* Interstate Font Family - Brand/Display Font */
     @font-face {
@@ -968,67 +967,64 @@
     const { useState, useCallback, useMemo, useEffect, useRef } = React;
     
     // ============================================
-    // LUCIDE ICON COMPONENT
+    // LUCIDE ICON COMPONENT - Simple SVG approach
     // ============================================
     const Icon = ({ name, size = 16, color = 'currentColor', className, style, ...props }) => {
-      const iconRef = useRef(null);
+      // Icon path definitions - add more as needed
+      const icons = {
+        'menu': 'M3 12h18M3 6h18M3 18h18',
+        'layers': 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
+        'list': 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
+        'bar-chart-3': 'M12 20V10M18 20V4M6 20v-4',
+        'target': 'M12 12m-10 0a10 10 0 1 0 20 0a10 10 0 1 0 -20 0M12 12m-6 0a6 6 0 1 0 12 0a6 6 0 1 0 -12 0M12 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0',
+        'trending-down': 'M23 18l-9.5-9.5-5 5L1 6',
+        'building-2': 'M3 21h18M5 21V7l8-4v18M19 21V11l-6-4',
+        'coins': 'M8 10a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM16 14a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 24a5 5 0 1 0 0-10 5 5 0 0 0 0 10z',
+        'users': 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
+        'settings': 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z',
+        'clipboard-list': 'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6v2H9V2zM9 12h6M9 16h6',
+        'share-2': 'M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98',
+        'layout-grid': 'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z',
+        'clock': 'M12 6v6l4 2M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z',
+        'alert-triangle': 'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01',
+        'clipboard-check': 'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6v2H9V2zM9 12l2 2 4-4',
+        'calendar-days': 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01',
+        'folder-kanban': 'M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2zM8 10v4M12 10v2M16 10v6',
+        'briefcase': 'M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16M8 7H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-4',
+        'user': 'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+        'octagon-alert': 'M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86L7.86 2zM12 8v4M12 16h.01',
+        'pencil': 'M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z',
+        'plug': 'M12 22v-5M9 8V2M15 8V2M9 8h6',
+        'file-text': 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM14 2v6h6M16 13H8M16 17H8M10 9H8',
+        'paperclip': 'M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48',
+        'zap': 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
+        'mail': 'M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6'
+      };
       
-      useEffect(() => {
-        if (!iconRef.current || !window.lucide) return;
-        
-        // Clear previous content
-        iconRef.current.innerHTML = '';
-        
-        // Get icon name in PascalCase for Lucide
-        const iconName = name.split('-').map(word => 
-          word.charAt(0).toUpperCase() + word.slice(1)
-        ).join('');
-        
-        // Get the icon constructor
-        const IconConstructor = window.lucide[iconName];
-        if (IconConstructor) {
-          // Create SVG element
-          const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-          svg.setAttribute('width', size);
-          svg.setAttribute('height', size);
-          svg.setAttribute('viewBox', '0 0 24 24');
-          svg.setAttribute('fill', 'none');
-          svg.setAttribute('stroke', color);
-          svg.setAttribute('stroke-width', '2');
-          svg.setAttribute('stroke-linecap', 'round');
-          svg.setAttribute('stroke-linejoin', 'round');
-          svg.style.display = 'inline-block';
-          svg.style.verticalAlign = 'middle';
-          
-          // Get icon path data
-          const iconElement = new IconConstructor();
-          if (iconElement && iconElement.toSvg) {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = iconElement.toSvg({ width: size, height: size, color: color });
-            const svgContent = tempDiv.querySelector('svg');
-            if (svgContent) {
-              Array.from(svgContent.children).forEach(child => {
-                svg.appendChild(child.cloneNode(true));
-              });
-            }
-          }
-          
-          iconRef.current.appendChild(svg);
-        }
-      }, [name, size, color]);
+      const pathData = icons[name] || '';
       
       return (
-        <span 
-          ref={iconRef}
-          style={{ 
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            ...style 
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={color}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{
+            display: 'inline-block',
+            verticalAlign: 'middle',
+            ...style
           }}
           className={className}
           {...props}
-        />
+        >
+          {pathData.split('M').filter(Boolean).map((path, i) => (
+            <path key={i} d={`M${path}`} />
+          ))}
+        </svg>
       );
     };
     
