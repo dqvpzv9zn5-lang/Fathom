@@ -1437,7 +1437,10 @@
         'more-vertical': 'M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM12 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM12 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z',
         'check-circle': 'M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3',
         'check': 'M20 6L9 17l-5-5',
-        'calendar': 'M16 2v4M8 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z'
+        'calendar': 'M16 2v4M8 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
+        'alert-triangle': 'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01',
+        'smile': 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01',
+        'folder-kanban': 'M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2zM8 10v4M12 10v2M16 10v6'
       };
       
       const pathData = icons[name] || '';
@@ -2421,11 +2424,11 @@
         const normalizedModel = costModel === 'per-journey' ? 'client' : (costModel || 'client');
         
         if (normalizedModel === 'event') {
-          return { icon: '🎪', label: 'EVENT', color: '#C4942A', bg: 'rgba(196, 148, 42, 0.1)' };
+          return { icon: 'calendar', label: 'EVENT', color: '#C4942A', bg: 'rgba(196, 148, 42, 0.1)' };
         } else if (normalizedModel === 'project') {
-          return { icon: '🎯', label: 'PROJECT', color: '#5A5B8A', bg: 'rgba(90, 91, 138, 0.1)' };
+          return { icon: 'folder-kanban', label: 'PROJECT', color: '#5A5B8A', bg: 'rgba(90, 91, 138, 0.1)' };
         } else {
-          return { icon: '🚶', label: 'CLIENT', color: '#5B8A9A', bg: 'rgba(91, 138, 154, 0.1)' };
+          return { icon: 'users', label: 'CLIENT', color: '#5B8A9A', bg: 'rgba(91, 138, 154, 0.1)' };
         }
       };
       
@@ -3478,7 +3481,7 @@
                                   gap: '3px',
                                   whiteSpace: 'nowrap'
                                 }}>
-                                  {badge.icon} {badge.label}
+                                  <Icon name={badge.icon} size={12} color={badge.color} /> {badge.label}
                                 </span>
                               );
                             })()}
@@ -3682,7 +3685,7 @@
                                 marginBottom: '10px',
                                 width: 'fit-content'
                               }}>
-                                {badge.icon} {badge.label}
+                                <Icon name={badge.icon} size={14} color={badge.color} /> {badge.label}
                               </div>
                             );
                           })()}
@@ -3693,19 +3696,19 @@
                             <div className="journey-card-metrics">
                               <div className="metric" title="Total time">
                                 <span><Icon name="clock" size={14} color="currentColor" /></span>
-                                <span className="metric-value">{formatTime(metrics.totalTime)}</span>
+                                <span className="metric-value" style={{ fontWeight: 600 }}>{formatTime(metrics.totalTime)}</span>
                               </div>
                               <span className="metric-dot">·</span>
                               <div className="metric" title="Stages / Steps">
                                 <span><Icon name="file-text" size={14} color="currentColor" /></span>
-                                <span>{metrics.stageCount} / {metrics.totalSteps}</span>
+                                <span style={{ fontWeight: 600 }}>{metrics.stageCount} / {metrics.totalSteps}</span>
                               </div>
                               {metrics.avgFriction && (
                                 <>
                                   <span className="metric-dot">·</span>
                                   <div className="metric" title="Avg friction">
                                     <span>{metrics.avgFriction >= 4 ? '😰' : metrics.avgFriction >= 3 ? '😐' : '🙂'}</span>
-                                    <span>{metrics.avgFriction}/5</span>
+                                    <span style={{ fontWeight: 600 }}>{metrics.avgFriction}/5</span>
                                   </div>
                                 </>
                               )}
@@ -3713,8 +3716,8 @@
                                 <>
                                   <span className="metric-dot">·</span>
                                   <div className="metric" title="Pain points">
-                                    <span>⚠️</span>
-                                    <span style={{ color: 'var(--error)' }}>{metrics.totalPainPoints}</span>
+                                    <span><Icon name="alert-triangle" size={14} color="#B84A5A" /></span>
+                                    <span style={{ color: '#B84A5A', fontWeight: 600 }}>{metrics.totalPainPoints}</span>
                                   </div>
                                 </>
                               )}
@@ -3722,8 +3725,8 @@
                                 <>
                                   <span className="metric-dot">·</span>
                                   <div className="metric" title="High improvement opps">
-                                    <span><Icon name="target" size={14} color="currentColor" /></span>
-                                    <span style={{ color: 'var(--success)' }}>{metrics.highImprovements}</span>
+                                    <span><Icon name="target" size={14} color="#2D8A6E" /></span>
+                                    <span style={{ color: '#2D8A6E', fontWeight: 600 }}>{metrics.highImprovements}</span>
                                   </div>
                                 </>
                               )}
@@ -3731,8 +3734,8 @@
                                 <>
                                   <span className="metric-dot">·</span>
                                   <div className="metric" title="Cost per journey">
-                                    <span>💷</span>
-                                    <span className="metric-value">{formatCurrency(metrics.totalCost)}</span>
+                                    <span><Icon name="circle-dollar-sign" size={14} color="currentColor" /></span>
+                                    <span className="metric-value" style={{ fontWeight: 600 }}>{formatCurrency(metrics.totalCost)}</span>
                                   </div>
                                 </>
                               )}
