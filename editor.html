@@ -12378,7 +12378,7 @@ FATHOM - Journey intelligence for modern operations`);
                                 gap: '4px',
                                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                               }}>
-                                🎯 Save {formatTime(Math.round(timeSavings))} · {formatCurrency(automationSavings)} ({step.automationOpportunity === 'high' ? '70' : '40'}%)
+                                <Icon name="target" size={11} color="#FFF" /> Save {formatTime(Math.round(timeSavings))} · {formatCurrency(automationSavings)} ({step.automationOpportunity === 'high' ? '70' : '40'}%)
                               </div>
                             )}
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
@@ -12471,12 +12471,12 @@ FATHOM - Journey intelligence for modern operations`);
                                 </div>
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', background: automationColors[step.automationOpportunity]?.bg || '#F4F5F7', borderRadius: '12px' }}>
-                                <span style={{ fontSize: '10px' }}>🎯</span>
+                                <Icon name="target" size={11} color={automationColors[step.automationOpportunity]?.text || '#556275'} />
                                 <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '10px', color: automationColors[step.automationOpportunity]?.text || '#556275', fontWeight: 500 }}>{automationColors[step.automationOpportunity]?.label || 'N/A'}</span>
                               </div>
                               {step.clientTouchpoint && (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', background: '#D4EDE5', borderRadius: '12px', border: '1px solid #2D8A6E' }}>
-                                  <span style={{ fontSize: '10px' }}>👤</span>
+                                  <Icon name="user" size={11} color="#2D8A6E" />
                                   <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '10px', color: '#2D8A6E', fontWeight: 500 }}>Client</span>
                                 </div>
                               )}
@@ -12503,7 +12503,7 @@ FATHOM - Journey intelligence for modern operations`);
                                 data-tooltip={`${(step.checkpointType || 'Compliance').charAt(0).toUpperCase() + (step.checkpointType || 'compliance').slice(1)}: ${step.checkpointDetails || 'Must be completed before proceeding'}`}
                                 style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: '#F5E0E3', borderRadius: '6px', border: '2px solid #B84A5A', marginBottom: '8px', cursor: 'help' }}
                               >
-                                <span style={{ fontSize: '16px' }}>🚧</span>
+                                <Icon name="octagon-alert" size={16} color="#B84A5A" />
                                 <div style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: '#B84A5A', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Checkpoint</div>
                               </div>
                             )}
@@ -12515,7 +12515,7 @@ FATHOM - Journey intelligence for modern operations`);
                                   data-tooltip={step.regulatoryRequirements.join(' • ')}
                                   style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 12px', background: '#E1EEF2', borderRadius: '6px', cursor: 'help' }}
                                 >
-                                  <span style={{ fontSize: '14px' }}>📋</span>
+                                  <Icon name="clipboard-check" size={14} color="#5A5B8A" />
                                   <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: '#5A5B8A', fontWeight: 500 }}>{step.regulatoryRequirements.length} reg. requirement{step.regulatoryRequirements.length > 1 ? 's' : ''}</span>
                                 </div>
                               )}
@@ -12525,7 +12525,7 @@ FATHOM - Journey intelligence for modern operations`);
                                   data-tooltip={step.painPoints.join(' • ')}
                                   style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 12px', background: '#F5E0E3', borderRadius: '6px', cursor: 'help' }}
                                 >
-                                  <span style={{ fontSize: '14px' }}>⚠️</span>
+                                  <Icon name="alert-triangle" size={14} color="#B84A5A" />
                                   <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: '#B84A5A', fontWeight: 500 }}>{step.painPoints.length} pain point{step.painPoints.length > 1 ? 's' : ''}</span>
                                 </div>
                               )}
@@ -14761,7 +14761,7 @@ FATHOM - Journey intelligence for modern operations`);
                                         minWidth: '80px',
                                         textAlign: 'right'
                                       }}>
-                                        ⚠️ {stage.painPoints} pain
+                                        <Icon name="alert-triangle" size={12} color="#B84A5A" style={{ marginRight: '4px' }} /> {stage.painPoints} pain
                                       </div>
                                     )}
                                   </div>
