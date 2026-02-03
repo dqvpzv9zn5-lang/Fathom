@@ -926,6 +926,9 @@
         'trending-up': 'M23 6l-9.5 9.5-5-5L1 18',
         'building-2': 'M3 21h18M5 21V7l8-4v18M19 21V11l-6-4',
         'coins': 'M8 10a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM16 14a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 24a5 5 0 1 0 0-10 5 5 0 0 0 0 10z',
+        'coins-stacked': 'M12 2v4m0 4v4m0 4v4M5 8c0 2.21 3.13 4 7 4s7-1.79 7-4M5 8c0-2.21 3.13-4 7-4s7 1.79 7 4M5 8v4c0 2.21 3.13 4 7 4s7-1.79 7-4V8M5 12v4c0 2.21 3.13 4 7 4s7-1.79 7 4V12',
+        'banknote': 'M2 8h20M2 16h20M6 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4zM18 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4zM2 8v8a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z',
+        'circle-dollar-sign': 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v12M15 9h-4.5a1.5 1.5 0 1 0 0 3h3a1.5 1.5 0 0 1 0 3H9',
         'pound-sterling': 'M18 17h-6M12 17v-4a4 4 0 0 1 4-4h.5M6 17h6M8 21V7a4 4 0 0 1 8 0',
         'dollar-sign': 'M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6',
         'users': 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
@@ -981,7 +984,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "11.2.0";
+    const APP_VERSION = "11.3.0";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -3714,7 +3717,7 @@ Powered by FATHOM
                   }}
                 >
                   <div style={{ fontSize: '16px', fontWeight: 600, color: '#1A2332', marginBottom: '4px' }}>
-                    🚶 Client
+                    <Icon name="user" size={16} color="currentColor" /> Client
                   </div>
                   <div style={{ fontSize: '12px', color: '#6E7B8C', lineHeight: 1.4 }}>
                     Customer flows through sequentially. Cost per client.
@@ -3738,7 +3741,7 @@ Powered by FATHOM
                   }}
                 >
                   <div style={{ fontSize: '16px', fontWeight: 600, color: '#1A2332', marginBottom: '4px' }}>
-                    🎯 Project
+                    <Icon name="target" size={16} color="currentColor" /> Project
                   </div>
                   <div style={{ fontSize: '12px', color: '#6E7B8C', lineHeight: 1.4 }}>
                     Internal pursuit or delivery. Cost per project.
@@ -3762,7 +3765,7 @@ Powered by FATHOM
                   }}
                 >
                   <div style={{ fontSize: '16px', fontWeight: 600, color: '#1A2332', marginBottom: '4px' }}>
-                    🎪 Event
+                    <Icon name="calendar" size={16} color="currentColor" /> Event
                   </div>
                   <div style={{ fontSize: '12px', color: '#6E7B8C', lineHeight: 1.4 }}>
                     Fixed capacity, many participants. Cost per event.
@@ -4977,7 +4980,7 @@ Powered by FATHOM
             {/* Journey Timeline */}
             <div style={{ background: '#FFF', borderRadius: '12px', padding: '20px', border: '1px solid #E4E7EB' }}>
               <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: 600, color: '#192B45' }}>
-                🎪 Event Timeline
+                <Icon name="calendar" size={16} color="currentColor" /> Event Timeline
               </h4>
               <div style={{ position: 'relative' }}>
                 {/* Timeline bar */}
@@ -5409,8 +5412,8 @@ Powered by FATHOM
           <div style={{ marginTop: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '24px' }}>
             {/* Top 5 Longest Steps */}
             <div>
-              <h4 style={{ margin: '0 0 12px', fontSize: '13px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#556275' }}>
-                ⏰ Top 5 Longest Steps
+              <h4 style={{ margin: '0 0 12px', fontSize: '13px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#556275', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Icon name="clock" size={14} color="#556275" /> Top 5 Longest Steps
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {byTime.slice(0, 5).map((step, i) => (
@@ -5450,8 +5453,8 @@ Powered by FATHOM
             
             {/* Top 5 Highest Friction Steps */}
             <div>
-              <h4 style={{ margin: '0 0 12px', fontSize: '13px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#556275' }}>
-                😰 Highest Friction Steps
+              <h4 style={{ margin: '0 0 12px', fontSize: '13px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#556275', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Icon name="alert-triangle" size={14} color="#B84A5A" /> Highest Friction Steps
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {byFriction.slice(0, 5).map((step, i) => {
@@ -5486,8 +5489,8 @@ Powered by FATHOM
             
             {/* Time by Role */}
             <div>
-              <h4 style={{ margin: '0 0 12px', fontSize: '13px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#556275' }}>
-                👥 Time by Role
+              <h4 style={{ margin: '0 0 12px', fontSize: '13px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#556275', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Icon name="users" size={14} color="#556275" /> Time by Role
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {roleTime.slice(0, 5).map(role => (
@@ -5532,8 +5535,8 @@ Powered by FATHOM
             
             {/* Stage Ranking by Time */}
             <div>
-              <h4 style={{ margin: '0 0 12px', fontSize: '13px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#556275' }}>
-                📊 Stages by Time
+              <h4 style={{ margin: '0 0 12px', fontSize: '13px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#556275', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Icon name="bar-chart-3" size={14} color="#556275" /> Stages by Time
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {stageMetrics.map((stage, i) => {
@@ -6889,7 +6892,7 @@ Powered by FATHOM
                   {!persona.isExternal && isEventMode && (
                     <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed #E4C87A', background: 'rgba(250, 240, 214, 0.3)', margin: '12px -16px -16px', padding: '12px 16px 16px', borderRadius: '0 0 4px 4px' }}>
                       <div style={{ fontFamily: "'Open Sans', sans-serif", fontSize: '11px', fontWeight: 600, color: '#8B6914', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        🎪 Event Deployment
+                        <Icon name="calendar" size={16} color="currentColor" /> Event Deployment
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
                         {/* Headcount */}
@@ -8016,8 +8019,8 @@ FATHOM - Journey intelligence for modern operations`);
             
             {/* Most Expensive Steps */}
             <div>
-              <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#556275' }}>
-                💰 Top 5 Most Expensive Steps
+              <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#556275', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Icon name="circle-dollar-sign" size={16} color="#C4942A" /> Top 5 Most Expensive Steps
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {byTotalCost.slice(0, 5).map((step, i) => (
@@ -8056,8 +8059,8 @@ FATHOM - Journey intelligence for modern operations`);
             
             {/* Highest Cost per Minute */}
             <div>
-              <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#556275' }}>
-                ⚡ Highest Cost/Minute Steps
+              <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#556275', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Icon name="zap" size={16} color="#C4942A" /> Highest Cost/Minute Steps
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {byCostPerMinute.slice(0, 5).map((step, i) => (
@@ -8098,8 +8101,8 @@ FATHOM - Journey intelligence for modern operations`);
             
             {/* Best Improvement Opportunities */}
             <div className="cost-automation-section" style={{ gridColumn: '1 / -1' }}>
-              <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#2D8A6E' }}>
-                🎯 Top Improvement Opportunities (by potential savings)
+              <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontFamily: "'Open Sans', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px', color: '#2D8A6E', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Icon name="target" size={16} color="#2D8A6E" /> Top Improvement Opportunities (by potential savings)
               </h4>
               <div className="cost-automation-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '12px' }}>
                 {byAutomationSavings.filter(s => s.automationSavings > 0).slice(0, 8).map((step, i) => (
@@ -8125,7 +8128,7 @@ FATHOM - Journey intelligence for modern operations`);
                       fontSize: '16px',
                       flexShrink: 0
                     }}>
-                      🎯
+                      <Icon name="target" size={16} color="#2D8A6E" />
                     </div>
                     <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
                       <div style={{ fontWeight: 600, fontSize: '13px', color: '#1A2332', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{step.name}</div>
@@ -13510,7 +13513,7 @@ FATHOM - Journey intelligence for modern operations`);
                           letterSpacing: '0.5px',
                           fontWeight: 600
                         }}>
-                          🎪 Event Step Configuration
+                          <Icon name="calendar" size={16} color="currentColor" /> Event Step Configuration
                         </label>
                       </div>
                       
