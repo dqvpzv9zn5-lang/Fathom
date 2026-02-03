@@ -973,7 +973,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "10.5.0";
+    const APP_VERSION = "10.6.0";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -12438,13 +12438,20 @@ FATHOM - Journey intelligence for modern operations`);
                     }}>
                       {stage.steps.map((step, stepIndex) => {
                         const isSelected = selectedStep?.id === step.id;
-                        // Check if step involves the active perspective
-                        const isInvolved = activePerspective === 'all' 
-                          || step.owner === activePerspective
-                          || (step.roleInvolvement && Object.keys(step.roleInvolvement).includes(activePerspective))
-                          || (step.actions && step.actions[activePerspective])
-                          || (activePerspective === 'client' && step.clientTouchpoint);
-                        const isFiltered = !isInvolved;
+                        
+                        // Perspective filter: check if this step involves the active perspective
+                        let isFiltered = false;
+                        if (activePerspective !== 'all') {
+                          // Check multiple ways a persona can be involved:
+                          const hasOwnership = step.owner === activePerspective;
+                          const hasRoleInvolvement = step.roleInvolvement && step.roleInvolvement.hasOwnProperty(activePerspective);
+                          const hasAction = step.actions && step.actions.hasOwnProperty(activePerspective);
+                          const isClientTouchpoint = activePerspective === 'client' && step.clientTouchpoint;
+                          
+                          // If persona is NOT involved in any way, filter (dim) the step
+                          isFiltered = !hasOwnership && !hasRoleInvolvement && !hasAction && !isClientTouchpoint;
+                        }
+                        
                         const stepCost = calculateStepCost(step, config.personas, config);
                         const costPerMinute = step.timeMinutes > 0 ? stepCost / step.timeMinutes : 0;
                         const automationSavings = step.automationOpportunity === 'high' ? stepCost * 0.7 
