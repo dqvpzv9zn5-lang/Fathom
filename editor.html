@@ -984,7 +984,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "11.3.0";
+    const APP_VERSION = "11.4.0";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -5304,7 +5304,7 @@ Powered by FATHOM
                   alignItems: 'center',
                   gap: '4px'
                 }}>
-                  <Icon name="pound-sterling" size={14} color="#8B6914" /> {formatCurrency(totalCost)}
+                  <Icon name="circle-dollar-sign" size={14} color="#8B6914" /> {formatCurrency(totalCost)}
                 </span>
               )}
               <button 
@@ -7875,7 +7875,7 @@ FATHOM - Journey intelligence for modern operations`);
               alignItems: 'center',
               gap: '8px'
             }}>
-              <Icon name="pound-sterling" size={18} color="#1A2332" /> Cost Analysis Dashboard
+              <Icon name="circle-dollar-sign" size={18} color="#1A2332" /> Cost Analysis Dashboard
             </h3>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <button 
@@ -14053,7 +14053,7 @@ FATHOM - Journey intelligence for modern operations`);
                           transition: 'all 0.15s'
                         }}
                       >
-                        <Icon name="pound-sterling" size={14} color={dashboardTab === 'costs' ? '#192B45' : 'rgba(255,255,255,0.7)'} /> Costs
+                        <Icon name="circle-dollar-sign" size={14} color={dashboardTab === 'costs' ? '#192B45' : 'rgba(255,255,255,0.7)'} /> Costs
                       </button>
                     )}
                     {config.funnel?.enabled && (
@@ -14295,7 +14295,7 @@ FATHOM - Journey intelligence for modern operations`);
                             whiteSpace: 'nowrap'
                           }}
                         >
-                          <Icon name="pound-sterling" size={14} color={stakeholderTab === 'finance' ? '#FFF' : '#6E7B8C'} /> Finance
+                          <Icon name="circle-dollar-sign" size={14} color={stakeholderTab === 'finance' ? '#FFF' : '#6E7B8C'} /> Finance
                         </button>
                         <button
                           onClick={() => setStakeholderTab('operations')}
@@ -15108,7 +15108,7 @@ FATHOM - Journey intelligence for modern operations`);
                           onMouseOver={(e) => { e.currentTarget.style.background = '#F0DDA8'; }}
                           onMouseOut={(e) => { e.currentTarget.style.background = '#FAF0D6'; }}
                         >
-                          <Icon name="pound-sterling" size={14} color="#8B6914" style={{marginRight: '4px'}} /> Configure Revenue & Costs
+                          <Icon name="circle-dollar-sign" size={14} color="#8B6914" style={{marginRight: '4px'}} /> Configure Revenue & Costs
                         </button>
                       </div>
                       <div style={{ flex: 1, overflow: 'auto' }}>
