@@ -857,6 +857,11 @@
       transition: background 0.15s;
       flex-shrink: 0;
     }
+    @media (max-width: 768px) {
+      .sidebar-toggle-btn {
+        padding: 6px 8px;
+      }
+    }
     .sidebar-toggle-btn:hover {
       background: rgba(255, 255, 255, 0.1);
     }
@@ -11057,7 +11062,7 @@ FATHOM - Journey intelligence for modern operations`);
                   }}
                   title="Toggle sidebar"
                 >
-                  <Icon name="menu" size={20} color="#FFF" />
+                  <Icon name="menu" size={isMobile ? 16 : 18} color="#FFF" />
                 </button>
                 
                 
@@ -11068,15 +11073,15 @@ FATHOM - Journey intelligence for modern operations`);
                 {!isMobile && <div className="header-divider" style={{ width: '1px', height: '32px', background: 'rgba(255,255,255,0.2)', flexShrink: 0 }} />}
                 
                 {/* Title */}
-                <div className="header-title-wrapper" style={{ minWidth: 0, flex: 1, display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div className="header-title-wrapper" style={{ minWidth: 0, flex: 1, display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px' }}>
                   {/* Cost Model Badge - BEFORE title */}
                   {config.meta?.costModel === 'event' ? (
                     <span style={{
                       background: '#C4942A',
                       color: '#FFF',
-                      padding: '3px 10px',
+                      padding: isMobile ? '2px 8px' : '3px 10px',
                       borderRadius: '12px',
-                      fontSize: '11px',
+                      fontSize: isMobile ? '10px' : '11px',
                       fontWeight: 600,
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
@@ -11085,15 +11090,15 @@ FATHOM - Journey intelligence for modern operations`);
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      <Icon name="calendar-days" size={12} color="#FFF" /> Event
+                      <Icon name="calendar-days" size={isMobile ? 10 : 12} color="#FFF" /> Event
                     </span>
                   ) : config.meta?.costModel === 'project' ? (
                     <span style={{
                       background: '#5A5B8A',
                       color: '#FFF',
-                      padding: '3px 10px',
+                      padding: isMobile ? '2px 8px' : '3px 10px',
                       borderRadius: '12px',
-                      fontSize: '11px',
+                      fontSize: isMobile ? '10px' : '11px',
                       fontWeight: 600,
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
@@ -11102,15 +11107,15 @@ FATHOM - Journey intelligence for modern operations`);
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      <Icon name="folder-kanban" size={12} color="#FFF" /> Project
+                      <Icon name="folder-kanban" size={isMobile ? 10 : 12} color="#FFF" /> Project
                     </span>
                   ) : (
                     <span style={{
                       background: '#5B8A9A',
                       color: '#FFF',
-                      padding: '3px 10px',
+                      padding: isMobile ? '2px 8px' : '3px 10px',
                       borderRadius: '12px',
-                      fontSize: '11px',
+                      fontSize: isMobile ? '10px' : '11px',
                       fontWeight: 600,
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
@@ -11119,7 +11124,7 @@ FATHOM - Journey intelligence for modern operations`);
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      <Icon name="briefcase" size={12} color="#FFF" /> Client
+                      <Icon name="briefcase" size={isMobile ? 10 : 12} color="#FFF" /> Client
                     </span>
                   )}
                   
@@ -11231,37 +11236,41 @@ FATHOM - Journey intelligence for modern operations`);
                 ) : (
                   <>
                     {/* Stats Badges */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Total Time">
-                      <Icon name="clock" size={14} color="#FFF" />
-                      <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{formatTime(totalTime)}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : '6px', padding: isMobile ? '3px 6px' : '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Total Time">
+                      <Icon name="clock" size={isMobile ? 12 : 14} color="#FFF" />
+                      <span style={{ fontWeight: 600, fontSize: isMobile ? '10px' : '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{formatTime(totalTime)}</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Average Friction">
-                      <span style={{ fontSize: '12px' }}>{frictionConfig[Math.round(stats.avgFriction) || 3]?.emoji || '😕'}</span>
-                      <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{stats.avgFriction}/5</span>
+                    {!isMobile && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Average Friction">
+                        <span style={{ fontSize: '12px' }}>{frictionConfig[Math.round(stats.avgFriction) || 3]?.emoji || '😕'}</span>
+                        <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{stats.avgFriction}/5</span>
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : '6px', padding: isMobile ? '3px 6px' : '4px 10px', background: '#B84A5A', borderRadius: '6px' }} title="Pain Points">
+                      <Icon name="alert-triangle" size={isMobile ? 12 : 14} color="#FFF" />
+                      <span style={{ fontWeight: 600, fontSize: isMobile ? '10px' : '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{stats.totalPainPoints}</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: '#B84A5A', borderRadius: '6px' }} title="Pain Points">
-                      <Icon name="alert-triangle" size={14} color="#FFF" />
-                      <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{stats.totalPainPoints}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : '6px', padding: isMobile ? '3px 6px' : '4px 10px', background: '#2D8A6E', borderRadius: '6px' }} title="High Improvement Opportunities">
+                      <Icon name="target" size={isMobile ? 12 : 14} color="#FFF" />
+                      <span style={{ fontWeight: 600, fontSize: isMobile ? '10px' : '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{stats.highAutomation}</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: '#2D8A6E', borderRadius: '6px' }} title="High Improvement Opportunities">
-                      <Icon name="target" size={14} color="#FFF" />
-                      <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{stats.highAutomation}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Regulatory Requirements">
-                      <Icon name="clipboard-check" size={14} color="#FFF" />
-                      <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{stats.totalRegReqs}</span>
-                    </div>
+                    {!isMobile && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Regulatory Requirements">
+                        <Icon name="clipboard-check" size={14} color="#FFF" />
+                        <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Interstate', sans-serif", color: '#FFF' }}>{stats.totalRegReqs}</span>
+                      </div>
+                    )}
                     
                     {/* Journey Cost */}
                     {showCosts && (
                       <>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: '#C4942A', borderRadius: '6px', marginLeft: '4px' }} title="Total Journey Cost">
-                          <Icon name="coins" size={14} color="#FFF" />
-                          <span style={{ fontWeight: 700, color: '#FFF', fontSize: '13px', fontFamily: "'Interstate', sans-serif" }}>{formatCurrency(stats.totalCost)}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : '6px', padding: isMobile ? '3px 8px' : '4px 12px', background: '#C4942A', borderRadius: '6px', marginLeft: '4px' }} title="Total Journey Cost">
+                          <Icon name="coins" size={isMobile ? 12 : 14} color="#FFF" />
+                          <span style={{ fontWeight: 700, color: '#FFF', fontSize: isMobile ? '11px' : '13px', fontFamily: "'Interstate', sans-serif" }}>{formatCurrency(stats.totalCost)}</span>
                         </div>
                         
                         {/* Per Attendee Badge - Event Mode only */}
-                        {config.meta?.costModel === 'event' && (
+                        {!isMobile && config.meta?.costModel === 'event' && (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(196, 148, 42, 0.3)', borderRadius: '6px' }} title="Cost Per Attendee">
                             <Icon name="bar-chart-3" size={14} color="#FFF" />
                             <span style={{ fontWeight: 600, color: '#FFF', fontSize: '11px', fontFamily: "'Interstate', sans-serif" }}>
@@ -11274,13 +11283,13 @@ FATHOM - Journey intelligence for modern operations`);
                     
                     {/* Profile Dropdown (Supabase mode only) */}
                     {isSupabaseMode && currentUser && (
-                      <div className="profile-container" style={{ position: 'relative', marginLeft: '8px', zIndex: 9999 }}>
+                      <div className="profile-container" style={{ position: 'relative', marginLeft: isMobile ? '4px' : '8px', zIndex: 9999 }}>
                         <button 
                           onClick={(e) => { e.stopPropagation(); setShowProfileMenu(!showProfileMenu); }}
                           style={{ 
                             display: 'flex', 
                             alignItems: 'center', 
-                            padding: '3px',
+                            padding: '2px',
                             background: 'transparent',
                             border: 'none',
                             borderRadius: '50%',
@@ -11290,17 +11299,17 @@ FATHOM - Journey intelligence for modern operations`);
                           }}
                         >
                           <div style={{ 
-                            width: '36px', 
-                            height: '36px', 
+                            width: isMobile ? '28px' : '36px', 
+                            height: isMobile ? '28px' : '36px', 
                             borderRadius: '50%', 
                             background: 'var(--steel-500, #5B8A9A)', 
                             display: 'flex', 
                             alignItems: 'center', 
                             justifyContent: 'center', 
                             color: '#FFF', 
-                            fontSize: '14px', 
+                            fontSize: isMobile ? '11px' : '14px', 
                             fontWeight: 600,
-                            border: '2px solid rgba(255,255,255,0.2)',
+                            border: isMobile ? '1px solid rgba(255,255,255,0.2)' : '2px solid rgba(255,255,255,0.2)',
                             transition: 'border-color 0.15s',
                             overflow: 'hidden'
                           }}>
@@ -11337,7 +11346,7 @@ FATHOM - Journey intelligence for modern operations`);
                             boxShadow: '0 8px 32px rgba(0,0,0,0.2)', 
                             minWidth: '220px', 
                             padding: '8px 0',
-                            zIndex: 10000
+                            zIndex: 99999
                           }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1px solid #E4E7EB', marginBottom: '4px' }}>
                               <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#5B8A9A', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '16px', fontWeight: 600, flexShrink: 0, overflow: 'hidden' }}>
@@ -11360,14 +11369,14 @@ FATHOM - Journey intelligence for modern operations`);
                             <a href="profile.html" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px', color: '#3D4A5C', textDecoration: 'none', fontSize: '14px', transition: 'background 0.1s' }} 
                                onMouseOver={(e) => e.currentTarget.style.background = '#F4F5F7'} 
                                onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
-                              <span style={{ width: '18px', textAlign: 'center' }}>👤</span>
+                              <Icon name="user" size={16} color="#556275" />
                               Profile Settings
                             </a>
                             
                             <a href="team.html" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px', color: '#3D4A5C', textDecoration: 'none', fontSize: '14px', transition: 'background 0.1s' }} 
                                onMouseOver={(e) => e.currentTarget.style.background = '#F4F5F7'} 
                                onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
-                              <span style={{ width: '18px', textAlign: 'center' }}>👥</span>
+                              <Icon name="users" size={16} color="#556275" />
                               Team Management
                             </a>
                             
@@ -11376,14 +11385,14 @@ FATHOM - Journey intelligence for modern operations`);
                             <a href="dashboard.html" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px', color: '#3D4A5C', textDecoration: 'none', fontSize: '14px', transition: 'background 0.1s' }} 
                                onMouseOver={(e) => e.currentTarget.style.background = '#F4F5F7'} 
                                onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
-                              <span style={{ width: '18px', textAlign: 'center' }}>📊</span>
+                              <Icon name="bar-chart-3" size={16} color="#556275" />
                               Dashboard
                             </a>
                             
                             <a href="whats-new.html" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px', color: '#3D4A5C', textDecoration: 'none', fontSize: '14px', transition: 'background 0.1s' }} 
                                onMouseOver={(e) => e.currentTarget.style.background = '#F4F5F7'} 
                                onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
-                              <span style={{ width: '18px', textAlign: 'center' }}>✨</span>
+                              <Icon name="sparkles" size={16} color="#556275" />
                               What's New
                             </a>
                             
@@ -11400,7 +11409,7 @@ FATHOM - Journey intelligence for modern operations`);
                               onMouseOver={(e) => e.currentTarget.style.background = 'rgba(184, 74, 90, 0.08)'} 
                               onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
                             >
-                              <span style={{ width: '18px', textAlign: 'center' }}>🚪</span>
+                              <Icon name="log-out" size={16} color="#B84A5A" />
                               Sign Out
                             </button>
                           </div>
