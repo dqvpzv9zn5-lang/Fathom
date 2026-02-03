@@ -11921,9 +11921,12 @@ FATHOM - Journey intelligence for modern operations`);
                                     background: 'rgba(239,68,68,0.9)', 
                                     padding: '2px 8px', 
                                     borderRadius: '4px', 
-                                    fontWeight: 600 
+                                    fontWeight: 600,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px'
                                   }}>
-                                    💸 {formatCurrency(stageFunnelData.wastedCost)}
+                                    <Icon name="trending-down" size={11} color="#FFF" /> {formatCurrency(stageFunnelData.wastedCost)}
                                   </span>
                                 )}
                               </div>
@@ -12102,7 +12105,7 @@ FATHOM - Journey intelligence for modern operations`);
                               cursor: 'default'
                             }}
                             title={`${highAutoOps} high improvement opportunit${highAutoOps !== 1 ? 'ies' : 'y'}`}>
-                              <span>🎯</span>
+                              <Icon name="target" size={12} color="#2D8A6E" />
                               <span>{highAutoOps} high</span>
                             </div>
                           )}
@@ -12119,7 +12122,7 @@ FATHOM - Journey intelligence for modern operations`);
                               cursor: 'default'
                             }}
                             title={`${medAutoOps} medium improvement opportunit${medAutoOps !== 1 ? 'ies' : 'y'}`}>
-                              <span>🎯</span>
+                              <Icon name="target" size={12} color="#8B6914" />
                               <span>{medAutoOps} medium</span>
                             </div>
                           )}
@@ -12136,7 +12139,7 @@ FATHOM - Journey intelligence for modern operations`);
                               cursor: 'default'
                             }}
                             title={`${totalPainPoints} pain point${totalPainPoints !== 1 ? 's' : ''}`}>
-                              <span>⚠️</span>
+                              <Icon name="alert-triangle" size={12} color="#B84A5A" />
                               <span>{totalPainPoints} pain</span>
                             </div>
                           )}
@@ -12153,7 +12156,7 @@ FATHOM - Journey intelligence for modern operations`);
                               cursor: 'default'
                             }}
                             title={`${totalRegReqs} regulatory requirement${totalRegReqs !== 1 ? 's' : ''}`}>
-                              <span>📋</span>
+                              <Icon name="clipboard-check" size={12} color="#5A5B8A" />
                               <span>{totalRegReqs} reg</span>
                             </div>
                           )}
@@ -12170,7 +12173,7 @@ FATHOM - Journey intelligence for modern operations`);
                               cursor: 'default'
                             }}
                             title={`${checkpointCount} checkpoint${checkpointCount !== 1 ? 's' : ''}`}>
-                              <span>🚧</span>
+                              <Icon name="octagon-alert" size={12} color="#92400E" />
                               <span>{checkpointCount} checkpoint{checkpointCount !== 1 ? 's' : ''}</span>
                             </div>
                           )}
@@ -12645,7 +12648,7 @@ FATHOM - Journey intelligence for modern operations`);
                             gap: '6px'
                           }}
                         >
-                          ✏️ Edit
+                          <Icon name="pencil" size={14} color="#FFF" /> Edit
                         </button>
                       )
                     )}
@@ -12864,7 +12867,7 @@ FATHOM - Journey intelligence for modern operations`);
                           letterSpacing: '0.5px',
                           fontWeight: 600
                         }}>
-                          💰 Cost Breakdown
+                          <Icon name="coins" size={12} color="#8B6914" style={{ marginRight: '4px', display: 'inline-block', verticalAlign: 'middle' }} /> Cost Breakdown
                         </label>
                         <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
                           {config.meta?.costModel === 'event' ? (
@@ -13195,9 +13198,9 @@ FATHOM - Journey intelligence for modern operations`);
                                       }}
                                       style={{ padding: '6px', border: '1px solid #C8CED6', borderRadius: '4px', fontSize: '11px', fontFamily: "'Interstate', sans-serif" }}
                                     >
-                                      <option value="third-party">🔌 Third-party</option>
-                                      <option value="materials">📄 Materials</option>
-                                      <option value="other">📎 Other</option>
+                                      <option value="third-party">Third-party</option>
+                                      <option value="materials">Materials</option>
+                                      <option value="other">Other</option>
                                     </select>
                                     <input
                                       type="text"
@@ -13240,9 +13243,9 @@ FATHOM - Journey intelligence for modern operations`);
                                   </>
                                 ) : (
                                   <>
-                                    <span style={{ fontSize: '14px' }}>
-                                      {cost.category === 'materials' ? '📄' : cost.category === 'other' ? '📎' : '🔌'}
-                                    </span>
+                                    <div style={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}>
+                                      {cost.category === 'materials' ? <Icon name="file-text" size={14} color="#6E7B8C" /> : cost.category === 'other' ? <Icon name="paperclip" size={14} color="#6E7B8C" /> : <Icon name="plug" size={14} color="#6E7B8C" />}
+                                    </div>
                                     <div style={{ flex: 1, fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: '#374151' }}>
                                       {cost.description}
                                     </div>
@@ -13279,7 +13282,7 @@ FATHOM - Journey intelligence for modern operations`);
                       {/* Peak Load Factor */}
                       <div style={{ marginBottom: '16px' }}>
                         <div style={{ fontFamily: "'Interstate', sans-serif", fontSize: '10px', color: '#8B6914', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', fontWeight: 600 }}>
-                          ⚡ Peak Load Factor
+                          <Icon name="zap" size={11} color="#8B6914" style={{ marginRight: '4px', display: 'inline-block', verticalAlign: 'middle' }} /> Peak Load Factor
                         </div>
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                           {[
@@ -13333,7 +13336,7 @@ FATHOM - Journey intelligence for modern operations`);
                       {/* Active Roles during this step */}
                       <div style={{ marginBottom: '16px' }}>
                         <div style={{ fontFamily: "'Interstate', sans-serif", fontSize: '10px', color: '#8B6914', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', fontWeight: 600 }}>
-                          👥 Active Roles During Step
+                          <Icon name="users" size={11} color="#8B6914" style={{ marginRight: '4px', display: 'inline-block', verticalAlign: 'middle' }} /> Active Roles During Step
                         </div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                           {config.personas.filter(p => !p.isExternal).map(persona => {
@@ -13471,7 +13474,7 @@ FATHOM - Journey intelligence for modern operations`);
                         <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
                           {((editingStep || selectedStep).painPoints || []).map((pp, i) => (
                             <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px', background: '#F5E0E3', borderRadius: '6px', marginBottom: '8px', fontFamily: "'Interstate', sans-serif", fontSize: '14px', color: '#B84A5A' }}>
-                              <span>⚠️</span>
+                              <Icon name="alert-triangle" size={16} color="#B84A5A" />
                               <span style={{ flex: 1 }}>{pp}</span>
                               {editingStep && <button onClick={(e) => { e.stopPropagation(); setEditingStep(prev => ({ ...prev, painPoints: (prev.painPoints || []).filter((_, idx) => idx !== i) })); }} style={{ background: 'none', border: 'none', color: '#B84A5A', cursor: 'pointer', fontSize: '16px' }}>×</button>}
                             </li>
@@ -13554,7 +13557,7 @@ FATHOM - Journey intelligence for modern operations`);
                         <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
                           {((editingStep || selectedStep).regulatoryRequirements || []).map((req, i) => (
                             <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px', background: '#E1EEF2', borderRadius: '6px', marginBottom: '8px', fontFamily: "'Interstate', sans-serif", fontSize: '14px', color: '#5A5B8A' }}>
-                              <span>📋</span>
+                              <Icon name="clipboard-check" size={16} color="#5A5B8A" />
                               <span style={{ flex: 1 }}>{req}</span>
                               {editingStep && <button onClick={(e) => { e.stopPropagation(); setEditingStep(prev => ({ ...prev, regulatoryRequirements: (prev.regulatoryRequirements || []).filter((_, idx) => idx !== i) })); }} style={{ background: 'none', border: 'none', color: '#5A5B8A', cursor: 'pointer', fontSize: '16px' }}>×</button>}
                             </li>
@@ -13633,7 +13636,7 @@ FATHOM - Journey intelligence for modern operations`);
                                       }}
                                       title={teamMemberCount === 0 ? 'Add team members to this role first' : `Request feedback from ${teamMemberCount} team ${teamMemberCount === 1 ? 'member' : 'members'}`}
                                     >
-                                      <span style={{ fontSize: '14px' }}>📧</span>
+                                      <Icon name="mail" size={14} color={teamMemberCount === 0 ? '#A9B2BE' : '#FFF'} />
                                       <span>Request Feedback</span>
                                       <span style={{ 
                                         padding: '2px 8px', 
