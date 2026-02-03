@@ -973,7 +973,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "10.1.0";
+    const APP_VERSION = "10.2.0";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -11551,7 +11551,7 @@ FATHOM - Journey intelligence for modern operations`);
                   }}
                   title="Problems"
                 >
-                  <span className="sidebar-icon"><Icon name="alert-circle" size={18} /></span>
+                  <span className="sidebar-icon"><Icon name="alert-triangle" size={18} /></span>
                   <span className="sidebar-label">Problems</span>
                 </div>
                 <div 
@@ -11907,7 +11907,7 @@ FATHOM - Journey intelligence for modern operations`);
                           boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                           zIndex: 10
                         }}>
-                          <Icon name="alert-circle" size={12} color="#FFF" /> {stageProblemColor.label}
+                          <Icon name="alert-triangle" size={12} color="#FFF" /> {stageProblemColor.label}
                         </div>
                       )}
                       {/* Smooth Stage Badge */}
@@ -12065,20 +12065,16 @@ FATHOM - Journey intelligence for modern operations`);
                                 alignItems: 'center', 
                                 gap: '8px',
                                 padding: '8px 12px',
-                                background: showProblems
-                                  ? stepProblemColor.bg
-                                  : showOppHighlight 
-                                    ? (isTopFive 
-                                      ? (isHighOpp ? 'linear-gradient(90deg, #D4EDE5 0%, #96BCC7 100%)' : 'linear-gradient(90deg, #FAF0D6 0%, #F0DDA8 100%)')
-                                      : (isHighOpp ? '#E1EEF2' : '#FAF0D6'))
-                                    : '#F4F5F7',
+                                background: showOppHighlight 
+                                  ? (isTopFive 
+                                    ? (isHighOpp ? 'linear-gradient(90deg, #D4EDE5 0%, #96BCC7 100%)' : 'linear-gradient(90deg, #FAF0D6 0%, #F0DDA8 100%)')
+                                    : (isHighOpp ? '#E1EEF2' : '#FAF0D6'))
+                                  : '#F4F5F7',
                                 borderRadius: '6px',
                                 fontSize: '13px',
-                                border: showProblems
-                                  ? (isStepProblematic ? `2px solid ${stepProblemColor.text}` : isStepSmooth ? '2px solid #1A5F4F' : '1px solid #E4E7EB')
-                                  : showOppHighlight 
-                                    ? (isTopFive
-                                      ? (isHighOpp ? '2px solid #96BCC7' : '2px solid #FCD34D')
+                                border: showOppHighlight 
+                                  ? (isTopFive
+                                    ? (isHighOpp ? '2px solid #96BCC7' : '2px solid #FCD34D')
                                     : (isHighOpp ? '1px solid #BBF7D0' : '1px solid #FEF08A'))
                                   : '1px solid transparent',
                                 position: 'relative',
@@ -12109,7 +12105,7 @@ FATHOM - Journey intelligence for modern operations`);
                                     {opportunityRanks[step.id]}
                                   </span>
                                 )}
-                                {/* Time Bar Background - only show when not highlighting opportunities */}
+                                {/* Time Bar Background */}
                                 {!showOppHighlight && (
                                   <div style={{
                                     position: 'absolute',
@@ -12117,9 +12113,11 @@ FATHOM - Journey intelligence for modern operations`);
                                     left: 0,
                                     width: `${timeBarWidth}%`,
                                     height: '100%',
-                                    background: stageColorLight,
-                                    opacity: 0.25,
-                                    transition: 'width 0.3s ease',
+                                    background: showProblems 
+                                      ? (isStepSmooth ? '#D4EDE5' : isStepProblematic ? stepProblemColor.text : stageColorLight)
+                                      : stageColorLight,
+                                    opacity: showProblems ? (isStepSmooth ? 0.3 : isStepProblematic ? 0.25 : 0.15) : 0.25,
+                                    transition: 'width 0.3s ease, background 0.3s ease',
                                     zIndex: 0
                                   }} />
                                 )}
@@ -12513,7 +12511,7 @@ FATHOM - Journey intelligence for modern operations`);
                                 gap: '4px',
                                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                               }}>
-                                <Icon name="alert-circle" size={11} color="#FFF" /> {problemColor.label} Problem
+                                <Icon name="alert-triangle" size={11} color="#FFF" /> {problemColor.label} Problem
                               </div>
                             )}
                             {/* Smooth Step Badge */}
