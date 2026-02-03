@@ -12654,202 +12654,234 @@ FATHOM - Journey intelligence for modern operations`);
                     <button onClick={() => { setSelectedStep(null); setEditingStep(null); }} style={{ background: 'transparent', border: 'none', color: '#FFF', fontSize: '28px', cursor: 'pointer', opacity: 0.7, padding: '0 8px' }}>×</button>
                   </div>
                 </div>
-                <div style={{ padding: isMobile ? '24px' : '32px', flex: isMobile ? 'none' : 1, overflowY: isMobile ? 'visible' : 'auto' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    {/* Description Field */}
-                    <div style={{ padding: '16px', background: '#F4F5F7', borderRadius: '8px' }}>
-                      <label style={{ display: 'block', fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#556275', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Description</label>
-                      {editingStep ? (
-                        <textarea 
-                          value={editingStep.description || ''} 
-                          onChange={(e) => setEditingStep(prev => ({ ...prev, description: e.target.value }))} 
-                          placeholder="Brief description of this step..." 
-                          style={{ 
-                            width: '100%', 
-                            padding: '10px', 
-                            border: '1px solid #C8CED6', 
-                            borderRadius: '6px', 
-                            fontSize: '14px', 
+                <div style={{ padding: isMobile ? '20px' : '20px 24px', flex: isMobile ? 'none' : 1, overflowY: isMobile ? 'visible' : 'auto' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {/* Description + Time Required Row */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '12px' }}>
+                      {/* Description Field */}
+                      <div style={{ padding: '12px 16px', background: '#F4F5F7', borderRadius: '8px' }}>
+                        <label style={{ display: 'block', fontFamily: "'Interstate', sans-serif", fontSize: '10px', color: '#556275', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px', fontWeight: 600 }}>Description</label>
+                        {editingStep ? (
+                          <textarea 
+                            value={editingStep.description || ''} 
+                            onChange={(e) => setEditingStep(prev => ({ ...prev, description: e.target.value }))} 
+                            placeholder="Brief description of this step..." 
+                            style={{ 
+                              width: '100%', 
+                              padding: '8px', 
+                              border: '1px solid #C8CED6', 
+                              borderRadius: '4px', 
+                              fontSize: '13px', 
+                              fontFamily: "'Open Sans', sans-serif", 
+                              resize: 'vertical', 
+                              minHeight: '60px',
+                              lineHeight: 1.5
+                            }} 
+                          />
+                        ) : (
+                          <p style={{ 
+                            margin: 0, 
+                            fontSize: '13px', 
+                            color: '#3D4A5C', 
                             fontFamily: "'Open Sans', sans-serif", 
-                            resize: 'vertical', 
-                            minHeight: '80px',
                             lineHeight: 1.5
-                          }} 
-                        />
-                      ) : (
-                        <p style={{ 
-                          margin: 0, 
-                          fontSize: '14px', 
-                          color: '#3D4A5C', 
-                          fontFamily: "'Open Sans', sans-serif", 
-                          lineHeight: 1.6,
-                          minHeight: '40px'
-                        }}>
-                          {selectedStep.description || <span style={{ fontStyle: 'italic', color: '#8A95A5' }}>No description provided</span>}
-                        </p>
-                      )}
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                      <div style={{ padding: '16px', background: '#F4F5F7', borderRadius: '8px' }}>
-                        <label style={{ display: 'block', fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#556275', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Time Required</label>
-                        <span style={{ fontSize: '24px', fontWeight: 600 }}>{formatTime((editingStep || selectedStep).timeMinutes)}</span>
+                          }}>
+                            {selectedStep.description || <span style={{ fontStyle: 'italic', color: '#8A95A5' }}>No description provided</span>}
+                          </p>
+                        )}
+                      </div>
+                      
+                      {/* Time Required */}
+                      <div style={{ padding: '12px 16px', background: '#F4F5F7', borderRadius: '8px' }}>
+                        <label style={{ display: 'block', fontFamily: "'Interstate', sans-serif", fontSize: '10px', color: '#556275', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px', fontWeight: 600 }}>Time Required</label>
+                        <span style={{ fontSize: '20px', fontWeight: 600 }}>{formatTime((editingStep || selectedStep).timeMinutes)}</span>
                         {editingStep && (
                           <div style={{ fontFamily: "'Interstate', sans-serif", fontSize: '10px', color: '#8A95A5', marginTop: '4px' }}>
                             Auto-calculated from roles below
                           </div>
                         )}
                       </div>
-                      <div style={{ padding: '16px', background: '#F4F5F7', borderRadius: '8px' }}>
-                        <label style={{ display: 'block', fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#556275', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Primary Owner</label>
+                    </div>
+                    
+                    {/* Improvement Opportunity + Friction Row */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '12px' }}>
+                      {/* Improvement Opportunity */}
+                      <div style={{ padding: '12px 16px', background: '#F4F5F7', borderRadius: '8px' }}>
+                        <label style={{ display: 'block', fontFamily: "'Interstate', sans-serif", fontSize: '10px', color: '#556275', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', fontWeight: 600 }}>Improvement Opportunity</label>
+                        {editingStep ? (
+                          <>
+                            <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+                              {['high', 'medium', 'low', 'none'].map(level => (
+                                <button 
+                                  key={level} 
+                                  onClick={() => setEditingStep(prev => ({ ...prev, automationOpportunity: level }))} 
+                                  style={{ 
+                                    padding: '4px 12px', 
+                                    border: '2px solid', 
+                                    borderColor: editingStep.automationOpportunity === level ? automationColors[level].text : '#E4E7EB', 
+                                    borderRadius: '12px', 
+                                    background: editingStep.automationOpportunity === level ? automationColors[level].bg : '#FFF', 
+                                    color: editingStep.automationOpportunity === level ? automationColors[level].text : '#556275', 
+                                    cursor: 'pointer', 
+                                    fontFamily: "'Interstate', sans-serif", 
+                                    fontSize: '11px', 
+                                    fontWeight: 500, 
+                                    textTransform: 'capitalize'
+                                  }}
+                                >
+                                  {level}
+                                </button>
+                              ))}
+                            </div>
+                            <textarea 
+                              value={editingStep.automationNotes || ''} 
+                              onChange={(e) => setEditingStep(prev => ({ ...prev, automationNotes: e.target.value }))} 
+                              placeholder="Notes on improvement potential..." 
+                              style={{ 
+                                width: '100%', 
+                                padding: '8px', 
+                                border: '1px solid #C8CED6', 
+                                borderRadius: '4px', 
+                                fontSize: '13px', 
+                                fontFamily: "'Open Sans', sans-serif", 
+                                resize: 'vertical', 
+                                minHeight: '60px',
+                                lineHeight: 1.5
+                              }} 
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: automationColors[selectedStep.automationOpportunity]?.bg, borderRadius: '12px', marginBottom: selectedStep.automationNotes ? '8px' : 0 }}>
+                              <Icon name="target" size={12} color={automationColors[selectedStep.automationOpportunity]?.text} />
+                              <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: automationColors[selectedStep.automationOpportunity]?.text, fontWeight: 500, textTransform: 'capitalize' }}>{selectedStep.automationOpportunity} potential</span>
+                            </div>
+                            {selectedStep.automationNotes && (
+                              <p style={{ margin: 0, fontSize: '13px', color: '#3D4A5C', fontFamily: "'Open Sans', sans-serif", lineHeight: 1.5 }}>
+                                {selectedStep.automationNotes}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
+                      
+                      {/* Friction */}
+                      <div style={{ padding: '12px 16px', background: frictionConfig[(editingStep || selectedStep).frictionScore || 3]?.bg || '#F4F5F7', borderRadius: '8px', transition: 'background 0.2s' }}>
+                        <label style={{ display: 'block', fontFamily: "'Interstate', sans-serif", fontSize: '10px', color: '#556275', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px', fontWeight: 600 }}>Friction</label>
+                        {editingStep ? (
+                          <div style={{ position: 'relative' }}>
+                            <select
+                              value={editingStep.frictionScore || 3}
+                              onChange={(e) => setEditingStep(prev => ({ ...prev, frictionScore: parseInt(e.target.value) }))}
+                              style={{
+                                width: '100%',
+                                padding: '8px',
+                                border: '1px solid #C8CED6',
+                                borderRadius: '4px',
+                                fontSize: '20px',
+                                background: '#FFF',
+                                fontFamily: "'Interstate', sans-serif",
+                                cursor: 'pointer',
+                                WebkitAppearance: 'none',
+                                MozAppearance: 'none',
+                                appearance: 'none',
+                                backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'12\' height=\'8\' viewBox=\'0 0 12 8\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1.5L6 6.5L11 1.5\' stroke=\'%23556275\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E")',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'right 8px center',
+                                paddingRight: '28px',
+                                color: 'transparent',
+                                textShadow: '0 0 0 transparent'
+                              }}
+                            >
+                              {[1,2,3,4,5].map(n => (
+                                <option key={n} value={n} style={{ color: '#1A2332', fontSize: '14px', fontFamily: "'Interstate', sans-serif" }}>
+                                  {frictionConfig[n]?.emoji} {frictionConfig[n]?.label}
+                                </option>
+                              ))}
+                            </select>
+                            <div style={{ 
+                              position: 'absolute', 
+                              top: '50%', 
+                              left: '50%', 
+                              transform: 'translate(-50%, -50%)', 
+                              pointerEvents: 'none',
+                              fontSize: '20px'
+                            }}>
+                              {frictionConfig[editingStep.frictionScore || 3]?.emoji}
+                            </div>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                            <span style={{ fontSize: '24px' }}>{frictionConfig[(editingStep || selectedStep).frictionScore || 3]?.emoji}</span>
+                            <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', fontWeight: 600, color: frictionConfig[(editingStep || selectedStep).frictionScore || 3]?.color }}>{frictionConfig[(editingStep || selectedStep).frictionScore || 3]?.label}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Primary Owner + Client Touchpoint Row */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      {/* Primary Owner */}
+                      <div style={{ padding: '12px 16px', background: '#F4F5F7', borderRadius: '8px' }}>
+                        <label style={{ display: 'block', fontFamily: "'Interstate', sans-serif", fontSize: '10px', color: '#556275', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px', fontWeight: 600 }}>Primary Owner</label>
                         {editingStep ? (
                           <select 
                             value={editingStep.owner} 
                             onChange={(e) => setEditingStep(prev => ({ ...prev, owner: e.target.value }))} 
-                            style={{ width: '100%', padding: '8px', border: '1px solid #C8CED6', borderRadius: '4px', fontSize: '14px', background: '#FFF' }}
+                            style={{ width: '100%', padding: '6px 8px', border: '1px solid #C8CED6', borderRadius: '4px', fontSize: '13px', background: '#FFF', fontFamily: "'Interstate', sans-serif" }}
                           >
                             {config.personas.map(p => (<option key={p.id} value={p.id}>{p.label}</option>))}
                           </select>
                         ) : (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: getPersonaColor(selectedStep.owner) }} />
-                            <span style={{ fontSize: '16px', fontWeight: 500 }}>{config.personas.find(p => p.id === selectedStep.owner)?.label}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                            <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: getPersonaColor(selectedStep.owner) }} />
+                            <span style={{ fontSize: '14px', fontWeight: 500, fontFamily: "'Interstate', sans-serif" }}>{config.personas.find(p => p.id === selectedStep.owner)?.label}</span>
                           </div>
                         )}
                       </div>
-                    </div>
-                    {/* Friction */}
-                    <div style={{ padding: '16px', background: frictionConfig[(editingStep || selectedStep).frictionScore || 3]?.bg || '#F4F5F7', borderRadius: '8px', marginBottom: '16px', transition: 'background 0.2s' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                        <label style={{ fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#556275', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Friction</label>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ fontSize: '18px' }}>{frictionConfig[(editingStep || selectedStep).frictionScore || 3]?.emoji}</span>
-                          <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', fontWeight: 600, color: frictionConfig[(editingStep || selectedStep).frictionScore || 3]?.color }}>{frictionConfig[(editingStep || selectedStep).frictionScore || 3]?.label}</span>
+                      
+                      {/* Client Touchpoint */}
+                      <div style={{ padding: '12px 16px', background: (editingStep || selectedStep).clientTouchpoint ? '#D4EDE5' : '#F4F5F7', borderRadius: '8px', border: (editingStep || selectedStep).clientTouchpoint ? '1px solid #2D8A6E' : '1px solid transparent' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div style={{ flex: 1 }}>
+                            <label style={{ display: 'block', fontFamily: "'Interstate', sans-serif", fontSize: '10px', color: '#556275', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px', fontWeight: 600 }}>Client Touchpoint</label>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <Icon name="user" size={14} color={(editingStep || selectedStep).clientTouchpoint ? '#2D8A6E' : '#556275'} />
+                              <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: (editingStep || selectedStep).clientTouchpoint ? '#2D8A6E' : '#556275', fontWeight: 500 }}>
+                                {(editingStep || selectedStep).clientTouchpoint ? 'Direct client involvement' : 'No client involvement'}
+                              </span>
+                            </div>
+                          </div>
+                          {editingStep && (
+                            <button 
+                              onClick={() => setEditingStep(prev => ({ ...prev, clientTouchpoint: !prev.clientTouchpoint }))} 
+                              style={{ 
+                                width: '50px', 
+                                height: '28px', 
+                                borderRadius: '14px', 
+                                border: 'none',
+                                background: editingStep.clientTouchpoint ? '#2D8A6E' : '#A9B2BE',
+                                cursor: 'pointer',
+                                position: 'relative',
+                                transition: 'background 0.2s',
+                                flexShrink: 0,
+                                marginLeft: '8px'
+                              }}
+                            >
+                              <div style={{
+                                width: '22px',
+                                height: '22px',
+                                borderRadius: '50%',
+                                background: '#FFF',
+                                position: 'absolute',
+                                top: '3px',
+                                left: editingStep.clientTouchpoint ? '25px' : '3px',
+                                transition: 'left 0.2s',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                              }} />
+                            </button>
+                          )}
                         </div>
-                      </div>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        {[1,2,3,4,5].map(n => (
-                          <button 
-                            key={n} 
-                            onClick={() => { 
-                              if (editingStep) { 
-                                setEditingStep(prev => ({ ...prev, frictionScore: n })); 
-                              }
-                            }} 
-                            disabled={!editingStep} 
-                            style={{ 
-                              width: '40px', 
-                              height: '40px', 
-                              border: '2px solid', 
-                              borderColor: ((editingStep || selectedStep).frictionScore || 3) >= n ? frictionConfig[(editingStep || selectedStep).frictionScore || 3]?.color : '#E4E7EB', 
-                              borderRadius: '8px', 
-                              background: ((editingStep || selectedStep).frictionScore || 3) >= n ? frictionConfig[(editingStep || selectedStep).frictionScore || 3]?.color : '#FFF', 
-                              color: ((editingStep || selectedStep).frictionScore || 3) >= n ? '#FFF' : '#3D4A5C', 
-                              cursor: editingStep ? 'pointer' : 'default', 
-                              fontWeight: 600, 
-                              fontSize: '14px', 
-                              transition: 'all 0.2s' 
-                            }}
-                          >
-                            {n}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    {/* Improvement Opportunity */}
-                    <div style={{ padding: '16px', background: '#F4F5F7', borderRadius: '8px', marginBottom: '16px' }}>
-                      <label style={{ display: 'block', fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#556275', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px' }}>Improvement Opportunity</label>
-                      {editingStep ? (
-                        <>
-                          <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                            {['high', 'medium', 'low', 'none'].map(level => (
-                              <button 
-                                key={level} 
-                                onClick={() => setEditingStep(prev => ({ ...prev, automationOpportunity: level }))} 
-                                style={{ 
-                                  padding: '8px 16px', 
-                                  border: '2px solid', 
-                                  borderColor: editingStep.automationOpportunity === level ? automationColors[level].text : '#E4E7EB', 
-                                  borderRadius: '20px', 
-                                  background: editingStep.automationOpportunity === level ? automationColors[level].bg : '#FFF', 
-                                  color: editingStep.automationOpportunity === level ? automationColors[level].text : '#556275', 
-                                  cursor: 'pointer', 
-                                  fontFamily: "'Interstate', sans-serif", 
-                                  fontSize: '12px', 
-                                  fontWeight: 500, 
-                                  textTransform: 'capitalize' 
-                                }}
-                              >
-                                {level}
-                              </button>
-                            ))}
-                          </div>
-                          <textarea 
-                            value={editingStep.automationNotes || ''} 
-                            onChange={(e) => setEditingStep(prev => ({ ...prev, automationNotes: e.target.value }))} 
-                            placeholder="Notes on improvement potential..." 
-                            style={{ 
-                              width: '100%', 
-                              padding: '10px', 
-                              border: '1px solid #C8CED6', 
-                              borderRadius: '6px', 
-                              fontSize: '13px', 
-                              fontFamily: "'Interstate', sans-serif", 
-                              resize: 'vertical', 
-                              minHeight: '60px' 
-                            }} 
-                          />
-                        </>
-                      ) : (
-                        <>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: automationColors[selectedStep.automationOpportunity]?.bg, borderRadius: '20px', marginBottom: selectedStep.automationNotes ? '12px' : 0 }}>
-                            <Icon name="target" size={14} color={automationColors[selectedStep.automationOpportunity]?.text} />
-                            <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '14px', color: automationColors[selectedStep.automationOpportunity]?.text, fontWeight: 500, textTransform: 'capitalize' }}>{selectedStep.automationOpportunity} potential</span>
-                          </div>
-                          {selectedStep.automationNotes && <p style={{ margin: 0, fontSize: '13px', color: '#556275', fontFamily: "'Interstate', sans-serif", lineHeight: 1.5 }}>{selectedStep.automationNotes}</p>}
-                        </>
-                      )}
-                    </div>
-                    
-                    {/* Client Touchpoint */}
-                    <div style={{ padding: '16px', background: (editingStep || selectedStep).clientTouchpoint ? '#D4EDE5' : '#F4F5F7', borderRadius: '8px', marginBottom: '16px', border: (editingStep || selectedStep).clientTouchpoint ? '1px solid #2D8A6E' : '1px solid transparent' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <label style={{ display: 'block', fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#556275', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Client Touchpoint</label>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Icon name="user" size={16} color={(editingStep || selectedStep).clientTouchpoint ? '#2D8A6E' : '#556275'} />
-                            <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '13px', color: (editingStep || selectedStep).clientTouchpoint ? '#2D8A6E' : '#556275', fontWeight: 500 }}>
-                              {(editingStep || selectedStep).clientTouchpoint ? 'This step has direct client involvement' : 'This step DOES NOT have direct client involvement'}
-                            </span>
-                          </div>
-                        </div>
-                        {editingStep && (
-                          <button 
-                            onClick={() => setEditingStep(prev => ({ ...prev, clientTouchpoint: !prev.clientTouchpoint }))} 
-                            style={{ 
-                              width: '60px', 
-                              height: '32px', 
-                              borderRadius: '16px', 
-                              border: 'none',
-                              background: editingStep.clientTouchpoint ? '#2D8A6E' : '#A9B2BE',
-                              cursor: 'pointer',
-                              position: 'relative',
-                              transition: 'background 0.2s',
-                              flexShrink: 0
-                            }}
-                          >
-                            <div style={{
-                              width: '26px',
-                              height: '26px',
-                              borderRadius: '50%',
-                              background: '#FFF',
-                              position: 'absolute',
-                              top: '3px',
-                              left: editingStep.clientTouchpoint ? '31px' : '3px',
-                              transition: 'left 0.2s',
-                              boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
-                            }} />
-                          </button>
-                        )}
                       </div>
                     </div>
                     
