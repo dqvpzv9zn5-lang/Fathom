@@ -858,7 +858,7 @@
       position: absolute;
       inset: 0;
       background: url('https://dqvpzv9zn5-lang.github.io/Fathom/topography-light.svg') center/600px 600px repeat;
-      opacity: 0.6;
+      opacity: 1;
       pointer-events: none;
     }
     
@@ -973,7 +973,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "10.4.0";
+    const APP_VERSION = "10.5.0";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -11034,8 +11034,7 @@ FATHOM - Journey intelligence for modern operations`);
               flexDirection: 'column',
               gap: '12px',
               flexShrink: 0,
-              position: 'relative',
-              zIndex: 1000
+              position: 'relative'
             }}>
             {/* Row 1: Back + Logo + Title (left) | Desktop nav + Export/Settings (right) */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
@@ -12439,11 +12438,11 @@ FATHOM - Journey intelligence for modern operations`);
                     }}>
                       {stage.steps.map((step, stepIndex) => {
                         const isSelected = selectedStep?.id === step.id;
-                        // Check if step involves the active perspective (either as owner OR in roleInvolvement)
+                        // Check if step involves the active perspective
                         const isInvolved = activePerspective === 'all' 
                           || step.owner === activePerspective
-                          || (step.roleInvolvement && step.roleInvolvement[activePerspective])
-                          || step.actions?.[activePerspective]
+                          || (step.roleInvolvement && Object.keys(step.roleInvolvement).includes(activePerspective))
+                          || (step.actions && step.actions[activePerspective])
                           || (activePerspective === 'client' && step.clientTouchpoint);
                         const isFiltered = !isInvolved;
                         const stepCost = calculateStepCost(step, config.personas, config);
