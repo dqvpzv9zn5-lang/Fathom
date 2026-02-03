@@ -12030,22 +12030,23 @@ FATHOM - Journey intelligence for modern operations`);
                                     {formatTime(Math.round(stepTimeSavings))} · {formatCurrency(stepSavings)} ({isHighOpp ? '70' : '40'}%)
                                   </span>
                                 ) : (
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', position: 'relative', zIndex: 1 }}>
-                                    {/* Time Badge */}
-                                    <span style={{ 
-                                      padding: '3px 8px', 
-                                      background: '#E9EEF4', 
-                                      color: '#556275', 
-                                      borderRadius: '4px',
-                                      fontWeight: 500,
-                                      fontSize: '11px'
-                                    }}>
-                                      {formatTime(step.timeMinutes)}
-                                    </span>
-                                    
-                                    {/* Cost Badge - only in Event Mode when showCosts enabled */}
-                                    {showCosts && config.meta?.costModel === 'event' && (
-                                      <>
+                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px', fontSize: '11px', position: 'relative', zIndex: 1 }}>
+                                    {/* Time | Cost on same line */}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                      {/* Time Badge */}
+                                      <span style={{ 
+                                        padding: '3px 8px', 
+                                        background: '#E9EEF4', 
+                                        color: '#556275', 
+                                        borderRadius: '4px',
+                                        fontWeight: 500,
+                                        fontSize: '11px'
+                                      }}>
+                                        {formatTime(step.timeMinutes)}
+                                      </span>
+                                      
+                                      {/* Cost Badge - only in Event Mode when showCosts enabled */}
+                                      {showCosts && config.meta?.costModel === 'event' && (
                                         <span style={{ 
                                           padding: '3px 8px', 
                                           background: '#FAF0D6', 
@@ -12056,21 +12057,24 @@ FATHOM - Journey intelligence for modern operations`);
                                         }}>
                                           {formatCurrency(stepCost)}
                                         </span>
-                                        
-                                        {/* Per Attendee Badge */}
-                                        <span style={{ 
-                                          padding: '3px 8px', 
-                                          background: 'rgba(196, 148, 42, 0.12)', 
-                                          color: '#8B6914', 
-                                          borderRadius: '4px',
-                                          fontWeight: 500,
-                                          fontSize: '10px'
-                                        }}>
-                                          {formatCostPerAttendee(calculateCostPerAttendee(stepCost, getStepCapacity(step, config)))}
-                                        </span>
-                                      </>
+                                      )}
+                                    </div>
+                                    
+                                    {/* Per Attendee Badge - on its own line underneath */}
+                                    {showCosts && config.meta?.costModel === 'event' && (
+                                      <span style={{ 
+                                        padding: '3px 8px', 
+                                        background: 'rgba(196, 148, 42, 0.12)', 
+                                        color: '#8B6914', 
+                                        borderRadius: '4px',
+                                        fontWeight: 500,
+                                        fontSize: '10px'
+                                      }}>
+                                        {formatCostPerAttendee(calculateCostPerAttendee(stepCost, getStepCapacity(step, config)))}
+                                      </span>
                                     )}
                                   </div>
+                                )}
                                 )}
                               </div>
                             );})}
@@ -12237,17 +12241,20 @@ FATHOM - Journey intelligence for modern operations`);
                             <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 600, lineHeight: 1.2 }}>{stage.name}</h2>
                           )}
                         </div>
-                        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
-                          <div style={{ fontSize: '16px', fontWeight: 600 }}>{formatTime(stageTime)}</div>
-                          {showCosts && (
-                            <>
-                              <div style={{ fontSize: '12px', opacity: 0.8 }}>{formatCurrency(stageCost)}</div>
-                              {config.meta?.costModel === 'event' && (
-                                <div style={{ fontSize: '10px', opacity: 0.7 }}>
-                                  {formatCostPerAttendee(calculateCostPerAttendee(stageCost, getStageCapacity(stage, config)))}
-                                </div>
-                              )}
-                            </>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
+                            <span style={{ fontWeight: 400 }}>{formatTime(stageTime)}</span>
+                            {showCosts && (
+                              <>
+                                <span style={{ opacity: 0.5, fontWeight: 400 }}>|</span>
+                                <span style={{ fontWeight: 600 }}>{formatCurrency(stageCost)}</span>
+                              </>
+                            )}
+                          </div>
+                          {showCosts && config.meta?.costModel === 'event' && (
+                            <div style={{ fontSize: '10px', opacity: 0.7, marginTop: '2px' }}>
+                              {formatCostPerAttendee(calculateCostPerAttendee(stageCost, getStageCapacity(stage, config)))}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -12396,19 +12403,21 @@ FATHOM - Journey intelligence for modern operations`);
                             )}
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                               <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#8A95A5', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Step {stageIndex + 1}.{stepIndex + 1}</span>
-                              <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
-                                <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: '#556275', background: '#E9EEF4', padding: '2px 8px', borderRadius: '10px' }}>{formatTime(step.timeMinutes)}</span>
-                                {showCosts && (
-                                  <>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'flex-end' }}>
+                                {/* Time | Cost on same line */}
+                                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                  <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: '#556275', background: '#E9EEF4', padding: '2px 8px', borderRadius: '10px' }}>{formatTime(step.timeMinutes)}</span>
+                                  {showCosts && (
                                     <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '12px', color: '#8B6914', background: '#FAF0D6', padding: '2px 8px', borderRadius: '10px', fontWeight: 500 }}>
                                       {formatCurrency(stepCost)}
                                     </span>
-                                    {config.meta?.costModel === 'event' && (
-                                      <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#5B8A9A', background: '#E1EEF2', padding: '2px 8px', borderRadius: '10px', fontWeight: 500 }}>
-                                        {formatCostPerAttendee(calculateCostPerAttendee(stepCost, getStepCapacity({ ...step, stageId: stage.id }, config)))}
-                                      </span>
-                                    )}
-                                  </>
+                                  )}
+                                </div>
+                                {/* Per Attendee on its own line */}
+                                {showCosts && config.meta?.costModel === 'event' && (
+                                  <span style={{ fontFamily: "'Interstate', sans-serif", fontSize: '11px', color: '#5B8A9A', background: '#E1EEF2', padding: '2px 8px', borderRadius: '10px', fontWeight: 500 }}>
+                                    {formatCostPerAttendee(calculateCostPerAttendee(stepCost, getStepCapacity({ ...step, stageId: stage.id }, config)))}
+                                  </span>
                                 )}
                               </div>
                             </div>
