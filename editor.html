@@ -973,7 +973,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "10.6.0";
+    const APP_VERSION = "10.7.0";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -12447,6 +12447,20 @@ FATHOM - Journey intelligence for modern operations`);
                           const hasRoleInvolvement = step.roleInvolvement && step.roleInvolvement.hasOwnProperty(activePerspective);
                           const hasAction = step.actions && step.actions.hasOwnProperty(activePerspective);
                           const isClientTouchpoint = activePerspective === 'client' && step.clientTouchpoint;
+                          
+                          // Debug logging (first step only)
+                          if (stepIndex === 0 && stageIndex === 0) {
+                            console.log('Perspective Filter Debug:', {
+                              activePerspective,
+                              stepName: step.name,
+                              stepOwner: step.owner,
+                              hasRoleInvolvement,
+                              roleInvolvementKeys: step.roleInvolvement ? Object.keys(step.roleInvolvement) : [],
+                              hasOwnership,
+                              hasAction,
+                              isClientTouchpoint
+                            });
+                          }
                           
                           // If persona is NOT involved in any way, filter (dim) the step
                           isFiltered = !hasOwnership && !hasRoleInvolvement && !hasAction && !isClientTouchpoint;
