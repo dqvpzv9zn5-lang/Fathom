@@ -973,7 +973,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "9.17.0";
+    const APP_VERSION = "10.0.0";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -2375,6 +2375,33 @@ Powered by FATHOM
         avgCostPerHour: calculateAvgCostPerStaffHour(totalLabourCost, totalHours),
         totalLabourCost
       };
+    };
+
+    // Calculate problem severity for a step (0-100 scale)
+    // Based on: pain points, friction level, and operational cost
+    const calculateProblemSeverity = (step, personas, config) => {
+      const stepCost = calculateStepCost(step, personas, config);
+      const painPointCount = (step.painPoints || []).length;
+      const frictionScore = step.frictionScore || (step.friction === 'high' ? 5 : step.friction === 'medium' ? 3 : 1);
+      
+      // Normalize each factor to 0-1 scale
+      const painFactor = Math.min(painPointCount / 5, 1); // 5+ pain points = max
+      const frictionFactor = frictionScore / 5; // Friction is already 1-5
+      const costFactor = Math.min(stepCost / 5000, 1); // £5000+ = max cost concern
+      
+      // Weighted scoring: pain=40%, friction=35%, cost=25%
+      const severityScore = (painFactor * 0.4 + frictionFactor * 0.35 + costFactor * 0.25) * 100;
+      
+      return severityScore;
+    };
+
+    // Get problem color based on severity score
+    const getProblemColor = (severityScore) => {
+      if (severityScore < 15) return { bg: '#D4EDE5', text: '#1A5F4F', label: 'Smooth' }; // Green - no problems
+      if (severityScore < 30) return { bg: '#F4F5F7', text: '#556275', label: 'Minor' }; // Neutral gray
+      if (severityScore < 50) return { bg: '#FEF3C7', text: '#92400E', label: 'Moderate' }; // Light yellow
+      if (severityScore < 70) return { bg: '#FED7AA', text: '#9A3412', label: 'Significant' }; // Light orange
+      return { bg: '#FEE2E2', text: '#991B1B', label: 'Severe' }; // Light red
     };
 
     /*
@@ -9722,6 +9749,7 @@ FATHOM - Journey intelligence for modern operations`);
       const [dashboardTab, setDashboardTab] = useState('time'); // 'time', 'costs', 'funnel'
       const [stakeholderTab, setStakeholderTab] = useState('finance'); // 'finance', 'operations', 'experience'
       const [highlightOpportunities, setHighlightOpportunities] = useState(false);
+      const [showProblems, setShowProblems] = useState(false);
       const [viewMode, setViewMode] = useState('stages'); // 'steps' or 'stages';
       const [showSettingsMenu, setShowSettingsMenu] = useState(false);
       const [showStructurePanel, setShowStructurePanel] = useState(false);
@@ -11513,10 +11541,27 @@ FATHOM - Journey intelligence for modern operations`);
               <div className="sidebar-section">
                 <div className="sidebar-section-header">SHOW</div>
                 <div 
+                  className={`sidebar-item checkbox-item ${showProblems ? 'checked' : ''}`}
+                  onClick={() => {
+                    setShowProblems(!showProblems);
+                    if (!showProblems) {
+                      setHighlightOpportunities(false);
+                      setShowFunnel(false);
+                    }
+                  }}
+                  title="Problems"
+                >
+                  <span className="sidebar-icon"><Icon name="alert-circle" size={18} /></span>
+                  <span className="sidebar-label">Problems</span>
+                </div>
+                <div 
                   className={`sidebar-item checkbox-item ${highlightOpportunities ? 'checked' : ''}`}
                   onClick={() => {
                     setHighlightOpportunities(!highlightOpportunities);
-                    if (!highlightOpportunities) setShowFunnel(false);
+                    if (!highlightOpportunities) {
+                      setShowFunnel(false);
+                      setShowProblems(false);
+                    }
                   }}
                   title="Opportunities"
                 >
@@ -11527,7 +11572,10 @@ FATHOM - Journey intelligence for modern operations`);
                   className={`sidebar-item checkbox-item ${showFunnel ? 'checked' : ''}`}
                   onClick={() => {
                     setShowFunnel(!showFunnel);
-                    if (!showFunnel) setHighlightOpportunities(false);
+                    if (!showFunnel) {
+                      setHighlightOpportunities(false);
+                      setShowProblems(false);
+                    }
                   }}
                   title="Funnel"
                 >
@@ -12322,7 +12370,7 @@ FATHOM - Journey intelligence for modern operations`);
                       alignItems: 'stretch',
                       borderRadius: '0 0 12px 12px',
                       overflow: 'visible',
-                      paddingTop: highlightOpportunities ? '14px' : '0'
+                      paddingTop: (highlightOpportunities || showProblems) ? '14px' : '0'
                     }}>
                       {stage.steps.map((step, stepIndex) => {
                         const isSelected = selectedStep?.id === step.id;
@@ -12337,6 +12385,13 @@ FATHOM - Journey intelligence for modern operations`);
                           : step.automationOpportunity === 'low' ? step.timeMinutes * 0.1 : 0;
                         const isHighOpportunity = highlightOpportunities && step.automationOpportunity === 'high' && stepCost > 50;
                         const isMediumOpportunity = highlightOpportunities && step.automationOpportunity === 'medium' && stepCost > 100;
+                        
+                        // Problem severity calculations
+                        const problemSeverity = calculateProblemSeverity(step, config.personas, config);
+                        const problemColor = getProblemColor(problemSeverity);
+                        const isProblemat = showProblems && problemSeverity >= 30; // Show color for moderate+ problems
+                        const isProblemSmooth = showProblems && problemSeverity < 15; // Green for smooth steps
+                        
                         const stageColor = getStageColor(stageIndex);
                         const stageColorDark = getStageColor(stageIndex, 'dark');
                         
@@ -12345,26 +12400,76 @@ FATHOM - Journey intelligence for modern operations`);
                         return (
                           <div key={step.id} className="step-card" onClick={() => setSelectedStep(isSelected ? null : { ...step, stageId: stage.id, stageIndex })} style={{ 
                             flex: '1 0 218px', 
-                            background: isSelected ? '#FFF' : isHighOpportunity ? 'linear-gradient(135deg, #D4EDE5 0%, #96BCC7 100%)' : isMediumOpportunity ? 'linear-gradient(135deg, #FAF0D6 0%, #F0DDA8 100%)' : '#FFF', 
+                            background: isSelected ? '#FFF' 
+                              : showProblems ? problemColor.bg
+                              : isHighOpportunity ? 'linear-gradient(135deg, #D4EDE5 0%, #96BCC7 100%)' 
+                              : isMediumOpportunity ? 'linear-gradient(135deg, #FAF0D6 0%, #F0DDA8 100%)' 
+                              : '#FFF', 
                             padding: '20px', 
                             cursor: 'pointer', 
                             opacity: isFiltered ? 0.4 : 1, 
-                            borderLeft: isFirstStep ? 'none' : (isHighOpportunity || isMediumOpportunity) ? 'none' : '1px solid #E4E7EB',
+                            borderLeft: isFirstStep ? 'none' : (isHighOpportunity || isMediumOpportunity || isProblemat || isProblemSmooth) ? 'none' : '1px solid #E4E7EB',
                             display: 'flex', 
                             flexDirection: 'column', 
                             position: 'relative',
                             boxShadow: isSelected 
                               ? `0 0 0 2px ${stageColorDark}, 0 8px 24px rgba(0, 0, 0, 0.15)` 
-                              : isHighOpportunity 
-                                ? 'inset 0 0 0 2px #2D8A6E' 
-                                : isMediumOpportunity 
-                                  ? 'inset 0 0 0 2px #C4942A' 
-                                  : 'none',
-                            borderRadius: (isSelected || isHighOpportunity || isMediumOpportunity) ? '8px' : '0',
+                              : showProblems && isProblemat
+                                ? `inset 0 0 0 2px ${problemColor.text}`
+                                : isProblemSmooth
+                                  ? 'inset 0 0 0 2px #1A5F4F'
+                                  : isHighOpportunity 
+                                    ? 'inset 0 0 0 2px #2D8A6E' 
+                                    : isMediumOpportunity 
+                                      ? 'inset 0 0 0 2px #C4942A' 
+                                      : 'none',
+                            borderRadius: (isSelected || isHighOpportunity || isMediumOpportunity || isProblemat || isProblemSmooth) ? '8px' : '0',
                             transform: isSelected ? 'translateY(-2px)' : 'none',
                             transition: 'all 0.15s ease',
-                            zIndex: isSelected ? 10 : (isHighOpportunity || isMediumOpportunity) ? 5 : 1
+                            zIndex: isSelected ? 10 : (isHighOpportunity || isMediumOpportunity || isProblemat || isProblemSmooth) ? 5 : 1
                           }}>
+                            {/* Problem Severity Badge */}
+                            {showProblems && isProblemat && (
+                              <div style={{
+                                position: 'absolute',
+                                top: '-8px',
+                                right: '12px',
+                                background: problemColor.text,
+                                color: '#FFF',
+                                padding: '4px 10px',
+                                borderRadius: '12px',
+                                fontSize: '10px',
+                                fontFamily: "'Open Sans', sans-serif",
+                                fontWeight: 600,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                              }}>
+                                <Icon name="alert-circle" size={11} color="#FFF" /> {problemColor.label} Problem
+                              </div>
+                            )}
+                            {/* Smooth Step Badge */}
+                            {showProblems && isProblemSmooth && (
+                              <div style={{
+                                position: 'absolute',
+                                top: '-8px',
+                                right: '12px',
+                                background: '#1A5F4F',
+                                color: '#FFF',
+                                padding: '4px 10px',
+                                borderRadius: '12px',
+                                fontSize: '10px',
+                                fontFamily: "'Open Sans', sans-serif",
+                                fontWeight: 600,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                              }}>
+                                <Icon name="check-circle" size={11} color="#FFF" /> Smooth
+                              </div>
+                            )}
                             {/* Opportunity Badge */}
                             {showCosts && (isHighOpportunity || isMediumOpportunity) && (
                               <div style={{
