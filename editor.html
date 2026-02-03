@@ -244,7 +244,7 @@
     /* Stage cards - solid white, no pattern */
     .stage-card {
       position: relative;
-      z-index: 2;
+      z-index: 1;
       background: #FFF !important;
       box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
       overflow: visible !important;
@@ -11031,7 +11031,9 @@ FATHOM - Journey intelligence for modern operations`);
               display: 'flex',
               flexDirection: 'column',
               gap: '12px',
-              flexShrink: 0
+              flexShrink: 0,
+              position: 'relative',
+              zIndex: 1000
             }}>
             {/* Row 1: Back + Logo + Title (left) | Desktop nav + Export/Settings (right) */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
@@ -11062,7 +11064,7 @@ FATHOM - Journey intelligence for modern operations`);
                   }}
                   title="Toggle sidebar"
                 >
-                  <Icon name="menu" size={isMobile ? 16 : 18} color="#FFF" />
+                  <Icon name="menu" size={isMobile ? 14 : 16} color="#FFF" />
                 </button>
                 
                 
@@ -11090,7 +11092,7 @@ FATHOM - Journey intelligence for modern operations`);
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      <Icon name="calendar-days" size={isMobile ? 10 : 12} color="#FFF" /> Event
+                      <Icon name="calendar-days" size={isMobile ? 8 : 10} color="#FFF" /> Event
                     </span>
                   ) : config.meta?.costModel === 'project' ? (
                     <span style={{
@@ -11107,7 +11109,7 @@ FATHOM - Journey intelligence for modern operations`);
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      <Icon name="folder-kanban" size={isMobile ? 10 : 12} color="#FFF" /> Project
+                      <Icon name="folder-kanban" size={isMobile ? 8 : 10} color="#FFF" /> Project
                     </span>
                   ) : (
                     <span style={{
@@ -11124,7 +11126,7 @@ FATHOM - Journey intelligence for modern operations`);
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      <Icon name="briefcase" size={isMobile ? 10 : 12} color="#FFF" /> Client
+                      <Icon name="briefcase" size={isMobile ? 8 : 10} color="#FFF" /> Client
                     </span>
                   )}
                   
