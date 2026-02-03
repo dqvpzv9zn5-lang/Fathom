@@ -11377,7 +11377,6 @@ FATHOM - Journey intelligence for modern operations`);
                         </div>
                         {!isMobile && (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Total Labor Time">
-                            <Icon name="clock" size={14} color="#FFF" />
                             <span style={{ fontWeight: 500, fontSize: '11px', fontFamily: "'Open Sans', sans-serif", color: '#FFF', opacity: 0.9 }}>{formatTime(stats.totalTime)} labor</span>
                           </div>
                         )}
@@ -12103,8 +12102,7 @@ FATHOM - Journey intelligence for modern operations`);
                                     {stage.duration.months > 0 && `${stage.duration.months}m`}
                                   </span>
                                 </div>
-                                <div style={{ fontSize: '11px', opacity: 0.75, display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end', marginTop: '2px' }}>
-                                  <Icon name="clock" size={10} color="#FFF" />
+                                <div style={{ fontSize: '11px', opacity: 0.75, justifyContent: 'flex-end', marginTop: '2px' }}>
                                   <span>{formatTime(stageTime)} labor</span>
                                 </div>
                               </>
@@ -12504,15 +12502,38 @@ FATHOM - Journey intelligence for modern operations`);
                           )}
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
-                            <span style={{ fontWeight: 400 }}>{formatTime(stageTime)}</span>
-                            {showCosts && (
-                              <>
-                                <span style={{ opacity: 0.5, fontWeight: 400 }}>|</span>
-                                <span style={{ fontWeight: 600 }}>{formatCurrency(stageCost)}</span>
-                              </>
-                            )}
-                          </div>
+                          {stage.duration && (stage.duration.years > 0 || stage.duration.months > 0) ? (
+                            // Has duration - show both elapsed time and labor time
+                            <>
+                              <div style={{ fontSize: '14px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
+                                <Icon name="calendar-days" size={14} color="#FFF" />
+                                <span>
+                                  {stage.duration.years > 0 && `${stage.duration.years}y`}
+                                  {stage.duration.years > 0 && stage.duration.months > 0 && ' '}
+                                  {stage.duration.months > 0 && `${stage.duration.months}m`}
+                                </span>
+                              </div>
+                              <div style={{ fontSize: '11px', opacity: 0.75, justifyContent: 'flex-end', marginTop: '2px' }}>
+                                <span>{formatTime(stageTime)} labor</span>
+                              </div>
+                            </>
+                          ) : (
+                            // No duration - show labor time with cost
+                            <div style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
+                              <span style={{ fontWeight: 400 }}>{formatTime(stageTime)}</span>
+                              {showCosts && (
+                                <>
+                                  <span style={{ opacity: 0.5, fontWeight: 400 }}>|</span>
+                                  <span style={{ fontWeight: 600 }}>{formatCurrency(stageCost)}</span>
+                                </>
+                              )}
+                            </div>
+                          )}
+                          {showCosts && stage.duration && (stage.duration.years > 0 || stage.duration.months > 0) && (
+                            <div style={{ fontSize: '12px', opacity: 0.8, marginTop: '4px' }}>
+                              {formatCurrency(stageCost)}
+                            </div>
+                          )}
                           {showCosts && config.meta?.costModel === 'event' && (
                             <div style={{ fontSize: '10px', opacity: 0.7, marginTop: '2px' }}>
                               {formatCostPerAttendee(calculateCostPerAttendee(stageCost, getStageCapacity(stage, config)))}
