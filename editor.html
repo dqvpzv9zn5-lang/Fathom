@@ -973,7 +973,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "10.2.0";
+    const APP_VERSION = "10.3.0";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -2399,9 +2399,9 @@ Powered by FATHOM
     const getProblemColor = (severityScore) => {
       if (severityScore < 15) return { bg: '#D4EDE5', text: '#1A5F4F', label: 'Smooth' }; // Green - no problems
       if (severityScore < 30) return { bg: '#F4F5F7', text: '#556275', label: 'Minor' }; // Neutral gray
-      if (severityScore < 50) return { bg: '#FEF3C7', text: '#92400E', label: 'Moderate' }; // Light yellow
-      if (severityScore < 70) return { bg: '#FED7AA', text: '#9A3412', label: 'Significant' }; // Light orange
-      return { bg: '#FEE2E2', text: '#991B1B', label: 'Severe' }; // Light red
+      if (severityScore < 50) return { bg: '#FEF3C7', text: '#D97706', label: 'Moderate' }; // Yellow with brighter orange text
+      if (severityScore < 70) return { bg: '#FED7AA', text: '#EA580C', label: 'Significant' }; // Light orange with bright orange text
+      return { bg: '#FEE2E2', text: '#B84A5A', label: 'Severe' }; // Light red with BRIGHT RED (pain indicator color)
     };
 
     /*
@@ -12114,10 +12114,10 @@ FATHOM - Journey intelligence for modern operations`);
                                     width: `${timeBarWidth}%`,
                                     height: '100%',
                                     background: showProblems 
-                                      ? (isStepSmooth ? '#D4EDE5' : isStepProblematic ? stepProblemColor.text : stageColorLight)
+                                      ? (isStepSmooth ? '#1A5F4F' : isStepProblematic ? stepProblemColor.text : stageColorLight)
                                       : stageColorLight,
-                                    opacity: showProblems ? (isStepSmooth ? 0.3 : isStepProblematic ? 0.25 : 0.15) : 0.25,
-                                    transition: 'width 0.3s ease, background 0.3s ease',
+                                    opacity: showProblems ? (isStepSmooth ? 0.2 : isStepProblematic ? 0.5 : 0.15) : 0.25,
+                                    transition: 'width 0.3s ease, background 0.3s ease, opacity 0.3s ease',
                                     zIndex: 0
                                   }} />
                                 )}
