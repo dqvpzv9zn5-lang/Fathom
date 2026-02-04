@@ -90,6 +90,13 @@
       color: #556275;
       font-size: 14px;
     }
+    .error {
+      background: #F5E0E3;
+      color: #B84A5A;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
   </style>
 </head>
 <body>
@@ -117,33 +124,20 @@
   <script>
     let journeyData = null;
 
-    // Load journey from parent window
-    window.addEventListener('DOMContentLoaded', async () => {
-      const mapId = localStorage.getItem('sopMapId');
+    // Load journey from localStorage
+    window.addEventListener('DOMContentLoaded', () => {
+      const mapData = localStorage.getItem('sopJourneyData');
       
-      if (!mapId) {
-        alert('No journey selected. Please go back to the dashboard.');
+      if (!mapData) {
+        document.getElementById('journeyInfo').innerHTML = '<div class="error">No journey data found. Please click Generate SOP from the dashboard.</div>';
+        document.getElementById('generateBtn').disabled = true;
         return;
       }
 
-      // Try to load from Supabase
       try {
-        const { createClient } = supabase;
-        const supabaseClient = createClient(
-          'https://ktctvaeulualihczwnrl.supabase.co',
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Y3R2YWV1bHVhbGloY3p3bnJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgwMDM0MjEsImV4cCI6MjA1MzU3OTQyMX0.yTte8RqJhJBv9NyHHqmQ4FZ1yF-8pS9lkfpg2uD4SdA'
-        );
-
-        const { data, error } = await supabaseClient
-          .from('journey_maps')
-          .select('*')
-          .eq('id', mapId)
-          .single();
-
-        if (error) throw error;
-
-        journeyData = data.config;
-        document.getElementById('journeyTitle').textContent = journeyData.meta?.title || data.title || 'Journey Map';
+        journeyData = JSON.parse(mapData);
+        const title = journeyData.meta?.title || 'Journey Map';
+        document.getElementById('journeyTitle').textContent = title;
         
         const stages = journeyData.stages?.length || 0;
         const steps = journeyData.stages?.reduce((acc, s) => acc + (s.steps?.length || 0), 0) || 0;
@@ -151,7 +145,8 @@
         
       } catch (err) {
         console.error('Error loading journey:', err);
-        alert('Could not load journey data. Please try again from the dashboard.');
+        document.getElementById('journeyInfo').innerHTML = '<div class="error">Error loading journey data. Please try again from the dashboard.</div>';
+        document.getElementById('generateBtn').disabled = true;
       }
     });
 
@@ -172,6 +167,16 @@
             }
           }
         });
+      } else if (step.owner) {
+        const persona = personas.find(p => p.id === step.owner);
+        if (persona && !persona.isExternal) {
+          const salary = persona.annualSalary || persona.salary || 0;
+          if (salary > 0) {
+            const hourlyRate = salary / 1820;
+            const hours = (step.timeMinutes || 0) / 60;
+            totalCost += hourlyRate * hours;
+          }
+        }
       }
       
       return totalCost;
@@ -462,12 +467,14 @@
         
         alert(`✅ SOP Generated!\n\nFile: ${fileName}\n\nThe professional SOP document has been downloaded.`);
         
+        // Clear the data after use
+        localStorage.removeItem('sopJourneyData');
+        
       } catch (err) {
         console.error('SOP generation error:', err);
         alert('Failed to generate SOP: ' + err.message);
       }
     }
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>
