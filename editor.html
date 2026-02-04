@@ -200,11 +200,10 @@
       overflow-x: hidden;
     }
     
-    /* Header must sit above everything including mobile menu */
+    /* Header - no z-index to avoid stacking context issues */
     .header-container {
-      position: sticky; /* Needed for z-index to work, but doesn't create stacking context like relative */
-      top: 0;
-      z-index: 100; /* Above mobile sidebar (90) and backdrop (89) */
+      position: relative;
+      /* No z-index - let it stay in natural document flow */
     }
     
     /* Stats bar - solid white, no pattern */
@@ -1009,7 +1008,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "11.7.4";
+    const APP_VERSION = "11.8.2";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -13099,7 +13098,7 @@ FATHOM - Journey intelligence for modern operations`);
                       right: 0, 
                       bottom: 0, 
                       background: 'rgba(0,0,0,0.3)', 
-                      zIndex: 9999998 
+                      zIndex: 99999998 
                     }} 
                   />
                 )}
@@ -13111,7 +13110,7 @@ FATHOM - Journey intelligence for modern operations`);
                   right: 0,
                   bottom: 0,
                   background: '#FFF',
-                  zIndex: 9999999,
+                  zIndex: 99999999,
                   overflowY: 'auto',
                   borderRadius: 0
                 } : { 
@@ -13123,7 +13122,7 @@ FATHOM - Journey intelligence for modern operations`);
                   maxWidth: '90vw',
                   background: '#FFF', 
                   boxShadow: '-4px 0 24px rgba(0,0,0,0.15)', 
-                  zIndex: 9999999,
+                  zIndex: 99999999,
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden'
