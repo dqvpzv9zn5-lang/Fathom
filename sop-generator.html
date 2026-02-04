@@ -123,6 +123,72 @@
         <div class="loading">⏳ Loading journey from database...</div>
       </div>
 
+      <div id="configSection" style="display: none;">
+        <div style="margin-bottom: 24px;">
+          <h3 style="font-size: 15px; font-weight: 600; color: #192B45; margin-bottom: 12px;">📋 Document Format</h3>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <label style="display: flex; align-items: center; padding: 12px; background: #F4F5F7; border: 2px solid #E4E7EB; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#FFF'; this.style.borderColor='#5B8A9A'" onmouseout="if(!this.querySelector('input').checked) { this.style.background='#F4F5F7'; this.style.borderColor='#E4E7EB'; }">
+              <input type="radio" name="format" value="comprehensive" checked style="margin-right: 10px; width: 18px; height: 18px; accent-color: #5B8A9A;" onchange="document.querySelectorAll('label').forEach(l => { if(l.querySelector('input[name=format]')) { l.style.background='#F4F5F7'; l.style.borderColor='#E4E7EB'; } }); this.parentElement.style.background='#E1EEF2'; this.parentElement.style.borderColor='#5B8A9A';">
+              <div>
+                <div style="font-weight: 600; font-size: 14px; color: #192B45; margin-bottom: 2px;">Comprehensive (All roles)</div>
+                <div style="font-size: 12px; color: #556275;">Full documentation with all stages, steps, and roles</div>
+              </div>
+            </label>
+            
+            <label style="display: flex; align-items: center; padding: 12px; background: #F4F5F7; border: 2px solid #E4E7EB; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#FFF'; this.style.borderColor='#5B8A9A'" onmouseout="if(!this.querySelector('input').checked) { this.style.background='#F4F5F7'; this.style.borderColor='#E4E7EB'; }">
+              <input type="radio" name="format" value="operational" style="margin-right: 10px; width: 18px; height: 18px; accent-color: #5B8A9A;" onchange="document.querySelectorAll('label').forEach(l => { if(l.querySelector('input[name=format]')) { l.style.background='#F4F5F7'; l.style.borderColor='#E4E7EB'; } }); this.parentElement.style.background='#E1EEF2'; this.parentElement.style.borderColor='#5B8A9A';">
+              <div>
+                <div style="font-weight: 600; font-size: 14px; color: #192B45; margin-bottom: 2px;">Operational (Standard)</div>
+                <div style="font-size: 12px; color: #556275;">Balanced detail for daily operations</div>
+              </div>
+            </label>
+            
+            <label style="display: flex; align-items: center; padding: 12px; background: #F4F5F7; border: 2px solid #E4E7EB; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#FFF'; this.style.borderColor='#5B8A9A'" onmouseout="if(!this.querySelector('input').checked) { this.style.background='#F4F5F7'; this.style.borderColor='#E4E7EB'; }">
+              <input type="radio" name="format" value="quick" style="margin-right: 10px; width: 18px; height: 18px; accent-color: #5B8A9A;" onchange="document.querySelectorAll('label').forEach(l => { if(l.querySelector('input[name=format]')) { l.style.background='#F4F5F7'; l.style.borderColor='#E4E7EB'; } }); this.parentElement.style.background='#E1EEF2'; this.parentElement.style.borderColor='#5B8A9A';">
+              <div>
+                <div style="font-weight: 600; font-size: 14px; color: #192B45; margin-bottom: 2px;">Quick Reference</div>
+                <div style="font-size: 12px; color: #556275;">Summary only - ideal for wall charts</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <h3 style="font-size: 15px; font-weight: 600; color: #192B45; margin-bottom: 12px;">🎯 Include Sections</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <label style="display: flex; align-items: center; padding: 10px 14px; background: #F4F5F7; border: 1px solid #E4E7EB; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.15s;" onmouseover="this.style.background='#FFF'; this.style.borderColor='#5B8A9A'" onmouseout="this.style.background='#F4F5F7'; this.style.borderColor='#E4E7EB'">
+              <input type="checkbox" id="section-overview" checked style="width: 18px; height: 18px; margin-right: 10px; accent-color: #5B8A9A; cursor: pointer;">
+              <span>Process Overview</span>
+            </label>
+            
+            <label style="display: flex; align-items: center; padding: 10px 14px; background: #F4F5F7; border: 1px solid #E4E7EB; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.15s;" onmouseover="this.style.background='#FFF'; this.style.borderColor='#5B8A9A'" onmouseout="this.style.background='#F4F5F7'; this.style.borderColor='#E4E7EB'">
+              <input type="checkbox" id="section-stages" checked style="width: 18px; height: 18px; margin-right: 10px; accent-color: #5B8A9A; cursor: pointer;">
+              <span>Stage Instructions</span>
+            </label>
+            
+            <label style="display: flex; align-items: center; padding: 10px 14px; background: #F4F5F7; border: 1px solid #E4E7EB; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.15s;" onmouseover="this.style.background='#FFF'; this.style.borderColor='#5B8A9A'" onmouseout="this.style.background='#F4F5F7'; this.style.borderColor='#E4E7EB'">
+              <input type="checkbox" id="section-roles" checked style="width: 18px; height: 18px; margin-right: 10px; accent-color: #5B8A9A; cursor: pointer;">
+              <span>Roles Matrix</span>
+            </label>
+            
+            <label style="display: flex; align-items: center; padding: 10px 14px; background: #F4F5F7; border: 1px solid #E4E7EB; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.15s;" onmouseover="this.style.background='#FFF'; this.style.borderColor='#5B8A9A'" onmouseout="this.style.background='#F4F5F7'; this.style.borderColor='#E4E7EB'">
+              <input type="checkbox" id="section-regulatory" checked style="width: 18px; height: 18px; margin-right: 10px; accent-color: #5B8A9A; cursor: pointer;">
+              <span>Regulatory Notes</span>
+            </label>
+            
+            <label style="display: flex; align-items: center; padding: 10px 14px; background: #F4F5F7; border: 1px solid #E4E7EB; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.15s;" onmouseover="this.style.background='#FFF'; this.style.borderColor='#5B8A9A'" onmouseout="this.style.background='#F4F5F7'; this.style.borderColor='#E4E7EB'">
+              <input type="checkbox" id="section-costs" checked style="width: 18px; height: 18px; margin-right: 10px; accent-color: #5B8A9A; cursor: pointer;">
+              <span>Cost Breakdown</span>
+            </label>
+            
+            <label style="display: flex; align-items: center; padding: 10px 14px; background: #F4F5F7; border: 1px solid #E4E7EB; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.15s;" onmouseover="this.style.background='#FFF'; this.style.borderColor='#5B8A9A'" onmouseout="this.style.background='#F4F5F7'; this.style.borderColor='#E4E7EB'">
+              <input type="checkbox" id="section-quickref" checked style="width: 18px; height: 18px; margin-right: 10px; accent-color: #5B8A9A; cursor: pointer;">
+              <span>Quick Reference</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
       <button class="btn btn-primary" id="generateBtn" onclick="generateSOP()" disabled>
         <span>📋</span>
         <span>Generate SOP Document</span>
@@ -179,6 +245,7 @@
           <div class="journey-meta">${stages} stages • ${steps} steps</div>
         `;
         
+        document.getElementById('configSection').style.display = 'block';
         document.getElementById('generateBtn').disabled = false;
         
       } catch (err) {
@@ -224,6 +291,15 @@
         alert('Journey data not loaded. Please try again.');
         return;
       }
+
+      // Get configuration
+      const format = document.querySelector('input[name="format"]:checked').value;
+      const includeOverview = document.getElementById('section-overview').checked;
+      const includeStages = document.getElementById('section-stages').checked;
+      const includeRoles = document.getElementById('section-roles').checked;
+      const includeRegulatory = document.getElementById('section-regulatory').checked;
+      const includeCosts = document.getElementById('section-costs').checked;
+      const includeQuickRef = document.getElementById('section-quickref').checked;
 
       try {
         const { jsPDF } = window.jspdf;
@@ -319,7 +395,8 @@
         addNewPage();
         
         // PROCESS OVERVIEW
-        doc.setFontSize(18);
+        if (includeOverview) {
+          doc.setFontSize(18);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(...navy);
         doc.text('1. Process Overview', margin, 40);
@@ -373,9 +450,11 @@
         }
         
         addNewPage();
+        }
         
         // STAGE INSTRUCTIONS
-        doc.setFontSize(18);
+        if (includeStages) {
+          doc.setFontSize(18);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(...navy);
         doc.text('2. Stage-by-Stage Instructions', margin, 40);
@@ -452,9 +531,11 @@
         });
         
         addNewPage();
+        }
         
         // QUICK REFERENCE
-        doc.setFontSize(18);
+        if (includeQuickRef) {
+          doc.setFontSize(18);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(...navy);
         doc.text('3. Quick Reference Guide', margin, 40);
@@ -496,6 +577,7 @@
           
           qrContentY += 8;
         });
+        }
         
         addPageFooter();
         
