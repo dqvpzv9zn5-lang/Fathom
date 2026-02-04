@@ -200,11 +200,11 @@
       overflow-x: hidden;
     }
     
-    /* Header must sit above everything */
+    /* Header must sit above everything including mobile menu */
     .header-container {
       position: sticky; /* Needed for z-index to work, but doesn't create stacking context like relative */
       top: 0;
-      z-index: 1; /* Low z-index - below everything */
+      z-index: 100; /* Above mobile sidebar (90) and backdrop (89) */
     }
     
     /* Stats bar - solid white, no pattern */
@@ -906,8 +906,8 @@
       .sidebar-nav {
         position: fixed;
         left: 0;
-        top: 80px;
-        height: calc(100vh - 80px);
+        top: 150px;  /* Further increased to fully clear header */
+        height: calc(100vh - 150px);
         z-index: 90;
         transform: translateX(-100%);
         transition: transform 0.2s ease-in-out;
@@ -1009,7 +1009,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "11.6.1";
+    const APP_VERSION = "11.7.4";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -11588,6 +11588,149 @@ FATHOM - Journey intelligence for modern operations`);
               </div>
               )}
             </div>
+            
+            {/* Row 2: Mobile Stats + Profile (mobile only) */}
+            {isMobile && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', paddingTop: '4px' }}>
+                {/* Left: Key stats */}
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  {/* Time or Duration */}
+                  {stats.hasDurations ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', background: 'rgba(255,255,255,0.15)', borderRadius: '6px' }} title="Total Journey Duration">
+                      <Icon name="calendar-days" size={12} color="#FFF" />
+                      <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Open Sans', sans-serif", color: '#FFF' }}>
+                        {stats.totalDuration.years > 0 && `${stats.totalDuration.years}y`}
+                        {stats.totalDuration.years > 0 && stats.totalDuration.months > 0 && ' '}
+                        {stats.totalDuration.months > 0 && `${stats.totalDuration.months}m`}
+                      </span>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Total Time">
+                      <Icon name="clock" size={12} color="#FFF" />
+                      <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Open Sans', sans-serif", color: '#FFF' }}>{formatTime(stats.totalTime)}</span>
+                    </div>
+                  )}
+                  
+                  {/* Pain Points */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', background: '#B84A5A', borderRadius: '6px' }} title="Pain Points">
+                    <Icon name="alert-triangle" size={12} color="#FFF" />
+                    <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Open Sans', sans-serif", color: '#FFF' }}>{stats.totalPainPoints}</span>
+                  </div>
+                  
+                  {/* Improvements */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', background: '#2D8A6E', borderRadius: '6px' }} title="High Improvement Opportunities">
+                    <Icon name="target" size={12} color="#FFF" />
+                    <span style={{ fontWeight: 600, fontSize: '11px', fontFamily: "'Open Sans', sans-serif", color: '#FFF' }}>{stats.highAutomation}</span>
+                  </div>
+                  
+                  {/* Total Cost */}
+                  {showCosts && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', background: '#C4942A', borderRadius: '6px' }} title="Total Journey Cost">
+                      <Icon name="coins" size={12} color="#FFF" />
+                      <span style={{ fontWeight: 700, color: '#FFF', fontSize: '12px', fontFamily: "'Open Sans', sans-serif" }}>{formatCurrency(stats.totalCost)}</span>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Right: Profile button */}
+                {isSupabaseMode && currentUser && (
+                  <div className="profile-container" style={{ position: 'relative', zIndex: 9999, flexShrink: 0 }}>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setShowProfileMenu(!showProfileMenu); }}
+                      style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        padding: '2px',
+                        background: 'transparent',
+                        border: 'none',
+                        borderRadius: '50%',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s',
+                        position: 'relative'
+                      }}
+                    >
+                      <div style={{ 
+                        width: '28px', 
+                        height: '28px', 
+                        borderRadius: '50%', 
+                        background: 'var(--steel-500, #5B8A9A)', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        color: '#FFF', 
+                        fontSize: '11px', 
+                        fontWeight: 600,
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        transition: 'border-color 0.15s',
+                        overflow: 'hidden'
+                      }}>
+                        {userProfile?.avatar_url ? (
+                          <img src={userProfile.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          getInitials(userProfile?.display_name || currentUser?.email)
+                        )}
+                      </div>
+                      <span style={{ 
+                        position: 'absolute',
+                        bottom: '2px',
+                        right: '0',
+                        width: '14px',
+                        height: '14px',
+                        background: 'var(--navy-700, #1A2332)',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'rgba(255,255,255,0.8)',
+                        fontSize: '8px',
+                        border: '2px solid var(--navy-800, #15243A)'
+                      }}>▼</span>
+                    </button>
+                    
+                    {showProfileMenu && (
+                      <div onClick={(e) => e.stopPropagation()} style={{ 
+                        position: 'absolute', 
+                        top: 'calc(100% + 8px)', 
+                        right: 0, 
+                        background: '#FFF', 
+                        borderRadius: '12px', 
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.2)', 
+                        minWidth: '220px', 
+                        padding: '8px 0',
+                        zIndex: 99999
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1px solid #E4E7EB', marginBottom: '4px' }}>
+                          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#5B8A9A', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '16px', fontWeight: 600, flexShrink: 0, overflow: 'hidden' }}>
+                            {userProfile?.avatar_url ? (
+                              <img src={userProfile.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                              getInitials(userProfile?.display_name || currentUser?.email)
+                            )}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '14px', fontWeight: 600, color: '#1A2332', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {userProfile?.display_name || 'User'}
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#6E7B8C', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {currentUser?.email}
+                            </div>
+                          </div>
+                        </div>
+                        <button onClick={() => window.location.href = '/dashboard.html'} style={{ width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#1A2332', transition: 'background 0.15s' }} onMouseEnter={(e) => e.currentTarget.style.background = '#F4F5F7'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+                          <Icon name="grid-3x3" size={16} color="#556275" />
+                          Dashboard
+                        </button>
+                        <div style={{ height: '1px', background: '#E4E7EB', margin: '4px 0' }} />
+                        <button onClick={handleSignOut} style={{ width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#B84A5A', transition: 'background 0.15s' }} onMouseEnter={(e) => e.currentTarget.style.background = '#F4F5F7'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+                          <Icon name="log-out" size={16} color="#B84A5A" />
+                          Sign Out
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             
             {/* Mobile: No additional buttons needed - use sidebar */}
           </header>
