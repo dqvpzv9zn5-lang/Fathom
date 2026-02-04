@@ -1008,7 +1008,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "11.8.2";
+    const APP_VERSION = "11.8.3";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -11449,7 +11449,7 @@ FATHOM - Journey intelligence for modern operations`);
                     
                     {/* Profile Dropdown (Supabase mode only) */}
                     {isSupabaseMode && currentUser && (
-                      <div className="profile-container" style={{ position: 'relative', marginLeft: isMobile ? '4px' : '8px', zIndex: 9999 }}>
+                      <div className="profile-container" style={{ position: 'relative', marginLeft: isMobile ? '4px' : '8px' }}>
                         <button 
                           onClick={(e) => { e.stopPropagation(); setShowProfileMenu(!showProfileMenu); }}
                           style={{ 
@@ -11633,7 +11633,7 @@ FATHOM - Journey intelligence for modern operations`);
                 
                 {/* Right: Profile button */}
                 {isSupabaseMode && currentUser && (
-                  <div className="profile-container" style={{ position: 'relative', zIndex: 9999, flexShrink: 0 }}>
+                  <div className="profile-container" style={{ position: 'relative', flexShrink: 0 }}>
                     <button 
                       onClick={(e) => { e.stopPropagation(); setShowProfileMenu(!showProfileMenu); }}
                       style={{ 
