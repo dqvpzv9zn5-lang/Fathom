@@ -542,6 +542,30 @@
       }
     }
     
+    /* Icon sizing - CRITICAL: Apply directly to SVG elements */
+    svg.mobile-badge-icon {
+      width: 10px !important;
+      height: 10px !important;
+    }
+    
+    svg.mobile-hamburger {
+      width: 16px !important;
+      height: 16px !important;
+    }
+    
+    /* Mobile - even smaller */
+    @media (max-width: 768px) {
+      svg.mobile-badge-icon {
+        width: 8px !important;
+        height: 8px !important;
+      }
+      
+      svg.mobile-hamburger {
+        width: 14px !important;
+        height: 14px !important;
+      }
+    }
+    
     /* Small mobile */
     @media (max-width: 480px) {
       .header-logo-title svg {
@@ -985,7 +1009,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "11.5.0";
+    const APP_VERSION = "11.6.1";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -11185,7 +11209,7 @@ FATHOM - Journey intelligence for modern operations`);
                   }}
                   title="Toggle sidebar"
                 >
-                  <Icon name="menu" size={isMobile ? 14 : 16} color="#FFF" />
+                  <Icon name="menu" size={16} color="#FFF" className="mobile-hamburger" />
                 </button>
                 
                 
@@ -11213,7 +11237,7 @@ FATHOM - Journey intelligence for modern operations`);
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      <Icon name="calendar-days" size={isMobile ? 8 : 10} color="#FFF" /> Event
+                      <Icon name="calendar-days" size={10} color="#FFF" className="mobile-badge-icon" /> Event
                     </span>
                   ) : config.meta?.costModel === 'project' ? (
                     <span style={{
@@ -11230,7 +11254,7 @@ FATHOM - Journey intelligence for modern operations`);
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      <Icon name="folder-kanban" size={isMobile ? 8 : 10} color="#FFF" /> Project
+                      <Icon name="folder-kanban" size={10} color="#FFF" className="mobile-badge-icon" /> Project
                     </span>
                   ) : (
                     <span style={{
@@ -11247,7 +11271,7 @@ FATHOM - Journey intelligence for modern operations`);
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      <Icon name="briefcase" size={isMobile ? 8 : 10} color="#FFF" /> Client
+                      <Icon name="briefcase" size={10} color="#FFF" className="mobile-badge-icon" /> Client
                     </span>
                   )}
                   
