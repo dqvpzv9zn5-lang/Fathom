@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FATHOM - Generate SOP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: #F4F5F7;
+      color: #1A2332;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .header {
+      background: #192B45;
+      color: #FFF;
+      padding: 32px;
+      border-radius: 12px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .logo {
+      font-family: 'Interstate', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .subtitle { font-size: 14px; opacity: 0.8; }
+    .card {
+      background: #FFF;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(25, 43, 69, 0.1);
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #192B45;
+      margin-bottom: 16px;
+    }
+    .btn {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Open Sans', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: #5B8A9A;
+      color: #FFF;
+      width: 100%;
+      justify-content: center;
+      font-size: 16px;
+      padding: 16px;
+    }
+    .btn-primary:hover {
+      background: #4A7485;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(91, 138, 154, 0.3);
+    }
+    .info-box {
+      background: #E1EEF2;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .journey-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #192B45;
+      margin-bottom: 8px;
+    }
+    .journey-meta {
+      color: #556275;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">FATHOM</div>
+      <div class="subtitle">Standard Operating Procedure Generator</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Generate SOP Document</div>
+      
+      <div id="journeyInfo" class="info-box">
+        <div class="journey-title" id="journeyTitle">Loading journey...</div>
+        <div class="journey-meta" id="journeyMeta"></div>
+      </div>
+
+      <button class="btn btn-primary" id="generateBtn" onclick="generateSOP()">
+        <span>📋</span>
+        <span>Generate SOP Document</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let journeyData = null;
+
+    // Load journey from parent window
+    window.addEventListener('DOMContentLoaded', async () => {
+      const mapId = localStorage.getItem('sopMapId');
+      
+      if (!mapId) {
+        alert('No journey selected. Please go back to the dashboard.');
+        return;
+      }
+
+      // Try to load from Supabase
+      try {
+        const { createClient } = supabase;
+        const supabaseClient = createClient(
+          'https://ktctvaeulualihczwnrl.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Y3R2YWV1bHVhbGloY3p3bnJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgwMDM0MjEsImV4cCI6MjA1MzU3OTQyMX0.yTte8RqJhJBv9NyHHqmQ4FZ1yF-8pS9lkfpg2uD4SdA'
+        );
+
+        const { data, error } = await supabaseClient
+          .from('journey_maps')
+          .select('*')
+          .eq('id', mapId)
+          .single();
+
+        if (error) throw error;
+
+        journeyData = data.config;
+        document.getElementById('journeyTitle').textContent = journeyData.meta?.title || data.title || 'Journey Map';
+        
+        const stages = journeyData.stages?.length || 0;
+        const steps = journeyData.stages?.reduce((acc, s) => acc + (s.steps?.length || 0), 0) || 0;
+        document.getElementById('journeyMeta').textContent = `${stages} stages • ${steps} steps`;
+        
+      } catch (err) {
+        console.error('Error loading journey:', err);
+        alert('Could not load journey data. Please try again from the dashboard.');
+      }
+    });
+
+    function calculateStepCost(step, personas) {
+      if (!personas) return 0;
+      let totalCost = 0;
+      
+      if (step.roleInvolvement && Object.keys(step.roleInvolvement).length > 0) {
+        Object.entries(step.roleInvolvement).forEach(([personaId, inv]) => {
+          const persona = personas.find(p => p.id === personaId);
+          if (persona && !persona.isExternal) {
+            const salary = persona.annualSalary || persona.salary || 0;
+            if (salary > 0) {
+              const hourlyRate = salary / 1820;
+              const hours = (inv.timeMinutes || 0) / 60;
+              const headcount = inv.headcount || 1;
+              totalCost += hourlyRate * hours * headcount;
+            }
+          }
+        });
+      }
+      
+      return totalCost;
+    }
+
+    function generateSOP() {
+      if (!journeyData) {
+        alert('Journey data not loaded. Please try again.');
+        return;
+      }
+
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        
+        const navy = [25, 43, 69];
+        const steel = [91, 138, 154];
+        const slate700 = [61, 74, 92];
+        const slate600 = [85, 98, 117];
+        const slate400 = [138, 149, 165];
+        const slate200 = [200, 206, 214];
+        const slate100 = [228, 231, 235];
+        
+        let pageNumber = 1;
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const margin = 25;
+        const contentWidth = pageWidth - (margin * 2);
+        
+        const addPageFooter = () => {
+          doc.setFontSize(9);
+          doc.setTextColor(...slate400);
+          doc.text('Generated by FATHOM Journey Intelligence', margin, pageHeight - 10);
+          doc.text(`Page ${pageNumber}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+          pageNumber++;
+        };
+        
+        const addNewPage = () => {
+          addPageFooter();
+          doc.addPage();
+        };
+        
+        const formatCurrency = (amount) => {
+          if (!amount || amount === 0) return '£0';
+          return `£${Math.round(amount).toLocaleString()}`;
+        };
+        
+        const formatTime = (minutes) => {
+          if (!minutes) return '0m';
+          if (minutes < 60) return `${minutes}m`;
+          const hours = Math.floor(minutes / 60);
+          const mins = minutes % 60;
+          return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+        };
+        
+        // COVER PAGE
+        doc.setFillColor(...navy);
+        doc.rect(0, 0, pageWidth, 80, 'F');
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(32);
+        doc.setFont('helvetica', 'bold');
+        doc.text('FATHOM', pageWidth / 2, 30, { align: 'center' });
+        
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Journey Intelligence Platform', pageWidth / 2, 38, { align: 'center' });
+        
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...slate700);
+        doc.text('STANDARD OPERATING PROCEDURE', pageWidth / 2, 110, { align: 'center' });
+        
+        const title = journeyData.meta?.title || 'Journey Map';
+        doc.setFontSize(22);
+        const titleLines = doc.splitTextToSize(title, contentWidth - 40);
+        doc.text(titleLines, pageWidth / 2, 125, { align: 'center' });
+        
+        const metaY = 150;
+        doc.setDrawColor(...slate200);
+        doc.setLineWidth(0.5);
+        doc.rect(margin, metaY, contentWidth, 60);
+        
+        doc.setFontSize(10);
+        doc.setTextColor(...slate600);
+        
+        const metaFields = [
+          ['Document ID:', `SOP-${new Date().getFullYear()}-001`],
+          ['Version:', '1.0'],
+          ['Effective Date:', new Date().toLocaleDateString('en-GB')],
+          ['Classification:', 'Internal Use Only']
+        ];
+        
+        let metaLineY = metaY + 10;
+        metaFields.forEach(([label, value]) => {
+          doc.setFont('helvetica', 'bold');
+          doc.text(label, margin + 5, metaLineY);
+          doc.setFont('helvetica', 'normal');
+          doc.text(value, margin + 45, metaLineY);
+          metaLineY += 12;
+        });
+        
+        addNewPage();
+        
+        // PROCESS OVERVIEW
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...navy);
+        doc.text('1. Process Overview', margin, 40);
+        
+        const allSteps = journeyData.stages?.flatMap(stage => stage.steps || []) || [];
+        const totalTime = allSteps.reduce((acc, s) => acc + (s.timeMinutes || 0), 0);
+        
+        let totalCost = 0;
+        if (journeyData.personas?.some(p => p.salary || p.annualSalary)) {
+          allSteps.forEach(step => {
+            totalCost += calculateStepCost(step, journeyData.personas);
+          });
+        }
+        
+        const boxY = 50;
+        doc.setFillColor(...slate100);
+        doc.roundedRect(margin, boxY, contentWidth, 55, 3, 3, 'F');
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...slate600);
+        
+        let metricsY = boxY + 10;
+        const metrics = [
+          ['Process Name:', title],
+          ['Total Duration:', formatTime(totalTime)],
+          ['Total Cost:', formatCurrency(totalCost)],
+          ['Stages:', `${journeyData.stages?.length || 0}`],
+          ['Steps:', `${allSteps.length}`]
+        ];
+        
+        const col1X = margin + 5;
+        const col2X = margin + (contentWidth / 2) + 5;
+        
+        metrics.forEach((metric, i) => {
+          const x = i < 3 ? col1X : col2X;
+          const y = metricsY + ((i % 3) * 12);
+          
+          doc.setFont('helvetica', 'bold');
+          doc.text(metric[0], x, y);
+          doc.setFont('helvetica', 'normal');
+          doc.text(metric[1], x + 35, y);
+        });
+        
+        if (journeyData.meta?.description) {
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...slate700);
+          const descLines = doc.splitTextToSize(journeyData.meta.description, contentWidth - 10);
+          doc.text(descLines, margin, 120);
+        }
+        
+        addNewPage();
+        
+        // STAGE INSTRUCTIONS
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...navy);
+        doc.text('2. Stage-by-Stage Instructions', margin, 40);
+        
+        let currentY = 55;
+        
+        (journeyData.stages || []).forEach((stage, stageIdx) => {
+          if (currentY > pageHeight - 80) {
+            addNewPage();
+            currentY = 40;
+          }
+          
+          doc.setFillColor(...navy);
+          doc.rect(margin, currentY, contentWidth, 12, 'F');
+          
+          doc.setFontSize(14);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(255, 255, 255);
+          doc.text(`Stage ${stageIdx + 1}: ${stage.name}`, margin + 3, currentY + 8);
+          
+          currentY += 18;
+          
+          if (stage.description) {
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'italic');
+            doc.setTextColor(...slate600);
+            const descLines = doc.splitTextToSize(stage.description, contentWidth - 10);
+            doc.text(descLines, margin, currentY);
+            currentY += (descLines.length * 4) + 5;
+          }
+          
+          const stepsData = (stage.steps || []).map((step, stepIdx) => {
+            const friction = step.frictionScore || 
+              { none: 1, low: 2, medium: 3, high: 4, critical: 5 }[step.friction] || '-';
+            
+            const owner = journeyData.personas?.find(p => p.id === step.owner)?.label || '-';
+            
+            return [
+              `${stageIdx + 1}.${stepIdx + 1}`,
+              step.name,
+              owner,
+              formatTime(step.timeMinutes),
+              friction.toString()
+            ];
+          });
+          
+          if (stepsData.length > 0) {
+            doc.autoTable({
+              startY: currentY,
+              head: [['#', 'Step', 'Owner', 'Time', 'Friction']],
+              body: stepsData,
+              theme: 'grid',
+              headStyles: {
+                fillColor: steel,
+                textColor: [255, 255, 255],
+                fontSize: 8,
+                fontStyle: 'bold'
+              },
+              bodyStyles: {
+                fontSize: 8,
+                textColor: slate700
+              },
+              columnStyles: {
+                0: { cellWidth: 12 },
+                2: { cellWidth: 35 },
+                3: { cellWidth: 20 },
+                4: { cellWidth: 18 }
+              },
+              margin: { left: margin, right: margin }
+            });
+            
+            currentY = doc.lastAutoTable.finalY + 12;
+          }
+        });
+        
+        addNewPage();
+        
+        // QUICK REFERENCE
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...navy);
+        doc.text('3. Quick Reference Guide', margin, 40);
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(...slate600);
+        doc.text('One-page summary for daily use', margin, 48);
+        
+        const qrY = 55;
+        doc.setDrawColor(...slate200);
+        doc.setLineWidth(0.5);
+        doc.rect(margin, qrY, contentWidth, 180);
+        
+        let qrContentY = qrY + 10;
+        
+        (journeyData.stages || []).forEach((stage, idx) => {
+          if (qrContentY > qrY + 170) return;
+          
+          doc.setFillColor(...steel);
+          doc.rect(margin + 2, qrContentY - 5, contentWidth - 4, 7, 'F');
+          
+          doc.setFontSize(11);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(255, 255, 255);
+          doc.text(`STAGE ${idx + 1}: ${stage.name.toUpperCase()}`, margin + 4, qrContentY);
+          
+          qrContentY += 10;
+          
+          doc.setFontSize(8);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...slate700);
+          
+          const stageSteps = stage.steps || [];
+          const stageTime = stageSteps.reduce((acc, s) => acc + (s.timeMinutes || 0), 0);
+          const stageCost = stageSteps.reduce((acc, s) => acc + calculateStepCost(s, journeyData.personas), 0);
+          
+          doc.text(`→ ${stageSteps.length} steps | ${formatTime(stageTime)} | ${formatCurrency(stageCost)}`, margin + 4, qrContentY);
+          
+          qrContentY += 8;
+        });
+        
+        addPageFooter();
+        
+        const fileName = `${title.replace(/[^a-z0-9]/gi, '_')}_SOP_v1.0.pdf`;
+        doc.save(fileName);
+        
+        alert(`✅ SOP Generated!\n\nFile: ${fileName}\n\nThe professional SOP document has been downloaded.`);
+        
+      } catch (err) {
+        console.error('SOP generation error:', err);
+        alert('Failed to generate SOP: ' + err.message);
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</body>
+</html>
