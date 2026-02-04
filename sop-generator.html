@@ -151,6 +151,14 @@
       }
 
       try {
+        // Check if user is authenticated
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+        
+        if (sessionError || !session) {
+          document.getElementById('journeyInfo').innerHTML = '<div class="error">❌ Please log in to the dashboard first, then click Generate SOP.</div>';
+          return;
+        }
+
         const { data, error } = await supabaseClient
           .from('journey_maps')
           .select('*')
