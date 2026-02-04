@@ -953,8 +953,7 @@
         'file-text': 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM14 2v6h6M16 13H8M16 17H8M10 9H8',
         'paperclip': 'M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48',
         'zap': 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
-        'mail': 'M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6',
-        'lightbulb': 'M9 18h6M10 22h4M15 2a7 7 0 0 1 0 14H9A7 7 0 0 1 9 2h6zM9.7 17a4 4 0 0 0 4.6 0'
+        'mail': 'M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6'
       };
       
       const pathData = icons[name] || '';
@@ -985,7 +984,7 @@
     };
     
     // Current app version
-    const APP_VERSION = "11.4.0";
+    const APP_VERSION = "11.5.0";
     
     // ============================================
     // SUPABASE CONFIGURATION
@@ -9137,7 +9136,7 @@ FATHOM - Journey intelligence for modern operations`);
     }
 
     // Structure Configuration Panel
-    function StructurePanel({ config, onMoveStage, onMoveStep, onInsertStage, onInsertStep, onRemoveStage, onRemoveStep, onClose, onRenameStage, onRenameStep, onUpdateStageDuration }) {
+    function StructurePanel({ config, onMoveStage, onMoveStep, onInsertStage, onInsertStep, onRemoveStage, onRemoveStep, onClose, onRenameStage, onRenameStep }) {
       const [addingStageAfter, setAddingStageAfter] = useState(null); // index or -1 for start
       const [addingStepIn, setAddingStepIn] = useState(null); // { stageId, afterIndex }
       const [newStageName, setNewStageName] = useState('');
@@ -9331,100 +9330,6 @@ FATHOM - Journey intelligence for modern operations`);
                       >🗑</button>
                     </div>
                   </div>
-
-                  {/* Stage Duration (Optional) - Only shown when expanded */}
-                  {expandedStages.includes(stage.id) && (
-                    <div style={{ 
-                      background: '#E1EEF2', 
-                      padding: '12px 16px', 
-                      borderLeft: `3px solid ${getStageColor(stageIndex)}`,
-                      borderRight: '1px solid #E4E7EB',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      flexWrap: 'wrap'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#556275' }}>
-                        <Icon name="calendar-days" size={16} color="#556275" />
-                        <span style={{ fontWeight: 500 }}>Stage Duration:</span>
-                      </div>
-                      <input
-                        type="number"
-                        min="0"
-                        placeholder="0"
-                        value={stage.duration?.years || ''}
-                        onChange={(e) => {
-                          const updatedStages = config.stages.map(s => 
-                            s.id === stage.id 
-                              ? {
-                                  ...s,
-                                  duration: {
-                                    years: parseInt(e.target.value) || 0,
-                                    months: s.duration?.months || 0,
-                                    displayText: `${parseInt(e.target.value) || 0}y ${s.duration?.months || 0}m`
-                                  }
-                                }
-                              : s
-                          );
-                          // Update config directly through parent
-                          onUpdateStageDuration && onUpdateStageDuration(updatedStages);
-                        }}
-                        style={{ 
-                          width: '60px', 
-                          padding: '6px 8px', 
-                          border: '1px solid #C8CED6', 
-                          borderRadius: '4px', 
-                          fontSize: '13px',
-                          textAlign: 'center'
-                        }}
-                      />
-                      <span style={{ fontSize: '13px', color: '#556275' }}>years</span>
-                      <input
-                        type="number"
-                        min="0"
-                        max="11"
-                        placeholder="0"
-                        value={stage.duration?.months || ''}
-                        onChange={(e) => {
-                          const months = Math.min(parseInt(e.target.value) || 0, 11);
-                          const updatedStages = config.stages.map(s => 
-                            s.id === stage.id 
-                              ? {
-                                  ...s,
-                                  duration: {
-                                    years: s.duration?.years || 0,
-                                    months: months,
-                                    displayText: `${s.duration?.years || 0}y ${months}m`
-                                  }
-                                }
-                              : s
-                          );
-                          onUpdateStageDuration && onUpdateStageDuration(updatedStages);
-                        }}
-                        style={{ 
-                          width: '60px', 
-                          padding: '6px 8px', 
-                          border: '1px solid #C8CED6', 
-                          borderRadius: '4px', 
-                          fontSize: '13px',
-                          textAlign: 'center'
-                        }}
-                      />
-                      <span style={{ fontSize: '13px', color: '#556275' }}>months</span>
-                      <div style={{ 
-                        marginLeft: 'auto', 
-                        fontSize: '11px', 
-                        color: '#6E7B8C',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        maxWidth: '200px'
-                      }}>
-                        <Icon name="lightbulb" size={12} color="#6E7B8C" />
-                        <span style={{ fontStyle: 'italic' }}>Elapsed time from start to finish (optional for multi-year stages)</span>
-                      </div>
-                    </div>
-                  )}
 
                   {/* Steps within Stage */}
                   {expandedStages.includes(stage.id) && (
@@ -9755,23 +9660,18 @@ FATHOM - Journey intelligence for modern operations`);
                 
                 const normalized = normalizeConfig(data.config);
                 setConfig(normalized);
+                // Cache in localStorage ONLY after successful Supabase load
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
               } else {
                 console.warn('⚠️ Map not found in Supabase');
+                // Show error - do NOT fall back to localStorage in Supabase mode
+                alert('Map not found in database. Please check the map ID in the URL.');
               }
             } catch (err) {
               console.error('⚠️ Supabase fetch failed:', err.message);
-              // Try localStorage as fallback
-              const saved = localStorage.getItem(STORAGE_KEY);
-              if (saved) {
-                try {
-                  const parsed = JSON.parse(saved);
-                  console.log('⚠️ Using localStorage fallback');
-                  setConfig(normalizeConfig(parsed));
-                } catch (e) {
-                  console.warn('⚠️ localStorage invalid');
-                }
-              }
+              // CRITICAL: In Supabase mode, DO NOT fall back to localStorage
+              // This prevents old localStorage data from overwriting newer Supabase data
+              alert(`Failed to load map from database: ${err.message}\n\nPlease check your connection and try again.`);
             }
             setConfigLoading(false);
             return;
@@ -11091,23 +10991,7 @@ FATHOM - Journey intelligence for modern operations`);
         const totalRegReqs = allSteps.reduce((acc, s) => acc + (s.regulatoryRequirements?.length || 0), 0);
         const totalCost = allSteps.reduce((acc, s) => acc + calculateStepCost(s, config.personas, config), 0);
         const totalTime = allSteps.reduce((acc, s) => acc + s.timeMinutes, 0);
-        
-        // Calculate total duration from stages (if any have duration set)
-        const hasDurations = config.stages.some(s => s.duration && (s.duration.years > 0 || s.duration.months > 0));
-        let totalDuration = null;
-        if (hasDurations) {
-          let totalMonths = 0;
-          config.stages.forEach(stage => {
-            if (stage.duration) {
-              totalMonths += (stage.duration.years || 0) * 12 + (stage.duration.months || 0);
-            }
-          });
-          const years = Math.floor(totalMonths / 12);
-          const months = totalMonths % 12;
-          totalDuration = { years, months };
-        }
-        
-        return { totalPainPoints, avgFriction, highAutomation, totalRegReqs, totalSteps: allSteps.length, totalCost, totalTime, totalDuration, hasDurations };
+        return { totalPainPoints, avgFriction, highAutomation, totalRegReqs, totalSteps: allSteps.length, totalCost, totalTime };
       }, [config.stages, config.personas]);
 
       // Funnel metrics calculation
@@ -11364,30 +11248,10 @@ FATHOM - Journey intelligence for modern operations`);
                 ) : (
                   <>
                     {/* Stats Badges */}
-                    {stats.hasDurations ? (
-                      // Has duration - show both elapsed and labor time
-                      <>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : '6px', padding: isMobile ? '3px 6px' : '4px 10px', background: 'rgba(255,255,255,0.15)', borderRadius: '6px' }} title="Total Journey Duration">
-                          <Icon name="calendar-days" size={isMobile ? 12 : 14} color="#FFF" />
-                          <span style={{ fontWeight: 600, fontSize: isMobile ? '10px' : '11px', fontFamily: "'Open Sans', sans-serif", color: '#FFF' }}>
-                            {stats.totalDuration.years > 0 && `${stats.totalDuration.years}y`}
-                            {stats.totalDuration.years > 0 && stats.totalDuration.months > 0 && ' '}
-                            {stats.totalDuration.months > 0 && `${stats.totalDuration.months}m`}
-                          </span>
-                        </div>
-                        {!isMobile && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Total Labor Time">
-                            <span style={{ fontWeight: 500, fontSize: '11px', fontFamily: "'Open Sans', sans-serif", color: '#FFF', opacity: 0.9 }}>{formatTime(stats.totalTime)} labor</span>
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      // No duration - show labor time prominently
-                      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : '6px', padding: isMobile ? '3px 6px' : '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Total Time">
-                        <Icon name="clock" size={isMobile ? 12 : 14} color="#FFF" />
-                        <span style={{ fontWeight: 600, fontSize: isMobile ? '10px' : '11px', fontFamily: "'Open Sans', sans-serif", color: '#FFF' }}>{formatTime(stats.totalTime)}</span>
-                      </div>
-                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : '6px', padding: isMobile ? '3px 6px' : '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Total Time">
+                      <Icon name="clock" size={isMobile ? 12 : 14} color="#FFF" />
+                      <span style={{ fontWeight: 600, fontSize: isMobile ? '10px' : '11px', fontFamily: "'Open Sans', sans-serif", color: '#FFF' }}>{formatTime(totalTime)}</span>
+                    </div>
                     {!isMobile && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px' }} title="Average Friction">
                         <span style={{ fontSize: '12px' }}>{frictionConfig[Math.round(stats.avgFriction) || 3]?.emoji || '😕'}</span>
@@ -12091,28 +11955,10 @@ FATHOM - Journey intelligence for modern operations`);
                             <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 600, lineHeight: 1.2 }}>{stage.name}</h2>
                           </div>
                           <div style={{ textAlign: 'right' }}>
-                            {stage.duration && (stage.duration.years > 0 || stage.duration.months > 0) ? (
-                              // Has duration - show both elapsed time and labor time
-                              <>
-                                <div style={{ fontSize: '14px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
-                                  <Icon name="calendar-days" size={isMobile ? 12 : 14} color="#FFF" />
-                                  <span>
-                                    {stage.duration.years > 0 && `${stage.duration.years}y`}
-                                    {stage.duration.years > 0 && stage.duration.months > 0 && ' '}
-                                    {stage.duration.months > 0 && `${stage.duration.months}m`}
-                                  </span>
-                                </div>
-                                <div style={{ fontSize: '11px', opacity: 0.75, justifyContent: 'flex-end', marginTop: '2px' }}>
-                                  <span>{formatTime(stageTime)} labor</span>
-                                </div>
-                              </>
-                            ) : (
-                              // No duration - show labor time prominently
-                              <div style={{ fontSize: '16px', fontWeight: 600 }}>{formatTime(stageTime)}</div>
-                            )}
+                            <div style={{ fontSize: '16px', fontWeight: 600 }}>{formatTime(stageTime)}</div>
                             {showCosts && (
                               <>
-                                <div style={{ fontSize: '12px', opacity: 0.8, marginTop: stage.duration ? '4px' : '0' }}>{formatCurrency(stageCost)}</div>
+                                <div style={{ fontSize: '12px', opacity: 0.8 }}>{formatCurrency(stageCost)}</div>
                                 {config.meta?.costModel === 'event' && (
                                   <div style={{ fontSize: '10px', opacity: 0.7 }}>
                                     {formatCostPerAttendee(calculateCostPerAttendee(stageCost, getStageCapacity(stage, config)))}
@@ -12502,38 +12348,15 @@ FATHOM - Journey intelligence for modern operations`);
                           )}
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          {stage.duration && (stage.duration.years > 0 || stage.duration.months > 0) ? (
-                            // Has duration - show both elapsed time and labor time
-                            <>
-                              <div style={{ fontSize: '14px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
-                                <Icon name="calendar-days" size={14} color="#FFF" />
-                                <span>
-                                  {stage.duration.years > 0 && `${stage.duration.years}y`}
-                                  {stage.duration.years > 0 && stage.duration.months > 0 && ' '}
-                                  {stage.duration.months > 0 && `${stage.duration.months}m`}
-                                </span>
-                              </div>
-                              <div style={{ fontSize: '11px', opacity: 0.75, justifyContent: 'flex-end', marginTop: '2px' }}>
-                                <span>{formatTime(stageTime)} labor</span>
-                              </div>
-                            </>
-                          ) : (
-                            // No duration - show labor time with cost
-                            <div style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
-                              <span style={{ fontWeight: 400 }}>{formatTime(stageTime)}</span>
-                              {showCosts && (
-                                <>
-                                  <span style={{ opacity: 0.5, fontWeight: 400 }}>|</span>
-                                  <span style={{ fontWeight: 600 }}>{formatCurrency(stageCost)}</span>
-                                </>
-                              )}
-                            </div>
-                          )}
-                          {showCosts && stage.duration && (stage.duration.years > 0 || stage.duration.months > 0) && (
-                            <div style={{ fontSize: '12px', opacity: 0.8, marginTop: '4px' }}>
-                              {formatCurrency(stageCost)}
-                            </div>
-                          )}
+                          <div style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
+                            <span style={{ fontWeight: 400 }}>{formatTime(stageTime)}</span>
+                            {showCosts && (
+                              <>
+                                <span style={{ opacity: 0.5, fontWeight: 400 }}>|</span>
+                                <span style={{ fontWeight: 600 }}>{formatCurrency(stageCost)}</span>
+                              </>
+                            )}
+                          </div>
                           {showCosts && config.meta?.costModel === 'event' && (
                             <div style={{ fontSize: '10px', opacity: 0.7, marginTop: '2px' }}>
                               {formatCostPerAttendee(calculateCostPerAttendee(stageCost, getStageCapacity(stage, config)))}
@@ -15336,12 +15159,6 @@ FATHOM - Journey intelligence for modern operations`);
             onRemoveStage={removeStage}
             onRenameStage={renameStage}
             onRenameStep={renameStep}
-            onUpdateStageDuration={(updatedStages) => {
-              setConfig(prev => ({
-                ...prev,
-                stages: updatedStages
-              }));
-            }}
             onRemoveStep={(stageId, stepId) => {
               setConfig(prev => ({
                 ...prev,
