@@ -11,6 +11,8 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <style>
     /* CSS Custom Properties */
     :root {
@@ -1368,6 +1370,212 @@
     }
     .dropdown-item:hover { background: var(--slate-50); }
     
+    /* ============================================================================
+       SOP GENERATOR MODAL STYLES
+       ============================================================================ */
+    
+    .sop-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(26, 35, 50, 0.88);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+      animation: sopFadeIn 0.2s ease-out;
+    }
+    
+    @keyframes sopFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .sop-modal-overlay.active {
+      display: flex;
+    }
+    
+    .sop-modal {
+      background: #FFF;
+      border-radius: 16px;
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      animation: sopSlideUp 0.3s ease-out;
+    }
+    
+    @keyframes sopSlideUp {
+      from { 
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to { 
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .sop-modal-header {
+      padding: 28px 32px;
+      border-bottom: 2px solid var(--slate-100);
+      background: linear-gradient(135deg, var(--navy-700) 0%, var(--navy-600) 100%);
+    }
+    
+    .sop-modal-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+    
+    .sop-modal-subtitle {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .sop-modal-body {
+      padding: 32px;
+      max-height: calc(90vh - 200px);
+      overflow-y: auto;
+    }
+    
+    .sop-section {
+      margin-bottom: 24px;
+    }
+    
+    .sop-section:last-of-type {
+      margin-bottom: 0;
+    }
+    
+    .sop-section-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy-700);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.3px;
+    }
+    
+    .sop-radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .sop-radio-option {
+      background: var(--slate-50);
+      border: 2px solid var(--slate-200);
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .sop-radio-option:hover {
+      background: #FFF;
+      border-color: var(--steel-500);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(91, 138, 154, 0.15);
+    }
+    
+    .sop-radio-option.selected {
+      background: var(--steel-100);
+      border-color: var(--steel-500);
+      box-shadow: 0 0 0 3px rgba(91, 138, 154, 0.1);
+    }
+    
+    .sop-radio-option input[type="radio"] {
+      margin-top: 2px;
+      accent-color: var(--steel-500);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    
+    .sop-option-content {
+      flex: 1;
+    }
+    
+    .sop-option-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--slate-900);
+      margin-bottom: 3px;
+    }
+    
+    .sop-option-desc {
+      font-size: 12px;
+      color: var(--slate-600);
+      line-height: 1.4;
+    }
+    
+    .sop-checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    
+    .sop-checkbox-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 13px;
+      color: var(--slate-700);
+    }
+    
+    .sop-checkbox-option:hover {
+      background: #FFF;
+      border-color: var(--steel-400);
+    }
+    
+    .sop-checkbox-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--steel-500);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    
+    .sop-checkbox-option input[type="checkbox"]:checked + span {
+      color: var(--navy-700);
+      font-weight: 600;
+    }
+    
+    .sop-modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      padding-top: 24px;
+      margin-top: 24px;
+      border-top: 2px solid var(--slate-100);
+    }
+    
+    .sop-modal-actions .btn {
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      min-width: 120px;
+    }
+    
     /* ============================================
        TABLET AND UP (768px+)
        ============================================ */
@@ -2405,6 +2613,21 @@
       const [surveyResponseCounts, setSurveyResponseCounts] = useState({}); // {mapId: {pending: N, reviewed: N}}
       const [toasts, setToasts] = useState([]);
       
+      // SOP Generator State
+      const [showSOPModal, setShowSOPModal] = useState(false);
+      const [selectedMapForSOP, setSelectedMapForSOP] = useState(null);
+      const [sopConfig, setSOPConfig] = useState({
+        format: 'comprehensive',
+        sections: {
+          overview: true,
+          stages: true,
+          roles: true,
+          regulatory: true,
+          costs: true,
+          quickRef: true
+        }
+      });
+      
       // Handle resize for mobile detection
       useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -3009,6 +3232,435 @@
         window.location.href = `editor.html?id=${mapId}&title=${encodeURIComponent(title)}`;
       };
 
+      // ============================================================================
+      // SOP GENERATOR HANDLERS
+      // ============================================================================
+
+      const handleGenerateSOPClick = (mapId, e) => {
+        e.stopPropagation();
+        setSelectedMapForSOP(mapId);
+        setShowSOPModal(true);
+      };
+
+      const closeSOPModal = () => {
+        setShowSOPModal(false);
+        setSelectedMapForSOP(null);
+      };
+
+      const toggleSOPSection = (section) => {
+        setSOPConfig(prev => ({
+          ...prev,
+          sections: { ...prev.sections, [section]: !prev.sections[section] }
+        }));
+      };
+
+      const generateSOPDocument = () => {
+        const mapId = selectedMapForSOP;
+        const config = mapConfigs[mapId];
+        const map = maps.find(m => m.id === mapId);
+        
+        if (!config) {
+          alert('Journey data not loaded. Please try again.');
+          return;
+        }
+
+        try {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF('p', 'mm', 'a4');
+          
+          const navy = [25, 43, 69];
+          const steel = [91, 138, 154];
+          const slate700 = [61, 74, 92];
+          const slate600 = [85, 98, 117];
+          const slate400 = [138, 149, 165];
+          const slate200 = [200, 206, 214];
+          const slate100 = [228, 231, 235];
+          
+          let pageNumber = 1;
+          const pageWidth = 210;
+          const pageHeight = 297;
+          const margin = 25;
+          const contentWidth = pageWidth - (margin * 2);
+          
+          const addPageFooter = () => {
+            doc.setFontSize(9);
+            doc.setTextColor(...slate400);
+            doc.text('Generated by FATHOM Journey Intelligence', margin, pageHeight - 10);
+            doc.text(`Page ${pageNumber}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+            pageNumber++;
+          };
+          
+          const addNewPage = () => {
+            addPageFooter();
+            doc.addPage();
+          };
+          
+          const formatCurrency = (amount) => {
+            if (!amount || amount === 0) return '£0';
+            return `£${Math.round(amount).toLocaleString()}`;
+          };
+          
+          const formatTime = (minutes) => {
+            if (!minutes) return '0m';
+            if (minutes < 60) return `${minutes}m`;
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+          };
+          
+          // COVER PAGE
+          doc.setFillColor(...navy);
+          doc.rect(0, 0, pageWidth, 80, 'F');
+          
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(32);
+          doc.setFont('helvetica', 'bold');
+          doc.text('FATHOM', pageWidth / 2, 30, { align: 'center' });
+          
+          doc.setFontSize(11);
+          doc.setFont('helvetica', 'normal');
+          doc.text('Journey Intelligence Platform', pageWidth / 2, 38, { align: 'center' });
+          
+          doc.setFontSize(18);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(...slate700);
+          doc.text('STANDARD OPERATING PROCEDURE', pageWidth / 2, 110, { align: 'center' });
+          
+          const title = config.meta?.title || map?.title || 'Journey Map';
+          doc.setFontSize(22);
+          const titleLines = doc.splitTextToSize(title, contentWidth - 40);
+          doc.text(titleLines, pageWidth / 2, 125, { align: 'center' });
+          
+          const metaY = 150;
+          doc.setDrawColor(...slate200);
+          doc.setLineWidth(0.5);
+          doc.rect(margin, metaY, contentWidth, 60);
+          
+          doc.setFontSize(10);
+          doc.setTextColor(...slate600);
+          
+          const metaFields = [
+            ['Document ID:', `SOP-${new Date().getFullYear()}-${mapId.substring(0, 6).toUpperCase()}`],
+            ['Version:', '1.0'],
+            ['Effective Date:', new Date().toLocaleDateString('en-GB')],
+            ['Review Date:', new Date(Date.now() + 365*24*60*60*1000).toLocaleDateString('en-GB')],
+            ['Classification:', 'Internal Use Only']
+          ];
+          
+          let metaLineY = metaY + 10;
+          metaFields.forEach(([label, value]) => {
+            doc.setFont('helvetica', 'bold');
+            doc.text(label, margin + 5, metaLineY);
+            doc.setFont('helvetica', 'normal');
+            doc.text(value, margin + 45, metaLineY);
+            metaLineY += 10;
+          });
+          
+          doc.setFontSize(9);
+          doc.setTextColor(...slate400);
+          doc.text('This document was automatically generated from FATHOM journey intelligence data.', pageWidth / 2, pageHeight - 30, { align: 'center' });
+          
+          addNewPage();
+          
+          // TABLE OF CONTENTS
+          doc.setFontSize(18);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(...navy);
+          doc.text('Table of Contents', margin, 40);
+          
+          const tocItems = [
+            '1. Process Overview',
+            '2. Roles & Responsibilities', 
+            '3. Stage-by-Stage Instructions',
+            '4. Quick Reference Guide'
+          ];
+          
+          let tocY = 55;
+          doc.setFontSize(11);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...slate700);
+          
+          tocItems.forEach((item, idx) => {
+            doc.text(item, margin, tocY);
+            doc.text(`${idx + 3}`, pageWidth - margin, tocY, { align: 'right' });
+            tocY += 10;
+          });
+          
+          addNewPage();
+          
+          // PROCESS OVERVIEW
+          if (sopConfig.sections.overview) {
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...navy);
+            doc.text('1. Process Overview', margin, 40);
+            
+            const allSteps = config.stages?.flatMap(stage => stage.steps || []) || [];
+            const totalTime = allSteps.reduce((acc, s) => acc + (s.timeMinutes || 0), 0);
+            
+            let totalCost = 0;
+            if (config.personas?.some(p => p.salary || p.annualSalary)) {
+              allSteps.forEach(step => {
+                totalCost += calculateStepCost(step, config.personas);
+              });
+            }
+            
+            const frictionMap = { none: 1, low: 2, medium: 3, high: 4, critical: 5, extreme: 5 };
+            const frictionValues = allSteps
+              .map(s => s.frictionScore || frictionMap[s.friction] || frictionMap[s.frictionLevel])
+              .filter(Boolean);
+            const avgFriction = frictionValues.length 
+              ? (frictionValues.reduce((a, b) => a + b, 0) / frictionValues.length).toFixed(1)
+              : 'N/A';
+            
+            const boxY = 50;
+            doc.setFillColor(...slate100);
+            doc.roundedRect(margin, boxY, contentWidth, 55, 3, 3, 'F');
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...slate600);
+            
+            let metricsY = boxY + 10;
+            const metrics = [
+              ['Process Name:', title],
+              ['Total Duration:', formatTime(totalTime)],
+              ['Total Cost:', formatCurrency(totalCost)],
+              ['Stages:', `${config.stages?.length || 0}`],
+              ['Steps:', `${allSteps.length}`],
+              ['Avg Friction:', `${avgFriction}/5`]
+            ];
+            
+            const col1X = margin + 5;
+            const col2X = margin + (contentWidth / 2) + 5;
+            
+            metrics.forEach((metric, i) => {
+              const x = i < 3 ? col1X : col2X;
+              const y = metricsY + ((i % 3) * 12);
+              
+              doc.setFont('helvetica', 'bold');
+              doc.setTextColor(...slate600);
+              doc.text(metric[0], x, y);
+              
+              doc.setFont('helvetica', 'normal');
+              doc.setTextColor(...slate700);
+              doc.text(metric[1], x + 35, y);
+            });
+            
+            if (config.meta?.description) {
+              doc.setFontSize(10);
+              doc.setFont('helvetica', 'normal');
+              doc.setTextColor(...slate700);
+              const descLines = doc.splitTextToSize(config.meta.description, contentWidth - 10);
+              doc.text(descLines, margin, 120);
+            }
+            
+            addNewPage();
+          }
+          
+          // ROLES & RESPONSIBILITIES
+          if (sopConfig.sections.roles && config.personas) {
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...navy);
+            doc.text('2. Roles & Responsibilities', margin, 40);
+            
+            const rolesData = config.personas
+              .filter(p => !p.isExternal)
+              .map(persona => {
+                let totalTime = 0;
+                let stagesInvolved = new Set();
+                
+                config.stages?.forEach((stage, stageIdx) => {
+                  stage.steps?.forEach(step => {
+                    const inv = step.roleInvolvement?.[persona.id];
+                    if (inv && inv.timeMinutes > 0) {
+                      totalTime += inv.timeMinutes;
+                      stagesInvolved.add(stageIdx + 1);
+                    }
+                  });
+                });
+                
+                const stagesStr = stagesInvolved.size > 0 
+                  ? Array.from(stagesInvolved).sort((a,b) => a-b).join(', ')
+                  : '-';
+                
+                return [
+                  persona.label || persona.name,
+                  stagesStr,
+                  formatTime(totalTime)
+                ];
+              })
+              .filter(r => r[2] !== '0m');
+            
+            if (rolesData.length > 0) {
+              doc.autoTable({
+                startY: 50,
+                head: [['Role', 'Stages Involved', 'Time Commitment']],
+                body: rolesData,
+                theme: 'grid',
+                headStyles: {
+                  fillColor: navy,
+                  textColor: [255, 255, 255],
+                  fontSize: 10,
+                  fontStyle: 'bold'
+                },
+                bodyStyles: {
+                  fontSize: 9,
+                  textColor: slate700
+                },
+                alternateRowStyles: {
+                  fillColor: slate100
+                },
+                margin: { left: margin, right: margin }
+              });
+            }
+            
+            addNewPage();
+          }
+          
+          // STAGE-BY-STAGE INSTRUCTIONS
+          if (sopConfig.sections.stages) {
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...navy);
+            doc.text('3. Stage-by-Stage Instructions', margin, 40);
+            
+            let currentY = 55;
+            
+            (config.stages || []).forEach((stage, stageIdx) => {
+              if (currentY > pageHeight - 80) {
+                addNewPage();
+                currentY = 40;
+              }
+              
+              doc.setFillColor(...navy);
+              doc.rect(margin, currentY, contentWidth, 12, 'F');
+              
+              doc.setFontSize(14);
+              doc.setFont('helvetica', 'bold');
+              doc.setTextColor(255, 255, 255);
+              doc.text(`Stage ${stageIdx + 1}: ${stage.name}`, margin + 3, currentY + 8);
+              
+              currentY += 18;
+              
+              if (stage.description) {
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'italic');
+                doc.setTextColor(...slate600);
+                const descLines = doc.splitTextToSize(stage.description, contentWidth - 10);
+                doc.text(descLines, margin, currentY);
+                currentY += (descLines.length * 4) + 5;
+              }
+              
+              const stepsData = (stage.steps || []).map((step, stepIdx) => {
+                const friction = step.frictionScore || 
+                  { none: 1, low: 2, medium: 3, high: 4, critical: 5 }[step.friction] || '-';
+                
+                const owner = config.personas?.find(p => p.id === step.owner)?.label || '-';
+                
+                return [
+                  `${stageIdx + 1}.${stepIdx + 1}`,
+                  step.name,
+                  owner,
+                  formatTime(step.timeMinutes),
+                  friction.toString()
+                ];
+              });
+              
+              if (stepsData.length > 0) {
+                doc.autoTable({
+                  startY: currentY,
+                  head: [['#', 'Step', 'Owner', 'Time', 'Friction']],
+                  body: stepsData,
+                  theme: 'grid',
+                  headStyles: {
+                    fillColor: steel,
+                    textColor: [255, 255, 255],
+                    fontSize: 8,
+                    fontStyle: 'bold'
+                  },
+                  bodyStyles: {
+                    fontSize: 8,
+                    textColor: slate700
+                  },
+                  columnStyles: {
+                    0: { cellWidth: 12 },
+                    2: { cellWidth: 35 },
+                    3: { cellWidth: 20 },
+                    4: { cellWidth: 18 }
+                  },
+                  margin: { left: margin, right: margin }
+                });
+                
+                currentY = doc.lastAutoTable.finalY + 12;
+              }
+            });
+            
+            addNewPage();
+          }
+          
+          // QUICK REFERENCE
+          if (sopConfig.sections.quickRef) {
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...navy);
+            doc.text('4. Quick Reference Guide', margin, 40);
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'italic');
+            doc.setTextColor(...slate600);
+            doc.text('One-page summary for daily use', margin, 48);
+            
+            const qrY = 55;
+            doc.setDrawColor(...slate200);
+            doc.setLineWidth(0.5);
+            doc.rect(margin, qrY, contentWidth, 180);
+            
+            let qrContentY = qrY + 10;
+            
+            (config.stages || []).forEach((stage, idx) => {
+              if (qrContentY > qrY + 170) return;
+              
+              doc.setFillColor(...steel);
+              doc.rect(margin + 2, qrContentY - 5, contentWidth - 4, 7, 'F');
+              
+              doc.setFontSize(11);
+              doc.setFont('helvetica', 'bold');
+              doc.setTextColor(255, 255, 255);
+              doc.text(`STAGE ${idx + 1}: ${stage.name.toUpperCase()}`, margin + 4, qrContentY);
+              
+              qrContentY += 10;
+              
+              doc.setFontSize(8);
+              doc.setFont('helvetica', 'normal');
+              doc.setTextColor(...slate700);
+              
+              const stageSteps = stage.steps || [];
+              const stageTime = stageSteps.reduce((acc, s) => acc + (s.timeMinutes || 0), 0);
+              const stageCost = stageSteps.reduce((acc, s) => acc + calculateStepCost(s, config.personas), 0);
+              
+              doc.text(`→ ${stageSteps.length} steps | ${formatTime(stageTime)} | ${formatCurrency(stageCost)}`, margin + 4, qrContentY);
+              
+              qrContentY += 8;
+            });
+          }
+          
+          addPageFooter();
+          
+          const fileName = `${title.replace(/[^a-z0-9]/gi, '_')}_SOP_v1.0.pdf`;
+          doc.save(fileName);
+          
+          closeSOPModal();
+          
+          alert(`✅ SOP Generated Successfully!\n\nFile: ${fileName}\n\nThe professional SOP document has been downloaded.\n\nIncludes:\n• Cover page with document control\n• Table of contents\n• Process overview with metrics\n• Stage-by-stage instructions\n• Roles & responsibilities\n• Quick reference guide`);
+          
+        } catch (err) {
+          console.error('SOP generation error:', err);
+          alert('Failed to generate SOP: ' + err.message);
+        }
+      };
+
       // Toggle favourite/star
       const toggleFavourite = async (mapId, e) => {
         if (e) {
@@ -3511,6 +4163,7 @@
                           <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
                             <button onClick={(e) => toggleFavourite(map.id, e)} className="btn btn-ghost" style={{ padding: '4px 8px', fontSize: '12px' }} title={map.favourite ? 'Unstar' : 'Star'}>{map.favourite ? '⭐' : '☆'}</button>
                             <button onClick={() => generateReport(map.id)} className="btn btn-ghost" style={{ padding: '4px 8px', fontSize: '12px' }} title="Report">📄</button>
+                            <button onClick={(e) => handleGenerateSOPClick(map.id, e)} className="btn btn-ghost" style={{ padding: '4px 8px', fontSize: '12px' }} title="Generate SOP">📋</button>
                             <button onClick={(e) => handleShareFromMenu(map.id, e)} className="btn btn-ghost" style={{ padding: '4px 8px', fontSize: '12px' }} title="Share">🔗</button>
                             <button onClick={(e) => handleDeleteMap(map.id, e)} className="btn btn-ghost" style={{ padding: '4px 8px', fontSize: '12px', color: map.favourite ? 'var(--slate-300)' : 'var(--error)' }} title={map.favourite ? 'Unstar to delete' : 'Delete'} disabled={map.favourite}>🗑️</button>
                           </div>
@@ -5263,6 +5916,153 @@ RULES:
             </div>
           </div>
         </div>
+        
+        {/* SOP Generation Modal */}
+        {showSOPModal && selectedMapForSOP && mapConfigs[selectedMapForSOP] && (
+          <div 
+            className="sop-modal-overlay active" 
+            onClick={closeSOPModal}
+          >
+            <div className="sop-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="sop-modal-header">
+                <div className="sop-modal-title">Generate Standard Operating Procedure</div>
+                <div className="sop-modal-subtitle">
+                  Journey: {mapConfigs[selectedMapForSOP]?.meta?.title || 'Selected journey'}
+                </div>
+              </div>
+              
+              <div className="sop-modal-body">
+                <div className="sop-section">
+                  <div className="sop-section-label">📋 Document Format</div>
+                  <div className="sop-radio-group">
+                    <label className={`sop-radio-option ${sopConfig.format === 'comprehensive' ? 'selected' : ''}`}>
+                      <input
+                        type="radio"
+                        name="sopFormat"
+                        value="comprehensive"
+                        checked={sopConfig.format === 'comprehensive'}
+                        onChange={(e) => setSOPConfig({...sopConfig, format: e.target.value})}
+                      />
+                      <div className="sop-option-content">
+                        <div className="sop-option-title">Comprehensive (All roles)</div>
+                        <div className="sop-option-desc">Full documentation with all stages, steps, and roles</div>
+                      </div>
+                    </label>
+                    
+                    <label className={`sop-radio-option ${sopConfig.format === 'operational' ? 'selected' : ''}`}>
+                      <input
+                        type="radio"
+                        name="sopFormat"
+                        value="operational"
+                        checked={sopConfig.format === 'operational'}
+                        onChange={(e) => setSOPConfig({...sopConfig, format: e.target.value})}
+                      />
+                      <div className="sop-option-content">
+                        <div className="sop-option-title">Operational (Standard)</div>
+                        <div className="sop-option-desc">Balanced detail for daily operations</div>
+                      </div>
+                    </label>
+                    
+                    <label className={`sop-radio-option ${sopConfig.format === 'quick' ? 'selected' : ''}`}>
+                      <input
+                        type="radio"
+                        name="sopFormat"
+                        value="quick"
+                        checked={sopConfig.format === 'quick'}
+                        onChange={(e) => setSOPConfig({...sopConfig, format: e.target.value})}
+                      />
+                      <div className="sop-option-content">
+                        <div className="sop-option-title">Quick Reference</div>
+                        <div className="sop-option-desc">Summary only - ideal for wall charts</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="sop-section">
+                  <div className="sop-section-label">🎯 Include Sections</div>
+                  <div className="sop-checkbox-grid">
+                    <label className="sop-checkbox-option">
+                      <input
+                        type="checkbox"
+                        checked={sopConfig.sections.overview}
+                        onChange={() => toggleSOPSection('overview')}
+                      />
+                      <span>Process Overview</span>
+                    </label>
+                    
+                    <label className="sop-checkbox-option">
+                      <input
+                        type="checkbox"
+                        checked={sopConfig.sections.stages}
+                        onChange={() => toggleSOPSection('stages')}
+                      />
+                      <span>Stage Instructions</span>
+                    </label>
+                    
+                    <label className="sop-checkbox-option">
+                      <input
+                        type="checkbox"
+                        checked={sopConfig.sections.roles}
+                        onChange={() => toggleSOPSection('roles')}
+                      />
+                      <span>Roles Matrix</span>
+                    </label>
+                    
+                    <label className="sop-checkbox-option">
+                      <input
+                        type="checkbox"
+                        checked={sopConfig.sections.regulatory}
+                        onChange={() => toggleSOPSection('regulatory')}
+                      />
+                      <span>Regulatory Checklist</span>
+                    </label>
+                    
+                    <label className="sop-checkbox-option">
+                      <input
+                        type="checkbox"
+                        checked={sopConfig.sections.costs}
+                        onChange={() => toggleSOPSection('costs')}
+                      />
+                      <span>Cost Breakdown</span>
+                    </label>
+                    
+                    <label className="sop-checkbox-option">
+                      <input
+                        type="checkbox"
+                        checked={sopConfig.sections.quickRef}
+                        onChange={() => toggleSOPSection('quickRef')}
+                      />
+                      <span>Quick Reference</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="sop-modal-actions">
+                  <button 
+                    className="btn btn-secondary" 
+                    onClick={closeSOPModal}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={generateSOPDocument}
+                    style={{ 
+                      background: 'var(--steel-500)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    <span>📋</span>
+                    <span>Generate SOP</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       );
     }
 
