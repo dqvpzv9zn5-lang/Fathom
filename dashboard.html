@@ -3630,7 +3630,7 @@
                                     <span className="card-options-item-icon">⬇️</span>
                                     Download map backup
                                   </button>
-                                  <button className="card-options-item" onClick={(e) => { e.stopPropagation(); const config = mapConfigs[map.id]; if (config) { localStorage.setItem('sopJourneyData', JSON.stringify(config)); window.open('sop-generator.html', '_blank'); } else { alert('Journey data not loaded yet. Please try again.'); } setOpenOptionsMenu(null); }}>
+                                  <button className="card-options-item" onClick={(e) => { e.stopPropagation(); localStorage.setItem('sopMapId', map.id); window.open('sop-generator.html', '_blank'); setOpenOptionsMenu(null); }}>
                                     <span className="card-options-item-icon">📋</span>
                                     Generate SOP
                                   </button>

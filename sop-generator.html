@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FATHOM - Generate SOP</title>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <style>
@@ -72,6 +73,11 @@
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(91, 138, 154, 0.3);
     }
+    .btn-primary:disabled {
+      background: #A9B2BE;
+      cursor: not-allowed;
+      transform: none;
+    }
     .info-box {
       background: #E1EEF2;
       padding: 20px;
@@ -97,6 +103,10 @@
       border-radius: 8px;
       margin-bottom: 16px;
     }
+    .loading {
+      text-align: center;
+      color: #556275;
+    }
   </style>
 </head>
 <body>
@@ -110,11 +120,10 @@
       <div class="card-title">Generate SOP Document</div>
       
       <div id="journeyInfo" class="info-box">
-        <div class="journey-title" id="journeyTitle">Loading journey...</div>
-        <div class="journey-meta" id="journeyMeta"></div>
+        <div class="loading">⏳ Loading journey from database...</div>
       </div>
 
-      <button class="btn btn-primary" id="generateBtn" onclick="generateSOP()">
+      <button class="btn btn-primary" id="generateBtn" onclick="generateSOP()" disabled>
         <span>📋</span>
         <span>Generate SOP Document</span>
       </button>
@@ -123,30 +132,50 @@
 
   <script>
     let journeyData = null;
+    let mapTitle = '';
 
-    // Load journey from localStorage
-    window.addEventListener('DOMContentLoaded', () => {
-      const mapData = localStorage.getItem('sopJourneyData');
+    // Initialize Supabase
+    const SUPABASE_URL = 'https://ktctvaeulualihczwnrl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Y3R2YWV1bHVhbGloY3p3bnJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgwMDM0MjEsImV4cCI6MjA1MzU3OTQyMX0.yTte8RqJhJBv9NyHHqmQ4FZ1yF-8pS9lkfpg2uD4SdA';
+    
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Load journey from Supabase
+    window.addEventListener('DOMContentLoaded', async () => {
+      const mapId = localStorage.getItem('sopMapId');
       
-      if (!mapData) {
-        document.getElementById('journeyInfo').innerHTML = '<div class="error">No journey data found. Please click Generate SOP from the dashboard.</div>';
-        document.getElementById('generateBtn').disabled = true;
+      if (!mapId) {
+        document.getElementById('journeyInfo').innerHTML = '<div class="error">❌ No journey selected. Please click Generate SOP from the dashboard.</div>';
         return;
       }
 
       try {
-        journeyData = JSON.parse(mapData);
-        const title = journeyData.meta?.title || 'Journey Map';
-        document.getElementById('journeyTitle').textContent = title;
+        const { data, error } = await supabaseClient
+          .from('journey_maps')
+          .select('*')
+          .eq('id', mapId)
+          .single();
+
+        if (error) throw error;
+
+        journeyData = data.config;
+        mapTitle = data.title;
         
+        const title = journeyData.meta?.title || data.title || 'Journey Map';
         const stages = journeyData.stages?.length || 0;
         const steps = journeyData.stages?.reduce((acc, s) => acc + (s.steps?.length || 0), 0) || 0;
-        document.getElementById('journeyMeta').textContent = `${stages} stages • ${steps} steps`;
+        
+        document.getElementById('journeyInfo').innerHTML = `
+          <div class="journey-title">✅ ${title}</div>
+          <div class="journey-meta">${stages} stages • ${steps} steps</div>
+        `;
+        
+        document.getElementById('generateBtn').disabled = false;
         
       } catch (err) {
         console.error('Error loading journey:', err);
-        document.getElementById('journeyInfo').innerHTML = '<div class="error">Error loading journey data. Please try again from the dashboard.</div>';
-        document.getElementById('generateBtn').disabled = true;
+        document.getElementById('journeyInfo').innerHTML = '<div class="error">❌ Error loading journey data: ' + err.message + '</div>';
       }
     });
 
@@ -250,7 +279,7 @@
         doc.setTextColor(...slate700);
         doc.text('STANDARD OPERATING PROCEDURE', pageWidth / 2, 110, { align: 'center' });
         
-        const title = journeyData.meta?.title || 'Journey Map';
+        const title = journeyData.meta?.title || mapTitle || 'Journey Map';
         doc.setFontSize(22);
         const titleLines = doc.splitTextToSize(title, contentWidth - 40);
         doc.text(titleLines, pageWidth / 2, 125, { align: 'center' });
@@ -467,8 +496,8 @@
         
         alert(`✅ SOP Generated!\n\nFile: ${fileName}\n\nThe professional SOP document has been downloaded.`);
         
-        // Clear the data after use
-        localStorage.removeItem('sopJourneyData');
+        // Clear the mapId after use
+        localStorage.removeItem('sopMapId');
         
       } catch (err) {
         console.error('SOP generation error:', err);
