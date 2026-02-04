@@ -3630,6 +3630,10 @@
                                     <span className="card-options-item-icon">⬇️</span>
                                     Download map backup
                                   </button>
+                                  <button className="card-options-item" onClick={(e) => { e.stopPropagation(); localStorage.setItem('sopMapId', map.id); window.open('sop-generator.html', '_blank'); setOpenOptionsMenu(null); }}>
+                                    <span className="card-options-item-icon">📋</span>
+                                    Generate SOP
+                                  </button>
                                   {!isShared && (
                                     <>
                                       <div className="card-options-divider"></div>
